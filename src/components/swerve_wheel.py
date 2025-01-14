@@ -92,7 +92,8 @@ class SwerveWheel:
         encoder_rotation = Rotation2d(
             self.cancoder.get_absolute_position().value * 2 * math.pi
         )
-        state = SwerveModuleState.optimize(self.desired_state, encoder_rotation)
+        state = self.desired_state
+        state.optimize(encoder_rotation)
         # scale speed while turning
         state.speed *= (state.angle - encoder_rotation).cos()
         # convert speed from m/s to r/s
