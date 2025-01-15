@@ -14,7 +14,7 @@ from robot import MyRobot
 class FalconSim:
     def __init__(self, motor: TalonFX, moi: float, gearing: float):
         self.gearbox = DCMotor.falcon500(1)
-        self.plant = LinearSystemId.DCMotorSystem(self.motor_sim, moi, gearing)
+        self.plant = LinearSystemId.DCMotorSystem(self.gearbox, moi, gearing)
         self.gearing = gearing
         self.sim_state = motor.sim_state
         self.sim_state.set_supply_voltage(12.0)
@@ -36,34 +36,19 @@ class PhysicsEngine:
     def __init__(self, physics_controller: PhysicsInterface, robot: MyRobot):
         self.physics_controller = physics_controller
         self.robot = robot
-        self.speed_sim_states = (
-            robot.front_left_speed_motor.sim_state,
-            robot.front_right_speed_motor.sim_state,
-            robot.rear_left_speed_motor.sim_state,
-            robot.rear_right_speed_motor.sim_state,
+        self.speed_sims = (
+            FalconSim(robot.front_left_speed_motor, 0.01, 6.75),
+            FalconSim(robot.front_right_speed_motor, 0.01, 6.75),
+            FalconSim(robot.rear_left_speed_motor, 0.01, 6.75),
+            FalconSim(robot.rear_right_speed_motor, 0.01, 6.75),
         )
-        for sim_state in self.speed_sim_states:
-            sim_state.set_supply_voltage(12.0)
-        self.speed_falcon_sims = (
-            DCMotorSim(DCMotor.falcon500(1), 6.75, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 6.75, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 6.75, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 6.75, 0.01),
+        self.direction_sims = (
+            FalconSim(robot.front_left_direction_motor, 0.01, 150 / 7),
+            FalconSim(robot.front_right_direction_motor, 0.01, 150 / 7),
+            FalconSim(robot.rear_left_direction_motor, 0.01, 150 / 7),
+            FalconSim(robot.rear_right_direction_motor, 0.01, 150 / 7),
         )
-        self.direction_sim_states = (
-            robot.front_left_direction_motor.sim_state,
-            robot.front_right_direction_motor.sim_state,
-            robot.rear_left_direction_motor.sim_state,
-            robot.rear_right_direction_motor.sim_state,
-        )
-        for sim_state in self.direction_sim_states:
-            sim_state.set_supply_voltage(12.0)
-        self.direction_falcon_sims = (
-            DCMotorSim(DCMotor.falcon500(1), 150 / 7, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 150 / 7, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 150 / 7, 0.01),
-            DCMotorSim(DCMotor.falcon500(1), 150 / 7, 0.01),
-        )
+
         self.encoders = (
             robot.front_left_cancoder,
             robot.front_right_cancoder,
@@ -79,31 +64,19 @@ class PhysicsEngine:
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)
             for i in range(4):
-                self.speed_falcon_sims[i].setInputVoltage(
-                    self.speed_sim_states[i].motor_voltage
-                )
-                self.speed_falcon_sims[i].update(tm_diff)
-                self.speed_sim_states[i].set_rotor_velocity(
-                    self.speed_falcon_sims[i].getAngularVelocity()
-                )
-                self.speed_sim_states[i].add_rotor_position(
-                    self.speed_falcon_sims[i].getAngularVelocity() * tm_diff
-                )
-                self.direction_falcon_sims[i].setInputVoltage(
-                    self.direction_sim_states[i].motor_voltage
-                )
-                self.direction_falcon_sims[i].update(tm_diff)
+                self.speed_sims[i].update(tm_diff)
+                self.direction_sims[i].update(tm_diff)
                 self.encoders[i].sim_state.add_position(
-                    -self.direction_falcon_sims[i].getAngularVelocity()
+                    -self.direction_sims[i].motor_sim.getAngularVelocity()
                     / (2 * math.pi)
                     * tm_diff
                 )
 
             sim_speeds = four_motor_swerve_drivetrain(
-                self.speed_sim_states[2].motor_voltage / 12.0,
-                self.speed_sim_states[3].motor_voltage / 12.0,
-                self.speed_sim_states[0].motor_voltage / 12.0,
-                self.speed_sim_states[1].motor_voltage / 12.0,
+                self.speed_sims[2].sim_state.motor_voltage / 12.0,
+                self.speed_sims[3].sim_state.motor_voltage / 12.0,
+                self.speed_sims[0].sim_state.motor_voltage / 12.0,
+                self.speed_sims[1].sim_state.motor_voltage / 12.0,
                 (self.encoders[2].get_absolute_position().value * -360) % 360,
                 (self.encoders[3].get_absolute_position().value * -360) % 360,
                 (self.encoders[0].get_absolute_position().value * -360) % 360,
