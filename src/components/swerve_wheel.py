@@ -44,6 +44,7 @@ class SwerveWheel:
         self.direction_controller = self.direction_profile.create_controller(
             f"{self.direction_motor.device_id}_direction"
         )
+        self.direction_controller.setTolerance(self.angle_deadband, 1.0)
 
         self.desired_state = None
 
@@ -103,15 +104,10 @@ class SwerveWheel:
         )
         self.speed_motor.set_control(controls.VoltageOut(speed_output))
 
-        angle_error = state.angle - encoder_rotation
-
-        deadbanded_error = applyDeadband(angle_error.radians(), self.angle_deadband)
-
-        if deadbanded_error == 0:
-            self.direction_motor.set_control(controls.coast_out.CoastOut())
-        else:
-            direction_output = self.direction_controller.calculate(
-                encoder_rotation.radians(),
-                state.angle.radians(),
-            )
-            self.direction_motor.set_control(controls.VoltageOut(-direction_output))
+        if self.direction_controller.atGoal():
+            self.direction_motor.set_control(controls.static_brake.StaticBrake())
+        direction_output = self.direction_controller.calculate(
+            encoder_rotation.radians(),
+            state.angle.radians(),
+        )
+        self.direction_motor.set_control(controls.VoltageOut(-direction_output))
