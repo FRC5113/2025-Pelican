@@ -7,6 +7,7 @@ from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from robotpy_apriltag import AprilTagFieldLayout
 from wpilib import RobotController, SmartDashboard
 from wpimath import applyDeadband, units
+from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Rotation3d,Pose2d,Transform2d,Rotation2d
 
 import magicbot
@@ -39,6 +40,7 @@ class MyRobot(magicbot.MagicRobot):
     # greatest speed that chassis should move (not greatest possible speed)
     top_speed = SmartPreference(3.0)
     top_omega = SmartPreference(6.0)
+    slew_rate = SmartPreference(5.0)
 
     def createObjects(self):
         """This method is where all attributes to be injected are
@@ -86,7 +88,7 @@ class MyRobot(magicbot.MagicRobot):
             kS=0.14,
             kP=18.0,
             kV=0.375,
-            continuous_range=(0, math.tau),
+            continuous_range=(-math.pi, math.pi),
             low_bandwidth=self.low_bandwidth,
         )
 
@@ -94,6 +96,9 @@ class MyRobot(magicbot.MagicRobot):
         self.sammi_curve = curve(
             lambda x: 1.89 * x**3 + 0.61 * x, 0.0, deadband=0.1, max_mag=1.0
         )
+        self.x_filter = SlewRateLimiter(self.slew_rate)
+        self.y_filter = SlewRateLimiter(self.slew_rate)
+        self.theta_filter = SlewRateLimiter(self.slew_rate)
 
         # odometry
         self.field_layout = AprilTagFieldLayout(
@@ -142,16 +147,16 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.drive(
                 controller.pov_y() * mult * self.top_speed,
                 -controller.pov_x() * mult * self.top_speed,
-                -applyDeadband(controller.rightx(), 0.1) * mult * self.top_omega,
+                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1) * mult * self.top_omega,
                 not controller.leftbumper(),
                 self.period,
             )
         else:
             # otherwise steer with joysticks
             self.swerve_drive.drive(
-                -applyDeadband(controller.lefty(), 0.1) * mult * self.top_speed,
-                -applyDeadband(controller.leftx(), 0.1) * mult * self.top_speed,
-                -applyDeadband(controller.rightx(), 0.1) * mult * self.top_omega,
+                -applyDeadband(self.x_filter.calculate(controller.lefty()), 0.1) * mult * self.top_speed,
+                -applyDeadband(self.y_filter.calculate(controller.leftx()), 0.1) * mult * self.top_speed,
+                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1) * mult * self.top_omega,
                 not controller.leftbumper(),
                 self.period,
             )
