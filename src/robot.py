@@ -185,7 +185,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.period,
             )
 
-        if controller.startbutton():
+        if controller.xbutton():
             self.swerve_drive.reset_gyro()
         if controller.backbutton():
             self.alert_test.enable()
