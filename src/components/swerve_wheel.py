@@ -38,15 +38,15 @@ class SwerveWheel:
         self.direction_motor.configurator.apply(self.motor_configs)
         self.speed_motor.configurator.apply(self.motor_configs)
 
-        self.speed_controller = self.speed_profile.create_controller(
+        self.desired_state = None
+
+    def on_enable(self):
+        self.speed_controller = self.speed_profile.create_flywheel_controller(
             f"{self.speed_motor.device_id}_speed"
         )
-        self.direction_controller = self.direction_profile.create_controller(
+        self.direction_controller = self.direction_profile.create_turret_controller(
             f"{self.direction_motor.device_id}_direction"
         )
-        self.direction_controller.setTolerance(self.angle_deadband, 1.0)
-
-        self.desired_state = None
 
     """
     INFORMATIONAL METHODS
@@ -104,10 +104,11 @@ class SwerveWheel:
         )
         self.speed_motor.set_control(controls.VoltageOut(speed_output))
 
-        if self.direction_controller.atGoal():
-            self.direction_motor.set_control(controls.static_brake.StaticBrake())
         direction_output = self.direction_controller.calculate(
             encoder_rotation.radians(),
             state.angle.radians(),
         )
+        if abs(self.direction_controller.error) < 0.03:
+            self.direction_motor.set_control(controls.static_brake.StaticBrake())
+            return
         self.direction_motor.set_control(controls.VoltageOut(-direction_output))

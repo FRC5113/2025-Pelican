@@ -8,7 +8,7 @@ from robotpy_apriltag import AprilTagFieldLayout
 from wpilib import RobotController, SmartDashboard
 from wpimath import applyDeadband, units
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d, Rotation3d,Pose2d,Transform2d,Rotation2d
+from wpimath.geometry import Transform3d, Rotation3d, Pose2d, Transform2d, Rotation2d
 
 import magicbot
 from components.odometry import Odometry
@@ -79,17 +79,31 @@ class MyRobot(magicbot.MagicRobot):
         # swerve module profiles
         self.speed_profile = SmartProfile(
             "speed",
-            kS=0.17,
-            kV=0.104,
-            low_bandwidth=self.low_bandwidth,
+            {
+                "kP": 0.0,
+                "kI": 0.0,
+                "kD": 0.0,
+                "kS": 0.17,
+                "kV": 0.104,
+                "kA": 0.01,
+            },
+            not self.low_bandwidth,
         )
         self.direction_profile = SmartProfile(
             "direction",
-            kS=0.14,
-            kP=18.0,
-            kV=0.375,
-            continuous_range=(-math.pi, math.pi),
-            low_bandwidth=self.low_bandwidth,
+            {
+                "kP": 18.0,
+                "kI": 0.0,
+                "kD": 0.0,
+                "kS": 0.14,
+                "kV": 0.375,
+                "kA": 0.0,
+                "kMaxV": 400.0,
+                "kMaxA": 4000.0,
+                "kMinInput": -math.pi,
+                "kMaxInput": math.pi,
+            },
+            not self.low_bandwidth,
         )
 
         # driving curve
@@ -108,18 +122,20 @@ class MyRobot(magicbot.MagicRobot):
             self.camera = LemonCameraSim(
                 # loadAprilTagLayoutField(AprilTagField.k2024Crescendo), 120
                 self.field_layout,
-                120, Transform2d(0.2921, 0.384175, Rotation2d(0)),
+                120,
+                Transform2d(0.2921, 0.384175, Rotation2d(0)),
             )
         else:
             self.camera = LemonCamera(
                 "Global_Shutter_Camera",
-                Transform3d(0.0,0.0,0.0,Rotation3d(0,0.523599,0.0)) #Transform3d(0.2921, 0.384175, 0.26035, Rotation3d(0, -0.523599, 0)),
+                Transform3d(
+                    0.0, 0.0, 0.0, Rotation3d(0, 0.523599, 0.0)
+                ),  # Transform3d(0.2921, 0.384175, 0.26035, Rotation3d(0, -0.523599, 0)),
             )
         self.theta_profile = SmartProfile(
             "theta",
-            kP=0.05,
-            continuous_range=(-180, 180),
-            low_bandwidth=self.low_bandwidth,
+            {"kP": 18.0, "kI": 0.0, "kD": 0.0, "kMinInput": -180, "kMaxInput": 180},
+            not self.low_bandwidth,
         )
 
         # initialize AlertManager with logger (kinda bad code)
@@ -147,16 +163,24 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.drive(
                 controller.pov_y() * mult * self.top_speed,
                 -controller.pov_x() * mult * self.top_speed,
-                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1) * mult * self.top_omega,
+                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1)
+                * mult
+                * self.top_omega,
                 not controller.leftbumper(),
                 self.period,
             )
         else:
             # otherwise steer with joysticks
             self.swerve_drive.drive(
-                -applyDeadband(self.x_filter.calculate(controller.lefty()), 0.1) * mult * self.top_speed,
-                -applyDeadband(self.y_filter.calculate(controller.leftx()), 0.1) * mult * self.top_speed,
-                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1) * mult * self.top_omega,
+                -applyDeadband(self.x_filter.calculate(controller.lefty()), 0.1)
+                * mult
+                * self.top_speed,
+                -applyDeadband(self.y_filter.calculate(controller.leftx()), 0.1)
+                * mult
+                * self.top_speed,
+                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1)
+                * mult
+                * self.top_omega,
                 not controller.leftbumper(),
                 self.period,
             )
@@ -165,7 +189,6 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.reset_gyro()
         if controller.backbutton():
             self.alert_test.enable()
-        
 
     @feedback
     def get_voltage(self) -> units.volts:
