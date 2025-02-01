@@ -3,17 +3,18 @@ from pathlib import Path
 
 
 import wpilib
-from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
+from phoenix6.hardware import CANcoder, TalonFX
 from robotpy_apriltag import AprilTagFieldLayout
-from wpilib import RobotController, SmartDashboard
+from wpilib import RobotController
 from wpimath import applyDeadband, units
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d, Rotation3d, Pose2d, Transform2d, Rotation2d
+from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
 
 import magicbot
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
+from components.elevator import Elevator
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
@@ -22,6 +23,9 @@ from lemonlib.util import Alert, AlertManager, AlertType
 from lemonlib.preference import SmartPreference, SmartProfile
 from lemonlib.ctre import LemonPigeon
 from lemonlib.vision import LemonCamera, LemonCameraSim
+
+from rev import SparkMax,SparkLowLevel
+from wpilib import DigitalInput, Encoder
 
 
 # from container import RobotContainer
@@ -35,6 +39,7 @@ class MyRobot(magicbot.MagicRobot):
     front_right: SwerveWheel
     rear_left: SwerveWheel
     rear_right: SwerveWheel
+    elevator: Elevator
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -76,6 +81,21 @@ class MyRobot(magicbot.MagicRobot):
         self.wheel_radius = 0.0508
         self.max_speed = 4.7
 
+        # elevator motors,encoder, and switches
+        BRUSHLESS = SparkLowLevel.MotorType.kBrushless
+        self.right_elevator_motor = SparkMax(61, BRUSHLESS)
+        self.left_elevator_motor = SparkMax(62, BRUSHLESS)
+        self.elevator_encoder = Encoder(2, 3)
+        self.upper_elevator_switch = DigitalInput(0)
+        self.lower_elevator_switch = DigitalInput(1)
+
+        # elevator constants
+        self.kCarriageMass = 15.0
+        self.kMinElevatorHeight = 0.0254
+        self.kMaxElevatorHeight = 2.032
+        self.kElevatorGearing = 10.0
+        self.kSpoolRadius = 0.0381
+
         # swerve module profiles
         self.speed_profile = SmartProfile(
             "speed",
@@ -102,6 +122,21 @@ class MyRobot(magicbot.MagicRobot):
                 "kMaxA": 4000.0,
                 "kMinInput": -math.pi,
                 "kMaxInput": math.pi,
+            },
+            not self.low_bandwidth,
+        )
+
+        # all estimated with reca.lc
+        self.elevator_profile = SmartProfile(
+            "elevator",
+            {
+                "kP": 0.0,
+                "kI": 0.0,
+                "kD": 0.0,
+                "kS": 0.0,
+                "kV": 10.23,
+                "kA": 0.02,
+                "kG": 0.23,
             },
             not self.low_bandwidth,
         )
@@ -189,6 +224,13 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.reset_gyro()
         if controller.backbutton():
             self.alert_test.enable()
+
+        if controller.ybutton():
+            self.elevator.move_up(0.3)
+        if controller.bbutton():
+            self.elevator.move_down(0.3)
+        if controller.abutton():
+            self.elevator.set_target_height(0.7)
 
     @feedback
     def get_voltage(self) -> units.volts:

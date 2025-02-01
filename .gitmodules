@@ -1,3 +1,0 @@
-[submodule "src/lemonlib"]
-	path = src/lemonlib
-	url = https://github.com/FRC5113/LemonLib.git
