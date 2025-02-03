@@ -24,7 +24,7 @@ from lemonlib.preference import SmartPreference, SmartProfile
 from lemonlib.ctre import LemonPigeon
 from lemonlib.vision import LemonCamera, LemonCameraSim
 
-from rev import SparkMax,SparkLowLevel
+from rev import SparkMax, SparkLowLevel
 from wpilib import DigitalInput, Encoder
 
 
@@ -83,18 +83,19 @@ class MyRobot(magicbot.MagicRobot):
 
         # elevator motors,encoder, and switches
         BRUSHLESS = SparkLowLevel.MotorType.kBrushless
-        self.right_elevator_motor = SparkMax(61, BRUSHLESS)
-        self.left_elevator_motor = SparkMax(62, BRUSHLESS)
-        self.elevator_encoder = Encoder(2, 3)
-        self.upper_elevator_switch = DigitalInput(0)
-        self.lower_elevator_switch = DigitalInput(1)
+        self.elevator_right_motor = SparkMax(61, BRUSHLESS)
+        self.elevator_left_motor = SparkMax(62, BRUSHLESS)
+        self.elevator_right_encoder = self.elevator_right_motor.getEncoder()
+        self.elevator_left_encoder = self.elevator_left_motor.getEncoder()
+        self.elevator_upper_switch = DigitalInput(0)
+        self.elevator_lower_switch = DigitalInput(1)
 
         # elevator constants
-        self.kCarriageMass = 15.0
-        self.kMinElevatorHeight = 0.0254
-        self.kMaxElevatorHeight = 2.032
-        self.kElevatorGearing = 10.0
-        self.kSpoolRadius = 0.0381
+        self.elevator_carriage_mass = 15.0
+        self.elevator_min_height = 0.0254
+        self.elevator_max_height = 2.032
+        self.elevator_gearing = 10.0
+        self.elevator_spool_radius = 0.0381
 
         # swerve module profiles
         self.speed_profile = SmartProfile(
@@ -137,6 +138,8 @@ class MyRobot(magicbot.MagicRobot):
                 "kV": 10.23,
                 "kA": 0.02,
                 "kG": 0.23,
+                "kMaxV": 10.0,
+                "kMaxA": 100.0,
             },
             not self.low_bandwidth,
         )
@@ -180,10 +183,6 @@ class MyRobot(magicbot.MagicRobot):
                 "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.WARNING
             )
 
-        self.alert_test = Alert(
-            "It works fucker", AlertType.INFO, timeout=3.0, elasticnoti=True
-        )
-
     def teleopPeriodic(self):
         controller = LemonInput(0)
 
@@ -222,13 +221,11 @@ class MyRobot(magicbot.MagicRobot):
 
         if controller.xbutton():
             self.swerve_drive.reset_gyro()
-        if controller.backbutton():
-            self.alert_test.enable()
 
         if controller.ybutton():
-            self.elevator.move_up(0.3)
+            self.elevator.move_manual(0.3)
         if controller.bbutton():
-            self.elevator.move_down(0.3)
+            self.elevator.move_manual(-0.3)
         if controller.abutton():
             self.elevator.set_target_height(0.7)
 
