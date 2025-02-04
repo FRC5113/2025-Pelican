@@ -15,6 +15,7 @@ from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
 from components.elevator import Elevator
+from components.claw import Claw
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
@@ -24,8 +25,9 @@ from lemonlib.preference import SmartPreference, SmartProfile
 from lemonlib.ctre import LemonPigeon
 from lemonlib.vision import LemonCamera, LemonCameraSim
 
-from rev import SparkMax, SparkLowLevel
+from rev import SparkMax, SparkLowLevel, SparkAbsoluteEncoder, SparkMaxAlternateEncoder
 from wpilib import DigitalInput, Encoder
+
 
 
 # from container import RobotContainer
@@ -40,6 +42,7 @@ class MyRobot(magicbot.MagicRobot):
     rear_left: SwerveWheel
     rear_right: SwerveWheel
     elevator: Elevator
+    claw: Claw
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -97,6 +100,12 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_gearing = 10.0
         self.elevator_spool_radius = 0.0381
 
+        #claw motors and encoder
+        self.claw_hinge_motor = SparkMax(71, BRUSHLESS)
+        self.claw_left_motor = SparkMax(72, BRUSHLESS)
+        self.claw_right_motor = SparkMax(73, BRUSHLESS)
+        #self.claw_hinge_encoder = self.claw_hinge_motor.getAlternateEncoder()
+
         # swerve module profiles
         self.speed_profile = SmartProfile(
             "speed",
@@ -140,6 +149,21 @@ class MyRobot(magicbot.MagicRobot):
                 "kG": 0.23,
                 "kMaxV": 10.0,
                 "kMaxA": 100.0,
+            },
+            not self.low_bandwidth,
+        )
+        self.claw_profile = SmartProfile(
+            "claw",
+            {
+                "kP": 0.0,
+                "kI": 0.0,
+                "kD": 0.0,
+                "kS": 0.0,
+                "kV": 1.61,
+                "kA": 0.0,
+                "kG": 0.8,
+                "kMaxV": 0.0,
+                "kMaxA": 0.0,
             },
             not self.low_bandwidth,
         )
@@ -228,6 +252,16 @@ class MyRobot(magicbot.MagicRobot):
             self.elevator.move_manual(-0.3)
         if controller.abutton():
             self.elevator.set_target_height(0.7)
+        
+        if controller.rightbumper() and controller.ybutton():
+            self.claw.set_intake(0.5)
+        if controller.rightbumper() and controller.bbutton():
+            self.claw.set_intake(-0.5)
+        if controller.rightbumper() and controller.abutton():
+            self.claw.set_target_angle(90)
+        if controller.rightbumper() and controller.xbutton():
+            self.claw.manual_control(0.5)
+        
 
     @feedback
     def get_voltage(self) -> units.volts:
