@@ -99,7 +99,7 @@ class Elevator:
         if self.motor_voltage == 0:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.motor_voltage = self.controller.calculate(
-                self.get_height(), self.target_height.value
+                self.get_height(), self.target_height
             )
 
         # prevent motors from moving the elevator past the limits

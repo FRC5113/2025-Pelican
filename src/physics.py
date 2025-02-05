@@ -1,13 +1,12 @@
 import math
-
 from phoenix6 import unmanaged
 from phoenix6.hardware.talon_fx import TalonFX
+from rev import SparkMaxSim, SparkRelativeEncoderSim, SparkMax, SparkAbsoluteEncoderSim
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
-from wpilib import DriverStation
-from wpilib.simulation import DCMotorSim
+from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
+from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim,SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
-
 from robot import MyRobot
 
 
@@ -34,6 +33,7 @@ class FalconSim:
 
 class PhysicsEngine:
     def __init__(self, physics_controller: PhysicsInterface, robot: MyRobot):
+        # Swerve Drive Setup
         self.physics_controller = physics_controller
         self.robot = robot
         self.speed_sims = (
@@ -60,6 +60,33 @@ class PhysicsEngine:
 
         self.robot.pigeon.sim_states_voltage(5.0)
 
+        # Elevator Simulation
+        self.elevator_gearbox = DCMotor.NEO(2)
+        self.elevator_sim = ElevatorSim(
+            self.elevator_gearbox,
+            robot.elevator_gearing,
+            robot.elevator_carriage_mass,
+            robot.elevator_spool_radius,
+            robot.elevator_min_height,
+            robot.elevator_max_height,
+            True,
+            0,
+            [0.01, 0.0],
+        )
+        self.encoder_sim = SparkRelativeEncoderSim(robot.elevator_left_motor) 
+        self.elevator_left_motor_sim = SparkMaxSim(robot.elevator_left_motor, DCMotor.NEO(1))
+        self.elevator_right_motor_sim = SparkMaxSim(robot.elevator_right_motor, DCMotor.NEO(1))
+
+        # Mechanism2d Visualization for Elevator
+        self.mech2d = Mechanism2d(20, 50)
+        self.elevator_root = self.mech2d.getRoot("Elevator Root", 10, 0)
+        self.elevator_mech2d = self.elevator_root.appendLigament(
+            "Elevator", self.elevator_sim.getPositionInches(), 90
+        )
+
+        # Put Mechanism to SmartDashboard
+        SmartDashboard.putData("Elevator Sim", self.mech2d)
+
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)
@@ -85,10 +112,24 @@ class PhysicsEngine:
                 2.5,
                 15.52,
             )
-            # artificially soften simulated omega
+            # Artificially soften simulated omega
             sim_speeds.omega_dps *= 0.4
-            # correct chassis speeds to match initial robot orientation
+            # Correct chassis speeds to match initial robot orientation
             sim_speeds.vx, sim_speeds.vy = sim_speeds.vy, -sim_speeds.vx
             pose = self.physics_controller.drive(sim_speeds, tm_diff)
             self.robot.camera.set_robot_pose(pose)
             self.robot.pigeon.sim_states_add_yaw(pose.rotation().degrees())
+
+            # Elevator Simulation Update
+            # First, we set our "inputs" (voltages)
+            self.elevator_sim.setInput(
+                0, self.elevator_left_motor_sim.getAppliedOutput()
+            )
+            # Next, we update the elevator simulation
+            self.elevator_sim.update(tm_diff)
+
+            # Set our simulated encoder's readings and simulated battery voltage
+            self.encoder_sim.setPosition(self.elevator_sim.getPosition())
+
+            # Update the Elevator length based on the simulated elevator height
+            self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())

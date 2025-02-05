@@ -104,7 +104,12 @@ class MyRobot(magicbot.MagicRobot):
         self.claw_hinge_motor = SparkMax(71, BRUSHLESS)
         self.claw_left_motor = SparkMax(72, BRUSHLESS)
         self.claw_right_motor = SparkMax(73, BRUSHLESS)
-        #self.claw_hinge_encoder = self.claw_hinge_motor.getAlternateEncoder()
+        self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
+
+        # claw constants
+        self.claw_gearing = 82.5
+        self.claw_min_angle = 0.0
+        self.claw_max_angle = 90.0
 
         # swerve module profiles
         self.speed_profile = SmartProfile(
