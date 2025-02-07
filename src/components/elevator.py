@@ -56,9 +56,7 @@ class Elevator:
         self.controller = self.elevator_profile.create_elevator_controller("elevator")
         self.position_known = False
         self.uncalibrated_alert.enable()
-    def stop(self):
-        self.right_motor.stop()
-        self.left_motor.stop()
+
     def get_encoder_rotations(self) -> float:
         """Return the average position of the encoders in motor
         rotations. 0 should correspond to the lowest position.
@@ -88,7 +86,7 @@ class Elevator:
 
     def execute(self):
         """Update the motor control to reach the target height."""
-        if self.lower_switch.get():
+        if not self.lower_switch.get():
             self.position_known = True
             self.uncalibrated_alert.disable()
             self.reset_encoders()
@@ -105,10 +103,10 @@ class Elevator:
             )
 
         # prevent motors from moving the elevator past the limits
-        if !self.lower_switch.get() and self.motor_voltage < 0:
-            self.stop()
-        if !self.upper_switch.get() and self.motor_voltage > 0:
-            self.stop()
+        if not self.lower_switch.get() and self.motor_voltage < 0:
+            return
+        if not self.upper_switch.get() and self.motor_voltage > 0:
+            return
 
         # assumes right motor must be inverted
         self.left_motor.setVoltage(self.motor_voltage)

@@ -29,7 +29,6 @@ from rev import SparkMax, SparkLowLevel, SparkAbsoluteEncoder, SparkMaxAlternate
 from wpilib import DigitalInput, Encoder
 
 
-
 # from container import RobotContainer
 
 
@@ -100,7 +99,7 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_gearing = 10.0
         self.elevator_spool_radius = 0.0381
 
-        #claw motors and encoder
+        # claw motors and encoder
         self.claw_hinge_motor = SparkMax(71, BRUSHLESS)
         self.claw_left_motor = SparkMax(72, BRUSHLESS)
         self.claw_right_motor = SparkMax(73, BRUSHLESS)
@@ -257,7 +256,7 @@ class MyRobot(magicbot.MagicRobot):
             self.elevator.move_manual(-0.3)
         if controller.abutton():
             self.elevator.set_target_height(0.7)
-        
+
         if controller.rightbumper() and controller.ybutton():
             self.claw.set_intake(0.5)
         if controller.rightbumper() and controller.bbutton():
@@ -266,7 +265,6 @@ class MyRobot(magicbot.MagicRobot):
             self.claw.set_target_angle(90)
         if controller.rightbumper() and controller.xbutton():
             self.claw.manual_control(0.5)
-        
 
     @feedback
     def get_voltage(self) -> units.volts:

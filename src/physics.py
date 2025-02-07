@@ -5,7 +5,7 @@ from rev import SparkMaxSim, SparkRelativeEncoderSim, SparkMax, SparkAbsoluteEnc
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
-from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim,SimDeviceSim
+from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from robot import MyRobot
 
@@ -73,9 +73,13 @@ class PhysicsEngine:
             0,
             [0.01, 0.0],
         )
-        self.encoder_sim = SparkRelativeEncoderSim(robot.elevator_left_motor) 
-        self.elevator_left_motor_sim = SparkMaxSim(robot.elevator_left_motor, DCMotor.NEO(1))
-        self.elevator_right_motor_sim = SparkMaxSim(robot.elevator_right_motor, DCMotor.NEO(1))
+        self.encoder_sim = SparkRelativeEncoderSim(robot.elevator_left_motor)
+        self.elevator_left_motor_sim = SparkMaxSim(
+            robot.elevator_left_motor, DCMotor.NEO(1)
+        )
+        self.elevator_right_motor_sim = SparkMaxSim(
+            robot.elevator_right_motor, DCMotor.NEO(1)
+        )
 
         # Mechanism2d Visualization for Elevator
         self.mech2d = Mechanism2d(20, 50)
