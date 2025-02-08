@@ -1,11 +1,10 @@
 import math
 from pathlib import Path
 
-
 import wpilib
-from phoenix6.hardware import CANcoder, TalonFX
+from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from robotpy_apriltag import AprilTagFieldLayout
-from wpilib import RobotController
+from wpilib import RobotController, DigitalInput, Encoder
 from wpimath import applyDeadband, units
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
@@ -16,17 +15,15 @@ from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
 from components.elevator import Elevator
 from components.claw import Claw
+from components.climber import Climber
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
-from lemonlib.util import curve
-from lemonlib.util import Alert, AlertManager, AlertType
+from lemonlib.util import curve, Alert, AlertManager, AlertType
 from lemonlib.preference import SmartPreference, SmartProfile
-from lemonlib.ctre import LemonPigeon
 from lemonlib.vision import LemonCamera, LemonCameraSim
 
-from rev import SparkMax, SparkLowLevel, SparkAbsoluteEncoder, SparkMaxAlternateEncoder
-from wpilib import DigitalInput, Encoder
+from rev import SparkMax, SparkLowLevel
 
 
 # from container import RobotContainer
@@ -42,6 +39,7 @@ class MyRobot(magicbot.MagicRobot):
     rear_right: SwerveWheel
     elevator: Elevator
     claw: Claw
+    climber: Climber
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -74,7 +72,7 @@ class MyRobot(magicbot.MagicRobot):
         self.rear_right_direction_motor = TalonFX(42)
         self.rear_right_cancoder = CANcoder(43)
 
-        self.pigeon = LemonPigeon(30)
+        self.pigeon = Pigeon2(30)
 
         # swerve constants
         self.offset_x = 0.381
@@ -100,15 +98,22 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_spool_radius = 0.0381
 
         # claw motors and encoder
-        self.claw_hinge_motor = SparkMax(71, BRUSHLESS)
-        self.claw_left_motor = SparkMax(72, BRUSHLESS)
-        self.claw_right_motor = SparkMax(73, BRUSHLESS)
+        self.claw_hinge_motor = SparkMax(63, BRUSHLESS)
+        self.claw_left_motor = SparkMax(64, BRUSHLESS)
+        self.claw_right_motor = SparkMax(65, BRUSHLESS)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
 
         # claw constants
         self.claw_gearing = 82.5
         self.claw_min_angle = 0.0
         self.claw_max_angle = 90.0
+
+        # climber hardware
+        self.climber_motor = TalonFX(51)
+        self.climber_encoder = Encoder(3, 4)
+        self.climber_winch_limit_switch = DigitalInput(5)
+        self.climber_right_hook_limit_switch = DigitalInput(6)
+        self.climber_left_hook_limit_switch = DigitalInput(7)
 
         # swerve module profiles
         self.speed_profile = SmartProfile(
@@ -265,6 +270,13 @@ class MyRobot(magicbot.MagicRobot):
             self.claw.set_target_angle(90)
         if controller.rightbumper() and controller.xbutton():
             self.claw.manual_control(0.5)
+
+        if controller.startbutton() and controller.ybutton():
+            self.climber.move(0.5)
+        if controller.startbutton() and controller.bbutton():
+            self.climber.move(-0.5)
+        if controller.startbutton() and controller.abutton():
+            self.climber.move_manual(0.1)
 
     @feedback
     def get_voltage(self) -> units.volts:

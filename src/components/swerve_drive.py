@@ -28,7 +28,7 @@ class SwerveDrive(Sendable):
     front_right: SwerveWheel
     rear_left: SwerveWheel
     rear_right: SwerveWheel
-    pigeon: LemonPigeon
+    pigeon: Pigeon2
 
     translationX = will_reset_to(0)
     translationY = will_reset_to(0)

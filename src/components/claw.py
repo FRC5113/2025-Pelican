@@ -14,6 +14,7 @@ class ClawAngle(float, Enum):
 
 
 class Claw:
+
     hinge_motor: SparkMax
     left_motor: SparkMax
     right_motor: SparkMax

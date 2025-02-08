@@ -58,7 +58,7 @@ class PhysicsEngine:
         for encoder in self.encoders:
             encoder.sim_state.add_position(0.25)
 
-        self.robot.pigeon.sim_states_voltage(5.0)
+        self.robot.pigeon.sim_state.set_supply_voltage(5.0)
 
         # Elevator Simulation
         self.elevator_gearbox = DCMotor.NEO(2)
@@ -122,7 +122,7 @@ class PhysicsEngine:
             sim_speeds.vx, sim_speeds.vy = sim_speeds.vy, -sim_speeds.vx
             pose = self.physics_controller.drive(sim_speeds, tm_diff)
             self.robot.camera.set_robot_pose(pose)
-            self.robot.pigeon.sim_states_add_yaw(pose.rotation().degrees())
+            self.robot.pigeon.sim_state.add_yaw(pose.rotation().degrees())
 
             # Elevator Simulation Update
             # First, we set our "inputs" (voltages)
