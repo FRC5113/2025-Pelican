@@ -3,30 +3,27 @@ from pathlib import Path
 
 import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
-from robotpy_apriltag import AprilTagFieldLayout
+from rev import SparkMax, SparkLowLevel
+from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from wpilib import RobotController, DigitalInput, Encoder
-from wpimath import applyDeadband, units
+from wpimath import units
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
-
 import magicbot
-from components.odometry import Odometry
-from components.swerve_drive import SwerveDrive
-from components.swerve_wheel import SwerveWheel
-from components.elevator import Elevator
-from components.claw import Claw
-from components.climber import Climber
 from magicbot import feedback
+from photonlibpy.photonCamera import PhotonCamera
 
 from lemonlib.control import LemonInput
 from lemonlib.util import curve, Alert, AlertManager, AlertType
 from lemonlib.preference import SmartPreference, SmartProfile
 from lemonlib.vision import LemonCamera, LemonCameraSim
 
-from rev import SparkMax, SparkLowLevel
-
-
-# from container import RobotContainer
+from components.odometry import Odometry
+from components.swerve_drive import SwerveDrive
+from components.swerve_wheel import SwerveWheel
+from components.elevator import Elevator
+from components.claw import Claw
+from components.climber import Climber
 
 
 class MyRobot(magicbot.MagicRobot):
@@ -55,7 +52,11 @@ class MyRobot(magicbot.MagicRobot):
         components, such as the NavX, need only be created once.
         """
 
-        # swerve motors and cancoders
+        """
+        SWERVE
+        """
+
+        # hardware
         self.front_left_speed_motor = TalonFX(21)
         self.front_left_direction_motor = TalonFX(22)
         self.front_left_cancoder = CANcoder(23)
@@ -72,50 +73,14 @@ class MyRobot(magicbot.MagicRobot):
         self.rear_right_direction_motor = TalonFX(42)
         self.rear_right_cancoder = CANcoder(43)
 
-        self.pigeon = Pigeon2(30)
-
-        # swerve constants
+        # physical constants
         self.offset_x = 0.381
         self.offset_y = 0.381
         self.drive_gear_ratio = 6.75
         self.wheel_radius = 0.0508
         self.max_speed = 4.7
 
-        # elevator motors,encoder, and switches
-        BRUSHLESS = SparkLowLevel.MotorType.kBrushless
-        self.elevator_right_motor = SparkMax(61, BRUSHLESS)
-        self.elevator_left_motor = SparkMax(62, BRUSHLESS)
-        self.elevator_right_encoder = self.elevator_right_motor.getEncoder()
-        self.elevator_left_encoder = self.elevator_left_motor.getEncoder()
-        self.elevator_upper_switch = DigitalInput(0)
-        self.elevator_lower_switch = DigitalInput(1)
-
-        # elevator constants
-        self.elevator_carriage_mass = 15.0
-        self.elevator_min_height = 0.0254
-        self.elevator_max_height = 2.032
-        self.elevator_gearing = 10.0
-        self.elevator_spool_radius = 0.0381
-
-        # claw motors and encoder
-        self.claw_hinge_motor = SparkMax(63, BRUSHLESS)
-        self.claw_left_motor = SparkMax(64, BRUSHLESS)
-        self.claw_right_motor = SparkMax(65, BRUSHLESS)
-        self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
-
-        # claw constants
-        self.claw_gearing = 82.5
-        self.claw_min_angle = 0.0
-        self.claw_max_angle = 90.0
-
-        # climber hardware
-        self.climber_motor = TalonFX(51)
-        self.climber_encoder = Encoder(3, 4)
-        self.climber_winch_limit_switch = DigitalInput(5)
-        self.climber_right_hook_limit_switch = DigitalInput(6)
-        self.climber_left_hook_limit_switch = DigitalInput(7)
-
-        # swerve module profiles
+        # profiles
         self.speed_profile = SmartProfile(
             "speed",
             {
@@ -145,7 +110,27 @@ class MyRobot(magicbot.MagicRobot):
             not self.low_bandwidth,
         )
 
-        # all estimated with reca.lc
+        """
+        ELEVATOR
+        """
+
+        # hardware
+        BRUSHLESS = SparkLowLevel.MotorType.kBrushless
+        self.elevator_right_motor = SparkMax(61, BRUSHLESS)
+        self.elevator_left_motor = SparkMax(62, BRUSHLESS)
+        self.elevator_right_encoder = self.elevator_right_motor.getEncoder()
+        self.elevator_left_encoder = self.elevator_left_motor.getEncoder()
+        self.elevator_upper_switch = DigitalInput(0)
+        self.elevator_lower_switch = DigitalInput(1)
+
+        # physical constants
+        self.elevator_carriage_mass = 15.0
+        self.elevator_min_height = 0.0254
+        self.elevator_max_height = 2.032
+        self.elevator_gearing = 10.0
+        self.elevator_spool_radius = 0.0381
+
+        # profile (estimated)
         self.elevator_profile = SmartProfile(
             "elevator",
             {
@@ -161,6 +146,23 @@ class MyRobot(magicbot.MagicRobot):
             },
             not self.low_bandwidth,
         )
+
+        """
+        CLAW
+        """
+
+        # hardware
+        self.claw_hinge_motor = SparkMax(63, BRUSHLESS)
+        self.claw_left_motor = SparkMax(64, BRUSHLESS)
+        self.claw_right_motor = SparkMax(65, BRUSHLESS)
+        self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
+
+        # physical constants
+        self.claw_gearing = 82.5
+        self.claw_min_angle = 0.0
+        self.claw_max_angle = 90.0
+
+        # profile (estimated)
         self.claw_profile = SmartProfile(
             "claw",
             {
@@ -177,6 +179,23 @@ class MyRobot(magicbot.MagicRobot):
             not self.low_bandwidth,
         )
 
+        """
+        CLIMBER
+        """
+
+        # hardware
+        self.climber_motor = TalonFX(51)
+        self.climber_encoder = Encoder(3, 4)
+        self.climber_winch_limit_switch = DigitalInput(5)
+        self.climber_right_hook_limit_switch = DigitalInput(6)
+        self.climber_left_hook_limit_switch = DigitalInput(7)
+
+        self.pigeon = Pigeon2(30)
+
+        """
+        MISCELLANEOUS
+        """
+
         # driving curve
         self.sammi_curve = curve(
             lambda x: 1.89 * x**3 + 0.61 * x, 0.0, deadband=0.1, max_mag=1.0
@@ -186,30 +205,34 @@ class MyRobot(magicbot.MagicRobot):
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
         # odometry
-        self.field_layout = AprilTagFieldLayout(
-            str(Path(__file__).parent.resolve() / "test_field.json")
-        )
-        if self.isSimulation():
-            self.camera = LemonCameraSim(
-                # loadAprilTagLayoutField(AprilTagField.k2024Crescendo), 120
-                self.field_layout,
-                120,
-                Transform2d(0.2921, 0.384175, Rotation2d(0)),
-            )
-        else:
-            self.camera = LemonCamera(
-                "Global_Shutter_Camera",
-                Transform3d(
-                    0.0, 0.0, 0.0, Rotation3d(0, 0.523599, 0.0)
-                ),  # Transform3d(0.2921, 0.384175, 0.26035, Rotation3d(0, -0.523599, 0)),
-            )
-        self.theta_profile = SmartProfile(
-            "theta",
-            {"kP": 18.0, "kI": 0.0, "kD": 0.0, "kMinInput": -180, "kMaxInput": 180},
-            not self.low_bandwidth,
-        )
+        # self.field_layout = loadAprilTagLayoutField(AprilTagField.k2024Crescendo)
+        # AprilTagFieldLayout(
+        #     str(Path(__file__).parent.resolve() / "test_field.json")
+        # )
+        # if self.isSimulation():
+        #     self.camera = LemonCameraSim(
+        #         # , 120
+        #         self.field_layout,
+        #         120,
+        #         Transform2d(0.2921, 0.384175, Rotation2d(0)),
+        #     )
+        # else:
+        #     self.camera = LemonCamera(
+        #         "Global_Shutter_Camera",
+        #         Transform3d(
+        #             0.0, 0.0, 0.0, Rotation3d(0, 0.523599, 0.0)
+        #         ),  # Transform3d(0.2921, 0.384175, 0.26035, Rotation3d(0, -0.523599, 0)),
+        #     )
+        self.camera = PhotonCamera("Global_Shutter_Camera")
+        self.robot_to_camera = Transform3d()
+        self.field_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
+        # self.theta_profile = SmartProfile(
+        #     "theta",
+        #     {"kP": 18.0, "kI": 0.0, "kD": 0.0, "kMinInput": -180, "kMaxInput": 180},
+        #     not self.low_bandwidth,
+        # )
 
-        # initialize AlertManager with logger (kinda bad code)
+        # alerts
         AlertManager(self.logger)
         if self.low_bandwidth:
             AlertManager.instant_alert(
@@ -230,7 +253,7 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.drive(
                 controller.pov_y() * mult * self.top_speed,
                 -controller.pov_x() * mult * self.top_speed,
-                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1)
+                -self.sammi_curve(self.theta_filter.calculate(controller.rightx()))
                 * mult
                 * self.top_omega,
                 not controller.leftbumper(),
@@ -239,13 +262,13 @@ class MyRobot(magicbot.MagicRobot):
         else:
             # otherwise steer with joysticks
             self.swerve_drive.drive(
-                -applyDeadband(self.x_filter.calculate(controller.lefty()), 0.1)
+                -self.sammi_curve(self.x_filter.calculate(controller.lefty()))
                 * mult
                 * self.top_speed,
-                -applyDeadband(self.y_filter.calculate(controller.leftx()), 0.1)
+                -self.sammi_curve(self.y_filter.calculate(controller.leftx()))
                 * mult
                 * self.top_speed,
-                -applyDeadband(self.theta_filter.calculate(controller.rightx()), 0.1)
+                -self.sammi_curve(self.theta_filter.calculate(controller.rightx()))
                 * mult
                 * self.top_omega,
                 not controller.leftbumper(),
