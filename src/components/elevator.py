@@ -30,6 +30,7 @@ class Elevator:
 
     target_height = will_reset_to(ElevatorHeight.BOTTOM)
     motor_voltage = will_reset_to(0)
+    manual_control = False
     position_known = False
 
     def setup(self):
@@ -44,18 +45,15 @@ class Elevator:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        # assumes that elevator starts at lowest position
-        # eventually use limit switches to confirm
-        self.reset_encoders()
 
-        self.uncalibrated_alert = Alert(
+        self.unhomed_alert = Alert(
             "Elevator encoders not calibrated! Moving elevator down.", AlertType.WARNING
         )
 
     def on_enable(self):
         self.controller = self.elevator_profile.create_elevator_controller("elevator")
         self.position_known = False
-        self.uncalibrated_alert.enable()
+        self.unhomed_alert.enable()
 
     def get_encoder_rotations(self) -> float:
         """Return the average position of the encoders in motor
@@ -74,6 +72,7 @@ class Elevator:
     def set_target_height(self, height: float):
         """Set the target height for the elevator."""
         self.target_height = height
+        self.manual_control = True
 
     def reset_encoders(self):
         """Set the position of the encoders to zero."""
@@ -83,31 +82,30 @@ class Elevator:
     def move_manual(self, voltage: float):
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
+        self.manual_control = False
 
     def execute(self):
-        """Update the motor control to reach the target height."""
-        if not self.lower_switch.get():
+        print(self.left_encoder.getPosition(), self.right_encoder.getPosition(), self.get_height())
+        if self.lower_switch.get():
             self.position_known = True
-            self.uncalibrated_alert.disable()
+            self.unhomed_alert.disable()
             self.reset_encoders()
 
         if not self.position_known:
             # move elevator down slowly until limit switch is reached and position is known
             self.motor_voltage = -0.5
-            return
+        else:
+            if not self.manual_control:
+                # calculate voltage from feedforward (only if voltage has not already been set)
+                self.motor_voltage = self.controller.calculate(
+                    self.get_height(), self.target_height
+                )
 
-        if self.motor_voltage == 0:
-            # calculate voltage from feedforward (only if voltage has not already been set)
-            self.motor_voltage = self.controller.calculate(
-                self.get_height(), self.target_height
-            )
-
-        # prevent motors from moving the elevator past the limits
-        if not self.lower_switch.get() and self.motor_voltage < 0:
-            return
-        if not self.upper_switch.get() and self.motor_voltage > 0:
-            return
-
+            # prevent motors from moving the elevator past the limits
+            if self.lower_switch.get() and self.motor_voltage < 0:
+                return
+            if self.upper_switch.get() and self.motor_voltage > 0:
+                return
         # assumes right motor must be inverted
         self.left_motor.setVoltage(self.motor_voltage)
         self.right_motor.setVoltage(-self.motor_voltage)

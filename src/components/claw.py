@@ -1,10 +1,8 @@
-import rev
-import wpilib
 from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder
-from wpilib import DigitalInput, Encoder
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 from enum import Enum
+from lemonlib.util import Alert,AlertType,AlertManager
 
 
 class ClawAngle(float, Enum):
@@ -27,6 +25,7 @@ class Claw:
     target_angle = will_reset_to(ClawAngle.UP)
     intake_motor_voltage = will_reset_to(0)
     hinge_motor_voltage = will_reset_to(0)
+    hinge_manual_control = False
 
     def setup(self):
         self.hinge_motor.configure(
@@ -35,12 +34,12 @@ class Claw:
             SparkMax.PersistMode.kPersistParameters,
         )
         self.right_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
         self.left_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
@@ -62,12 +61,14 @@ class Claw:
 
     def set_target_angle(self, angle: float):
         self.target_angle = angle
+        self.hinge_manual_control = False
 
-    def manual_control(self, voltage: float):
+    def hinge_move_manual(self, voltage: float):
         self.hinge_motor_voltage = voltage
+        self.hinge_manual_control = True
 
     def execute(self):
-        if self.hinge_motor_voltage == 0:
+        if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.hinge_motor_voltage = self.controller.calculate(
                 self.get_angle(), self.target_angle.value
@@ -76,6 +77,8 @@ class Claw:
             self.hinge_motor.set(self.hinge_motor_voltage)
         else:
             self.hinge_motor.stopMotor()
+        if self.get_angle()-self.max_angle>18 or self.min_angle-self.get_angle()>18:
+            AlertManager.instant_alert("The motor has exceded max/min bounds, the angle is " + self.get_angle() + " degrees",AlertType.ERROR)
 
         self.left_motor.set(self.intake_motor_voltage)
         self.right_motor.set(-self.intake_motor_voltage)

@@ -279,20 +279,18 @@ class MyRobot(magicbot.MagicRobot):
             self.swerve_drive.reset_gyro()
 
         if controller.ybutton():
-            self.elevator.move_manual(0.3)
+            self.elevator.move_manual(1.5)
         if controller.bbutton():
-            self.elevator.move_manual(-0.3)
-        if controller.abutton():
-            self.elevator.set_target_height(0.7)
+            self.elevator.move_manual(-1.5)
 
         if controller.rightbumper() and controller.ybutton():
             self.claw.set_intake(0.5)
         if controller.rightbumper() and controller.bbutton():
             self.claw.set_intake(-0.5)
         if controller.rightbumper() and controller.abutton():
-            self.claw.set_target_angle(90)
+            self.claw.hinge_manual_control(-0.5)
         if controller.rightbumper() and controller.xbutton():
-            self.claw.manual_control(0.5)
+            self.claw.hinge_manual_control(0.5)
 
         if controller.startbutton() and controller.ybutton():
             self.climber.move(0.5)
