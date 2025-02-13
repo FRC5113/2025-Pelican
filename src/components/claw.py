@@ -78,7 +78,7 @@ class Claw:
         else:
             self.hinge_motor.stopMotor()
         if self.get_angle()-self.max_angle>18 or self.min_angle-self.get_angle()>18:
-            AlertManager.instant_alert("The motor has exceded max/min bounds, the angle is " + self.get_angle() + " degrees",AlertType.ERROR)
+            AlertManager.instant_alert(f"The motor has exceded max/min bounds, the angle is {self.get_angle()} degrees" ,AlertType.ERROR)
 
         self.left_motor.set(self.intake_motor_voltage)
         self.right_motor.set(-self.intake_motor_voltage)
