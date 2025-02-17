@@ -2,7 +2,7 @@ from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 from enum import Enum
-from lemonlib.util import Alert,AlertType,AlertManager
+from lemonlib.util import Alert, AlertType, AlertManager
 
 
 class ClawAngle(float, Enum):
@@ -77,8 +77,14 @@ class Claw:
             self.hinge_motor.set(self.hinge_motor_voltage)
         else:
             self.hinge_motor.stopMotor()
-        if self.get_angle()-self.max_angle>18 or self.min_angle-self.get_angle()>18:
-            AlertManager.instant_alert(f"The motor has exceded max/min bounds, the angle is {self.get_angle()} degrees" ,AlertType.ERROR)
+        if (
+            self.get_angle() - self.max_angle > 18
+            or self.min_angle - self.get_angle() > 18
+        ):
+            AlertManager.instant_alert(
+                f"The motor has exceded max/min bounds, the angle is {self.get_angle()} degrees",
+                AlertType.ERROR,
+            )
 
         self.left_motor.set(self.intake_motor_voltage)
         self.right_motor.set(-self.intake_motor_voltage)

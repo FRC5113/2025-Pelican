@@ -85,7 +85,6 @@ class Elevator:
         self.manual_control = False
 
     def execute(self):
-        print(self.left_encoder.getPosition(), self.right_encoder.getPosition(), self.get_height())
         if self.lower_switch.get():
             self.position_known = True
             self.unhomed_alert.disable()
