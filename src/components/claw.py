@@ -27,6 +27,10 @@ class Claw:
     hinge_motor_voltage = will_reset_to(0)
     hinge_manual_control = False
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self):
         self.hinge_motor.configure(
             SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
@@ -49,12 +53,20 @@ class Claw:
             "claw"
         )  # using turret controller for claw until arm is made
 
+    """
+    INFORMATIONAL METHODS
+    """
+
     def get_position(self) -> float:
         return self.hinge_encoder.getPosition()
 
     @feedback
     def get_angle(self) -> float:
         return self.hinge_encoder.getPosition() * 360
+
+    """
+    CONTROL METHODS
+    """
 
     def set_intake(self, voltage: float):
         self.intake_motor_voltage = voltage
@@ -67,12 +79,17 @@ class Claw:
         self.hinge_motor_voltage = voltage
         self.hinge_manual_control = True
 
+    """
+    EXECUTE
+    """
+
     def execute(self):
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.hinge_motor_voltage = self.controller.calculate(
                 self.get_angle(), self.target_angle.value
             )
+        # will eventually need to be tweaked!!!
         if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
             self.hinge_motor.set(self.hinge_motor_voltage)
         else:

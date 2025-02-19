@@ -27,6 +27,10 @@ class SwerveWheel:
     stopped = will_reset_to(True)
     angle_deadband = SmartPreference(0.0349)
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self) -> None:
         """
         This function is automatically called after the motors and encoders have been injected.

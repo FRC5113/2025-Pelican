@@ -38,6 +38,10 @@ class SwerveDrive(Sendable):
     def __init__(self) -> None:
         Sendable.__init__(self)
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self) -> None:
         """
         This function is automatically called after the components have
@@ -125,14 +129,18 @@ class SwerveDrive(Sendable):
             lambda _: None,
         )
 
+    def on_enable(self):
+        self.pigeon.reset()
+
+    """
+    INFORMATIONAL METHODS
+    """
+
     def get_estimated_pose(self) -> Pose2d:
         return self.pose_estimator.getEstimatedPosition()
 
     """
     CONTROL METHODS
-
-    These essentially set up variables and info before execute is ran
-    (like updating translationX from 0 -> 1)
     """
 
     def set_rotationX(self, value: float):
@@ -159,6 +167,10 @@ class SwerveDrive(Sendable):
     def add_vision_measurement(self, pose, timestamp):
         self.pose_estimator.addVisionMeasurement(pose, timestamp)
 
+    """
+    TELEMETRY METHODS
+    """
+
     def sendAdvantageScopeData(self):
         """Put swerve module setpoints and measurements to NT.
         This is used mainly for AdvantageScope's swerve tab"""
@@ -175,12 +187,7 @@ class SwerveDrive(Sendable):
 
     """
     EXECUTE
-    This is ran every "tick" of the robot. This is where we update all
-    the wheels speed and direction.
     """
-
-    def on_enable(self):
-        self.pigeon.reset()
 
     def execute(self) -> None:
         self.sendAdvantageScopeData()

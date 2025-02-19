@@ -33,6 +33,10 @@ class Elevator:
     manual_control = False
     position_known = False
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self):
         """Initialize motors and encoder."""
         self.left_motor.configure(
@@ -55,6 +59,10 @@ class Elevator:
         self.position_known = False
         self.unhomed_alert.enable()
 
+    """
+    INFORMATIONAL METHODS
+    """
+
     def get_encoder_rotations(self) -> float:
         """Return the average position of the encoders in motor
         rotations. 0 should correspond to the lowest position.
@@ -68,6 +76,10 @@ class Elevator:
         return (
             self.get_encoder_rotations() / self.gearing * math.tau * self.spool_radius
         )
+
+    """
+    CONTROL METHODS
+    """
 
     def set_target_height(self, height: float):
         """Set the target height for the elevator."""
@@ -83,6 +95,10 @@ class Elevator:
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
         self.manual_control = False
+
+    """
+    EXECUTE
+    """
 
     def execute(self):
         if self.lower_switch.get():

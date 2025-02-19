@@ -22,6 +22,10 @@ class Climber:
     moving_down = False
     position_known = False
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self):
         self.motor_configs = TalonFXConfiguration()
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -31,6 +35,18 @@ class Climber:
             self.manual_climber = Alert(
                 "Climber is moving Manually and can break", AlertType.WARNING, 0.5
             )
+
+    """
+    INFORMATIONAL METHODS
+    """
+
+    @feedback
+    def get_position(self):
+        return self.encoder.getDistance()
+
+    """
+    CONTROL METHODS
+    """
 
     def move(self, speed: float):
         self.motor_speed = speed
@@ -43,9 +59,9 @@ class Climber:
         self.moving_down = True
         self.manual_climber.enable()
 
-    @feedback
-    def get_position(self):
-        return self.encoder.getDistance()
+    """
+    EXECUTE
+    """
 
     def execute(self):
         if self.manual and self.debug:

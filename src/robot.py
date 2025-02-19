@@ -2,11 +2,12 @@ import math
 from pathlib import Path
 
 import wpilib
+from wpilib import XboxController, PS5Controller
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from wpilib import RobotController, DigitalInput, Encoder, DriverStation
-from wpimath import units
+from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
 import magicbot
@@ -116,8 +117,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # hardware
         BRUSHLESS = SparkLowLevel.MotorType.kBrushless
-        self.elevator_right_motor = SparkMax(61, BRUSHLESS)
-        self.elevator_left_motor = SparkMax(62, BRUSHLESS)
+        self.elevator_right_motor = SparkMax(59, BRUSHLESS)
+        self.elevator_left_motor = SparkMax(57, BRUSHLESS)
         self.elevator_right_encoder = self.elevator_right_motor.getEncoder()
         self.elevator_left_encoder = self.elevator_left_motor.getEncoder()
         self.elevator_upper_switch = DigitalInput(0)
@@ -152,9 +153,9 @@ class MyRobot(magicbot.MagicRobot):
         """
 
         # hardware
-        self.claw_hinge_motor = SparkMax(63, BRUSHLESS)
-        self.claw_left_motor = SparkMax(64, BRUSHLESS)
-        self.claw_right_motor = SparkMax(65, BRUSHLESS)
+        self.claw_hinge_motor = SparkMax(56, BRUSHLESS)
+        self.claw_left_motor = SparkMax(55, BRUSHLESS)
+        self.claw_right_motor = SparkMax(58, BRUSHLESS)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
 
         # physical constants
@@ -194,7 +195,12 @@ class MyRobot(magicbot.MagicRobot):
         MISCELLANEOUS
         """
 
-        self.controller = LemonInput(0)
+        self.ps5: PS5Controller = PS5Controller(0)
+        self.xbox: XboxController = XboxController(1)
+        if DriverStation.getJoystickIsXbox(0):
+            # switch controller ports if necessary
+            self.ps5 = PS5Controller(1)
+            self.xbox = XboxController(0)
 
         self.pigeon = Pigeon2(30)
 
@@ -209,32 +215,9 @@ class MyRobot(magicbot.MagicRobot):
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
         # odometry
-        # self.field_layout = loadAprilTagLayoutField(AprilTagField.k2024Crescendo)
-        # AprilTagFieldLayout(
-        #     str(Path(__file__).parent.resolve() / "test_field.json")
-        # )
-        # if self.isSimulation():
-        #     self.camera = LemonCameraSim(
-        #         # , 120
-        #         self.field_layout,
-        #         120,
-        #         Transform2d(0.2921, 0.384175, Rotation2d(0)),
-        #     )
-        # else:
-        #     self.camera = LemonCamera(
-        #         "Global_Shutter_Camera",
-        #         Transform3d(
-        #             0.0, 0.0, 0.0, Rotation3d(0, 0.523599, 0.0)
-        #         ),  # Transform3d(0.2921, 0.384175, 0.26035, Rotation3d(0, -0.523599, 0)),
-        #     )
-        self.camera = PhotonCamera("Global_Shutter_Camera")
+        # self.camera = PhotonCamera("Global_Shutter_Camera")
         self.robot_to_camera = Transform3d()
         self.field_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
-        # self.theta_profile = SmartProfile(
-        #     "theta",
-        #     {"kP": 18.0, "kI": 0.0, "kD": 0.0, "kMinInput": -180, "kMaxInput": 180},
-        #     not self.low_bandwidth,
-        # )
 
         # alerts
         AlertManager(self.logger)
@@ -244,98 +227,61 @@ class MyRobot(magicbot.MagicRobot):
             )
 
     def teleopPeriodic(self):
-        """
-        SWERVE
-        """
+        with self.consumeExceptions():
 
-        try:
+            """
+            SWERVE
+            """
+
             mult = 1
-            if self.controller.lefttrigger() >= 0.8:
+            if self.ps5.getL2Button() >= 0.8:
                 mult *= 0.5
-            if self.controller.righttrigger() >= 0.8:
+            if self.ps5.getR2Button() >= 0.8:
                 mult *= 0.5
 
-            if self.controller.pov() >= 0:
-                # use pov inputs to steer if present
-                self.swerve_drive.drive(
-                    self.controller.pov_y() * mult * self.top_speed,
-                    -self.controller.pov_x() * mult * self.top_speed,
-                    -self.sammi_curve(
-                        self.theta_filter.calculate(self.controller.rightx())
-                    )
-                    * mult
-                    * self.top_omega,
-                    not self.controller.leftbumper(),
-                    self.period,
-                )
-            else:
-                # otherwise steer with joysticks
-                self.swerve_drive.drive(
-                    -self.sammi_curve(self.x_filter.calculate(self.controller.lefty()))
-                    * mult
-                    * self.top_speed,
-                    -self.sammi_curve(self.y_filter.calculate(self.controller.leftx()))
-                    * mult
-                    * self.top_speed,
-                    -self.sammi_curve(
-                        self.theta_filter.calculate(self.controller.rightx())
-                    )
-                    * mult
-                    * self.top_omega,
-                    not self.controller.leftbumper(),
-                    self.period,
-                )
+            self.swerve_drive.drive(
+                -self.sammi_curve(self.x_filter.calculate(self.ps5.getLeftY()))
+                * mult
+                * self.top_speed,
+                -self.sammi_curve(self.y_filter.calculate(self.ps5.getLeftX()))
+                * mult
+                * self.top_speed,
+                -self.sammi_curve(self.theta_filter.calculate(self.ps5.getRightX()))
+                * mult
+                * self.top_omega,
+                not self.ps5.getL1Button(),
+                self.period,
+            )
 
-            if self.controller.xbutton():
+            if self.ps5.getSquareButton():
                 self.swerve_drive.reset_gyro()
-        except:
-            if not self.fms:
-                raise
 
-        """
-        ELEVATOR
-        """
+            """
+            ELEVATOR
+            """
 
-        try:
-            if self.controller.ybutton():
-                self.elevator.move_manual(1.5)
-            if self.controller.bbutton():
-                self.elevator.move_manual(-1.5)
-        except:
-            if not self.fms:
-                raise
+            self.elevator.move_manual(1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
 
-        """
-        CLAW
-        """
+            """
+            CLAW
+            """
 
-        try:
-            if self.controller.rightbumper() and self.controller.ybutton():
-                self.claw.set_intake(0.5)
-            if self.controller.rightbumper() and self.controller.bbutton():
-                self.claw.set_intake(-0.5)
-            if self.controller.rightbumper() and self.controller.abutton():
+            self.claw.set_intake(0.5 * applyDeadband(self.xbox.getLeftY(), 0.1))
+            if self.xbox.getYButton():
                 self.claw.hinge_manual_control(-0.5)
-            if self.controller.rightbumper() and self.controller.xbutton():
+            if self.xbox.getBButton():
                 self.claw.hinge_manual_control(0.5)
-        except:
-            if not self.fms:
-                raise
 
-        """
-        CLIMBER
-        """
+            """
+            CLIMBER
+            """
 
-        try:
-            if self.controller.startbutton() and self.controller.ybutton():
-                self.climber.move(0.5)
-            if self.controller.startbutton() and self.controller.bbutton():
-                self.climber.move(-0.5)
-            if self.controller.startbutton() and self.controller.abutton():
-                self.climber.move_manual(0.1)
-        except:
-            if not self.fms:
-                raise
+            # if self.controller.startbutton() and self.controller.ybutton():
+            #     self.climber.move(0.5)
+            # if self.controller.startbutton() and self.controller.bbutton():
+            #     self.climber.move(-0.5)
+            # if self.controller.startbutton() and self.controller.abutton():
+            #     self.climber.move_manual(0.1)
 
     @feedback
     def get_voltage(self) -> units.volts:
