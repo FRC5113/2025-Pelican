@@ -53,6 +53,10 @@ class Elevator:
         self.unhomed_alert = Alert(
             "Elevator encoders not calibrated! Moving elevator down.", AlertType.WARNING
         )
+        self.limit_error_alert = Alert(
+            "At least one elevator limit switch is unplugged! Halting elevator.",
+            AlertType.ERROR,
+        )
 
     def on_enable(self):
         self.controller = self.elevator_profile.create_elevator_controller("elevator")
@@ -84,7 +88,7 @@ class Elevator:
     def set_target_height(self, height: float):
         """Set the target height for the elevator."""
         self.target_height = height
-        self.manual_control = True
+        self.manual_control = False
 
     def reset_encoders(self):
         """Set the position of the encoders to zero."""
@@ -94,7 +98,7 @@ class Elevator:
     def move_manual(self, voltage: float):
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
-        self.manual_control = False
+        self.manual_control = True
 
     """
     EXECUTE
@@ -115,6 +119,12 @@ class Elevator:
                 self.motor_voltage = self.controller.calculate(
                     self.get_height(), self.target_height
                 )
+
+            if self.lower_switch.get() and self.upper_switch.get():
+                self.limit_error_alert.enable()
+                return
+            else:
+                self.limit_error_alert.disable()
 
             # prevent motors from moving the elevator past the limits
             if self.lower_switch.get() and self.motor_voltage < 0:

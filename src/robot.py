@@ -44,6 +44,7 @@ class MyRobot(magicbot.MagicRobot):
     top_speed = SmartPreference(3.0)
     top_omega = SmartPreference(6.0)
     slew_rate = SmartPreference(5.0)
+    wheel_twist = SmartPreference(1.0)
 
     def createObjects(self):
         """This method is where all attributes to be injected are
@@ -160,8 +161,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # physical constants
         self.claw_gearing = 82.5
-        self.claw_min_angle = 0.0
-        self.claw_max_angle = 90.0
+        self.claw_min_angle = 5.0
+        self.claw_max_angle = 111.2
 
         # profile (estimated)
         self.claw_profile = SmartProfile(
@@ -195,12 +196,12 @@ class MyRobot(magicbot.MagicRobot):
         MISCELLANEOUS
         """
 
-        self.ps5: PS5Controller = PS5Controller(0)
-        self.xbox: XboxController = XboxController(1)
-        if DriverStation.getJoystickIsXbox(0):
-            # switch controller ports if necessary
-            self.ps5 = PS5Controller(1)
-            self.xbox = XboxController(0)
+        self.ps5: PS5Controller = PS5Controller(1)
+        self.xbox: XboxController = XboxController(0)
+        # if DriverStation.getJoystickIsXbox(0):
+        #     # switch controller ports if necessary
+        #     self.ps5 = PS5Controller(1)
+        #     self.xbox = XboxController(0)
 
         self.pigeon = Pigeon2(30)
 
@@ -260,22 +261,29 @@ class MyRobot(magicbot.MagicRobot):
             ELEVATOR
             """
 
-            self.elevator.move_manual(1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
+            self.elevator.move_manual(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
 
             """
             CLAW
             """
 
-            self.claw.set_intake(0.5 * applyDeadband(self.xbox.getLeftY(), 0.1))
+            self.claw.set_intake(
+                0.5 * applyDeadband(self.xbox.getLeftY(), 0.1), 
+                0.5 * self.wheel_twist * applyDeadband(self.xbox.getLeftY(), 0.1)
+            )
             if self.xbox.getYButton():
-                self.claw.hinge_manual_control(-0.5)
+                self.claw.hinge_move_manual(-1)
             if self.xbox.getBButton():
-                self.claw.hinge_manual_control(0.5)
+                self.claw.hinge_move_manual(1)
 
             """
             CLIMBER
             """
 
+            if self.xbox.getLeftTriggerAxis() > 0.05:
+                self.climber.move_manual(self.xbox.getLeftTriggerAxis())
+            if self.xbox.getRightTriggerAxis() > 0.05:
+                self.climber.move_manual(-self.xbox.getRightTriggerAxis())
             # if self.controller.startbutton() and self.controller.ybutton():
             #     self.climber.move(0.5)
             # if self.controller.startbutton() and self.controller.bbutton():

@@ -56,6 +56,7 @@ class Climber:
         """Move the climber Manually. DO NOT USE IN COMPETITION OR LET JUSTIN TOUCH THIS"""
 
         self.motor_speed = speed
+        self.manual = True
         self.moving_down = True
         self.manual_climber.enable()
 
@@ -65,6 +66,7 @@ class Climber:
 
     def execute(self):
         if self.manual and self.debug:
+            print(self.motor_speed)
             self.encoder.reset()
             self.motor.set(self.motor_speed)
             return

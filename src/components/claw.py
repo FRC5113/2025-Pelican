@@ -7,8 +7,8 @@ from lemonlib.util import Alert, AlertType, AlertManager
 
 class ClawAngle(float, Enum):
     # values likely inaccurate
-    UP = 0.0
-    SIDE = 90.0
+    UP = 5.0
+    DOWN = 111.2
 
 
 class Claw:
@@ -23,7 +23,8 @@ class Claw:
     hinge_encoder: SparkAbsoluteEncoder
 
     target_angle = will_reset_to(ClawAngle.UP)
-    intake_motor_voltage = will_reset_to(0)
+    intake_left_motor_voltage = will_reset_to(0)
+    intake_right_motor_voltage = will_reset_to(0)
     hinge_motor_voltage = will_reset_to(0)
     hinge_manual_control = False
 
@@ -62,14 +63,18 @@ class Claw:
 
     @feedback
     def get_angle(self) -> float:
-        return self.hinge_encoder.getPosition() * 360
+        angle = self.hinge_encoder.getPosition() * 360
+        if angle > 180:
+            angle -= 360
+        return angle
 
     """
     CONTROL METHODS
     """
 
-    def set_intake(self, voltage: float):
-        self.intake_motor_voltage = voltage
+    def set_intake(self, left_voltage: float, right_voltage: float):
+        self.intake_left_motor_voltage = left_voltage
+        self.intake_right_motor_voltage = right_voltage
 
     def set_target_angle(self, angle: float):
         self.target_angle = angle
@@ -84,16 +89,18 @@ class Claw:
     """
 
     def execute(self):
+        self.left_motor.set(self.intake_left_motor_voltage)
+        self.right_motor.set(-self.intake_right_motor_voltage)
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.hinge_motor_voltage = self.controller.calculate(
                 self.get_angle(), self.target_angle.value
             )
         # will eventually need to be tweaked!!!
-        if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
-            self.hinge_motor.set(self.hinge_motor_voltage)
-        else:
-            self.hinge_motor.stopMotor()
+        # if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
+        #     self.hinge_motor.set(self.hinge_motor_voltage)
+        # else:
+        #     self.hinge_motor.stopMotor()
         if (
             self.get_angle() - self.max_angle > 18
             or self.min_angle - self.get_angle() > 18
@@ -102,6 +109,9 @@ class Claw:
                 f"The motor has exceded max/min bounds, the angle is {self.get_angle()} degrees",
                 AlertType.ERROR,
             )
-
-        self.left_motor.set(self.intake_motor_voltage)
-        self.right_motor.set(-self.intake_motor_voltage)
+        # negative voltage = increase angle
+        if self.get_angle() > self.max_angle and self.hinge_motor_voltage < 0:
+            return
+        if self.get_angle() < self.min_angle and self.hinge_motor_voltage > 0:
+            return
+        self.hinge_motor.setVoltage(self.hinge_motor_voltage)
