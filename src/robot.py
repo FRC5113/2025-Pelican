@@ -266,11 +266,17 @@ class MyRobot(magicbot.MagicRobot):
             """
             CLAW
             """
-
-            self.claw.set_intake(
-                0.5 * applyDeadband(self.xbox.getLeftY(), 0.1), 
-                0.5 * self.wheel_twist * applyDeadband(self.xbox.getLeftY(), 0.1)
-            )
+            
+            if self.xbox.getLeftY() > 0:
+                self.claw.set_intake(
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1)
+                )
+            else:
+                self.claw.set_intake(
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1), 
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist
+                )
             if self.xbox.getYButton():
                 self.claw.hinge_move_manual(-1)
             if self.xbox.getBButton():
