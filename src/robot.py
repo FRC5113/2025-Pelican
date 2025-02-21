@@ -132,7 +132,7 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_min_height = 0.0254
         self.elevator_max_height = 2.032
         self.elevator_gearing = 10.0
-        self.elevator_spool_radius = 0.0381
+        self.elevator_spool_radius = 0.0223
 
         # profile (estimated)
         self.elevator_profile = SmartProfile(

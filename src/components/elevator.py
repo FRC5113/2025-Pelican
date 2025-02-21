@@ -149,9 +149,9 @@ class Elevator:
 
             # prevent motors from moving the elevator past the limits
             if self.lower_switch.get() and self.motor_voltage < 0:
-                return
+                self.motor_voltage = 0
             if self.upper_switch.get() and self.motor_voltage > 0:
-                return
+                self.motor_voltage = 0
         # assumes right motor must be inverted
         self.left_motor.setVoltage(self.motor_voltage)
         self.right_motor.setVoltage(-self.motor_voltage)

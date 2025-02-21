@@ -10,7 +10,7 @@ class SysIdElevator(MagicSysIdRoutine):
 
     def setup(self):
         self.setup_sysid(
-            SysIdRoutine.Config(rampRate=0.2, stepVoltage=7.0),
+            SysIdRoutine.Config(rampRate=0.25, stepVoltage=4.0),
             SysIdRoutine.Mechanism(
                 self.elevator.sysid_drive,
                 self.elevator.sysid_log,
