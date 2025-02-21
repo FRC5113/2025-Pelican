@@ -130,7 +130,7 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_min_height = 0.0254
         self.elevator_max_height = 2.032
         self.elevator_gearing = 10.0
-        self.elevator_spool_radius = 0.0381
+        self.elevator_spool_radius = 0.0223
 
         # profile (estimated)
         self.elevator_profile = SmartProfile(
@@ -140,9 +140,9 @@ class MyRobot(magicbot.MagicRobot):
                 "kI": 0.0,
                 "kD": 0.0,
                 "kS": 0.0,
-                "kV": 10.23,
-                "kA": 0.02,
-                "kG": 0.23,
+                "kV": 0.0,
+                "kA": 0.0,
+                "kG": 0.0,
                 "kMaxV": 10.0,
                 "kMaxA": 100.0,
             },
@@ -261,6 +261,14 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             self.elevator.set_voltage(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
+            if self.xbox.getAButton():
+                self.elevator.set_target_height(0.0)
+            if self.xbox.getBButton():
+                self.elevator.set_target_height(0.2)
+            if self.xbox.getYButton():
+                self.elevator.set_target_height(0.7)
+            if self.xbox.getXButton():
+                self.elevator.set_target_height(0.4)
 
             """
             CLAW
@@ -276,10 +284,10 @@ class MyRobot(magicbot.MagicRobot):
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist,
                 )
-            if self.xbox.getYButton():
-                self.claw.set_hinge_voltage(-1)
-            if self.xbox.getBButton():
-                self.claw.set_hinge_voltage(1)
+            # if self.xbox.getYButton():
+            #     self.claw.set_hinge_voltage(-1)
+            # if self.xbox.getBButton():
+            #     self.claw.set_hinge_voltage(1)
 
             """
             CLIMBER
