@@ -5,6 +5,7 @@ from magicbot import feedback, will_reset_to
 from wpilib import DigitalInput
 from lemonlib.preference import SmartProfile
 from rev import SparkMax, SparkBaseConfig, SparkRelativeEncoder
+from wpilib.sysid import SysIdRoutineLog
 
 from lemonlib.util import Alert, AlertType
 
@@ -99,6 +100,26 @@ class Elevator:
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
         self.manual_control = True
+
+    """
+    SYSID
+    """
+
+    def sysid_drive(self, volts: float):
+        self.set_voltage(volts)
+
+    def sysid_log(self, log: SysIdRoutineLog):
+        log.motor("left_elevator").voltage(self.motor_voltage).position(
+            self.left_encoder.getPosition()
+            / self.gearing
+            * math.tau
+            * self.spool_radius
+        ).velocity(
+            self.left_encoder.getVelocity()
+            / self.gearing
+            * math.tau
+            * self.spool_radius
+        )
 
     """
     EXECUTE

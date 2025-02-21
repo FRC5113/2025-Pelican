@@ -19,6 +19,7 @@ from lemonlib.util import curve, Alert, AlertManager, AlertType
 from lemonlib.preference import SmartPreference, SmartProfile
 from lemonlib.vision import LemonCamera, LemonCameraSim
 
+from components.sysid_elevator import SysIdElevator
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
@@ -29,6 +30,7 @@ from components.climber import Climber
 
 class MyRobot(magicbot.MagicRobot):
     odometry: Odometry
+    sysid_elevator: SysIdElevator
 
     swerve_drive: SwerveDrive
     front_left: SwerveWheel
@@ -261,6 +263,14 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             self.elevator.set_voltage(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
+            if self.xbox.getBButton():
+                self.sysid_elevator.quasistatic_forward()
+            if self.xbox.getAButton():
+                self.sysid_elevator.quasistatic_reverse()
+            if self.xbox.getYButton():
+                self.sysid_elevator.dynamic_forward()
+            if self.xbox.getXButton():
+                self.sysid_elevator.dynamic_reverse()
 
             """
             CLAW
@@ -276,9 +286,9 @@ class MyRobot(magicbot.MagicRobot):
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist,
                 )
-            if self.xbox.getYButton():
+            if self.xbox.getLeftBumper():
                 self.claw.set_hinge_voltage(-1)
-            if self.xbox.getBButton():
+            if self.xbox.getRightBumper():
                 self.claw.set_hinge_voltage(1)
 
             """
