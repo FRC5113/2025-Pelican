@@ -6,7 +6,7 @@ from wpilib import XboxController, PS5Controller
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotController, DigitalInput, Encoder, DriverStation
+from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
@@ -187,10 +187,9 @@ class MyRobot(magicbot.MagicRobot):
 
         # hardware
         self.climber_motor = TalonFX(51)
-        self.climber_encoder = Encoder(3, 4)
-        self.climber_winch_limit_switch = DigitalInput(5)
-        self.climber_right_hook_limit_switch = DigitalInput(6)
-        self.climber_left_hook_limit_switch = DigitalInput(7)
+        self.climber_encoder = DutyCycleEncoder(2)
+        self.climber_min_position = 0.0  # placeholder
+        self.climber_max_position = 1.0  # placeholder
 
         """
         MISCELLANEOUS
@@ -261,35 +260,35 @@ class MyRobot(magicbot.MagicRobot):
             ELEVATOR
             """
 
-            self.elevator.move_manual(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
+            self.elevator.set_voltage(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
 
             """
             CLAW
             """
-            
+
             if self.xbox.getLeftY() > 0:
                 self.claw.set_intake(
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1)
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
                 )
             else:
                 self.claw.set_intake(
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1), 
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
+                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist,
                 )
             if self.xbox.getYButton():
-                self.claw.hinge_move_manual(-1)
+                self.claw.set_hinge_voltage(-1)
             if self.xbox.getBButton():
-                self.claw.hinge_move_manual(1)
+                self.claw.set_hinge_voltage(1)
 
             """
             CLIMBER
             """
 
             if self.xbox.getLeftTriggerAxis() > 0.05:
-                self.climber.move_manual(self.xbox.getLeftTriggerAxis())
+                self.climber.set_speed(self.xbox.getLeftTriggerAxis())
             if self.xbox.getRightTriggerAxis() > 0.05:
-                self.climber.move_manual(-self.xbox.getRightTriggerAxis())
+                self.climber.set_speed(-self.xbox.getRightTriggerAxis())
             # if self.controller.startbutton() and self.controller.ybutton():
             #     self.climber.move(0.5)
             # if self.controller.startbutton() and self.controller.bbutton():

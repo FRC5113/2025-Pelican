@@ -2,7 +2,7 @@ from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 from enum import Enum
-from lemonlib.util import Alert, AlertType, AlertManager
+from lemonlib.util import Alert, AlertType
 
 
 class ClawAngle(float, Enum):
@@ -25,7 +25,7 @@ class Claw:
     target_angle = will_reset_to(ClawAngle.UP)
     intake_left_motor_voltage = will_reset_to(0)
     intake_right_motor_voltage = will_reset_to(0)
-    hinge_motor_voltage = will_reset_to(0)
+    hinge_voltage = will_reset_to(0)
     hinge_manual_control = False
 
     """
@@ -33,11 +33,6 @@ class Claw:
     """
 
     def setup(self):
-        self.hinge_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
         self.right_motor.configure(
             SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
             SparkMax.ResetMode.kResetSafeParameters,
@@ -48,11 +43,26 @@ class Claw:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+        self.hinge_alert = Alert(
+            "Claw hinge has rotated too far!", type=AlertType.ERROR
+        )
 
     def on_enable(self):
+        self.hinge_motor.configure(
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
+            SparkMax.ResetMode.kResetSafeParameters,
+            SparkMax.PersistMode.kPersistParameters,
+        )
         self.controller = self.claw_profile.create_turret_controller(
             "claw"
         )  # using turret controller for claw until arm is made
+
+    def on_disable(self):
+        self.hinge_motor.configure(
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
+            SparkMax.ResetMode.kResetSafeParameters,
+            SparkMax.PersistMode.kPersistParameters,
+        )
 
     """
     INFORMATIONAL METHODS
@@ -63,6 +73,7 @@ class Claw:
 
     @feedback
     def get_angle(self) -> float:
+        """Return the angle of the hinge normalized to [-180,180]"""
         angle = self.hinge_encoder.getPosition() * 360
         if angle > 180:
             angle -= 360
@@ -80,8 +91,8 @@ class Claw:
         self.target_angle = angle
         self.hinge_manual_control = False
 
-    def hinge_move_manual(self, voltage: float):
-        self.hinge_motor_voltage = voltage
+    def set_hinge_voltage(self, voltage: float):
+        self.hinge_voltage = voltage
         self.hinge_manual_control = True
 
     """
@@ -93,25 +104,27 @@ class Claw:
         self.right_motor.set(-self.intake_right_motor_voltage)
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
-            self.hinge_motor_voltage = self.controller.calculate(
+            self.hinge_voltage = self.controller.calculate(
                 self.get_angle(), self.target_angle.value
             )
         # will eventually need to be tweaked!!!
         # if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
-        #     self.hinge_motor.set(self.hinge_motor_voltage)
+        #     self.hinge_motor.set(self.hinge_voltage)
         # else:
         #     self.hinge_motor.stopMotor()
         if (
-            self.get_angle() - self.max_angle > 18
-            or self.min_angle - self.get_angle() > 18
+            self.get_angle() - self.max_angle > 10
+            or self.min_angle - self.get_angle() > 10
         ):
-            AlertManager.instant_alert(
-                f"The motor has exceded max/min bounds, the angle is {self.get_angle()} degrees",
-                AlertType.ERROR,
+            self.hinge_alert.enable()
+            self.hinge_alert.set_text(
+                f"Claw hinge has rotated too far! Current angle: {self.get_angle()}"
             )
+        else:
+            self.hinge_alert.disable()
         # negative voltage = increase angle
-        if self.get_angle() > self.max_angle and self.hinge_motor_voltage < 0:
+        if self.get_angle() > self.max_angle and self.hinge_voltage < 0:
             return
-        if self.get_angle() < self.min_angle and self.hinge_motor_voltage > 0:
+        if self.get_angle() < self.min_angle and self.hinge_voltage > 0:
             return
-        self.hinge_motor.setVoltage(self.hinge_motor_voltage)
+        self.hinge_motor.setVoltage(self.hinge_voltage)

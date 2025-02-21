@@ -31,7 +31,7 @@ class Elevator:
     target_height = will_reset_to(ElevatorHeight.BOTTOM)
     motor_voltage = will_reset_to(0)
     manual_control = False
-    position_known = False
+    homed = False
 
     """
     INITIALIZATION METHODS
@@ -60,7 +60,7 @@ class Elevator:
 
     def on_enable(self):
         self.controller = self.elevator_profile.create_elevator_controller("elevator")
-        self.position_known = False
+        self.homed = False
         self.unhomed_alert.enable()
 
     """
@@ -95,7 +95,7 @@ class Elevator:
         self.left_encoder.setPosition(0)
         self.right_encoder.setPosition(0)
 
-    def move_manual(self, voltage: float):
+    def set_voltage(self, voltage: float):
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
         self.manual_control = True
@@ -106,11 +106,11 @@ class Elevator:
 
     def execute(self):
         if self.lower_switch.get():
-            self.position_known = True
+            self.homed = True
             self.unhomed_alert.disable()
             self.reset_encoders()
 
-        if not self.position_known:
+        if not self.homed:
             # move elevator down slowly until limit switch is reached and position is known
             self.motor_voltage = -0.5
         else:
