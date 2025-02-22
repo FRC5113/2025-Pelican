@@ -162,8 +162,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # physical constants
         self.claw_gearing = 82.5
-        self.claw_min_angle = 5.0
-        self.claw_max_angle = 111.2
+        self.claw_min_angle = -111.6
+        self.claw_max_angle = 7.6
 
         # profile (estimated)
         self.claw_profile = SmartProfile(
