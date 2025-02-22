@@ -158,6 +158,7 @@ class MyRobot(magicbot.MagicRobot):
         self.claw_left_motor = SparkMax(55, BRUSHLESS)
         self.claw_right_motor = SparkMax(58, BRUSHLESS)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
+        self.claw_intake_limit = self.claw_hinge_motor.getReverseLimitSwitch()
 
         # physical constants
         self.claw_gearing = 82.5
@@ -195,6 +196,8 @@ class MyRobot(magicbot.MagicRobot):
         MISCELLANEOUS
         """
 
+        self.period = 0.02
+
         self.ps5: PS5Controller = PS5Controller(1)
         self.xbox: XboxController = XboxController(0)
         # if DriverStation.getJoystickIsXbox(0):
@@ -217,7 +220,7 @@ class MyRobot(magicbot.MagicRobot):
         # odometry
         # self.camera = PhotonCamera("Global_Shutter_Camera")
         self.robot_to_camera = Transform3d()
-        self.field_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
+        self.field_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeAndyMark)
 
         # alerts
         AlertManager(self.logger)
@@ -261,14 +264,14 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             self.elevator.set_voltage(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
-            if self.xbox.getAButton():
-                self.elevator.set_target_height(0.0)
-            if self.xbox.getBButton():
-                self.elevator.set_target_height(0.2)
-            if self.xbox.getYButton():
-                self.elevator.set_target_height(0.7)
-            if self.xbox.getXButton():
-                self.elevator.set_target_height(0.4)
+            # if self.xbox.getAButton():
+            #     self.elevator.set_target_height(0.0)
+            # if self.xbox.getBButton():
+            #     self.elevator.set_target_height(0.2)
+            # if self.xbox.getYButton():
+            #     self.elevator.set_target_height(0.7)
+            # if self.xbox.getXButton():
+            #     self.elevator.set_target_height(0.4)
 
             """
             CLAW
@@ -284,10 +287,10 @@ class MyRobot(magicbot.MagicRobot):
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
                     0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist,
                 )
-            # if self.xbox.getYButton():
-            #     self.claw.set_hinge_voltage(-1)
-            # if self.xbox.getBButton():
-            #     self.claw.set_hinge_voltage(1)
+            if self.xbox.getYButton():
+                self.claw.set_hinge_voltage(-1)
+            if self.xbox.getBButton():
+                self.claw.set_hinge_voltage(1)
 
             """
             CLIMBER

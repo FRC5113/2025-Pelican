@@ -6,7 +6,7 @@
 [tool.robotpy]
 
 # Version of robotpy this project depends on
-robotpy_version = "2025.2.1"
+robotpy_version = "2025.3.1.1"
 
 # Which extra RobotPy components should be installed
 # -> equivalent to `pip install robotpy[extra1, ...]
@@ -18,7 +18,7 @@ robotpy_extras = [
      "navx",
     # "pathplannerlib",
     # "phoenix5",
-    # "phoenix6",
+     "phoenix6",
     # "playingwithfusion",
     # "rev",
     # "romi",
@@ -28,5 +28,5 @@ robotpy_extras = [
 
 # Other pip packages to install
 requires = [
-    "photonlibpy==2025.1.1","lemonlib","robotpy-rev==2025.0.2"
+    "photonlibpy==2025.1.1","robotpy-rev==2025.0.2"
 ]

@@ -1,4 +1,4 @@
-from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder
+from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder,SparkLimitSwitch
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 from enum import Enum
@@ -7,8 +7,8 @@ from lemonlib.util import Alert, AlertType
 
 class ClawAngle(float, Enum):
     # values likely inaccurate
-    UP = 5.0
-    DOWN = 111.2
+    UP = -111.6
+    DOWN = 7.6
 
 
 class Claw:
@@ -21,6 +21,7 @@ class Claw:
     min_angle: float
     max_angle: float
     hinge_encoder: SparkAbsoluteEncoder
+    intake_limit: SparkLimitSwitch
 
     target_angle = will_reset_to(ClawAngle.UP)
     intake_left_motor_voltage = will_reset_to(0)
@@ -78,6 +79,10 @@ class Claw:
         if angle > 180:
             angle -= 360
         return angle
+    
+    @feedback
+    def get_intake(self) -> bool:
+        return self.intake_limit.get()
 
     """
     CONTROL METHODS
@@ -100,8 +105,9 @@ class Claw:
     """
 
     def execute(self):
-        self.left_motor.set(self.intake_left_motor_voltage)
-        self.right_motor.set(-self.intake_right_motor_voltage)
+        if not self.intake_limit.get() or (self.intake_left_motor_voltage < 0 and self.intake_right_motor_voltage < 0):
+            self.left_motor.set(self.intake_left_motor_voltage)
+            self.right_motor.set(-self.intake_right_motor_voltage)
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.hinge_voltage = self.controller.calculate(
