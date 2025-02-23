@@ -54,7 +54,7 @@ class Claw:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        self.controller = self.claw_profile.create_turret_controller(
+        self.controller = self.claw_profile.create_arm_controller(
             "claw"
         )  # using turret controller for claw until arm is made
 
@@ -114,10 +114,10 @@ class Claw:
                 self.get_angle(), self.target_angle.value
             )
         # will eventually need to be tweaked!!!
-        # if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
-        #     self.hinge_motor.set(self.hinge_voltage)
-        # else:
-        #     self.hinge_motor.stopMotor()
+        if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
+           self.hinge_motor.set(self.hinge_voltage)
+        else:
+           self.hinge_motor.stopMotor()
         if (
             self.get_angle() - self.max_angle > 10
             or self.min_angle - self.get_angle() > 10

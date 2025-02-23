@@ -198,8 +198,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.period = 0.02
 
-        self.ps5: PS5Controller = PS5Controller(1)
-        self.xbox: XboxController = XboxController(0)
+        self.primary = LemonInput(0, "PS5")
+        self.secondary =  LemonInput(1, "Xbox")
         # if DriverStation.getJoystickIsXbox(0):
         #     # switch controller ports if necessary
         #     self.ps5 = PS5Controller(1)
@@ -237,33 +237,33 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             mult = 1
-            if self.ps5.getL2Button() >= 0.8:
+            if self.primary.getRightTrigger() >= 0.8:
                 mult *= 0.5
-            if self.ps5.getR2Button() >= 0.8:
+            if self.primary.getLeftTrigger() >= 0.8:
                 mult *= 0.5
 
             self.swerve_drive.drive(
-                -self.sammi_curve(self.x_filter.calculate(self.ps5.getLeftY()))
+                -self.sammi_curve(self.x_filter.calculate(self.primary.getLeftY()))
                 * mult
                 * self.top_speed,
-                -self.sammi_curve(self.y_filter.calculate(self.ps5.getLeftX()))
+                -self.sammi_curve(self.y_filter.calculate(self.primary.getLeftX()))
                 * mult
                 * self.top_speed,
-                -self.sammi_curve(self.theta_filter.calculate(self.ps5.getRightX()))
+                -self.sammi_curve(self.theta_filter.calculate(self.primary.getRightY()))
                 * mult
                 * self.top_omega,
-                not self.ps5.getL1Button(),
+                not self.primary.getLeftBumper(),
                 self.period,
             )
 
-            if self.ps5.getSquareButton():
+            if self.primary.getXbutton():
                 self.swerve_drive.reset_gyro()
 
             """
             ELEVATOR
             """
 
-            self.elevator.set_voltage(-1.5 * applyDeadband(self.xbox.getRightY(), 0.1))
+            self.elevator.set_voltage(-1.5 * applyDeadband(self.secondary.getXbutton(), 0.1))
             # if self.xbox.getAButton():
             #     self.elevator.set_target_height(0.0)
             # if self.xbox.getBButton():
@@ -277,29 +277,29 @@ class MyRobot(magicbot.MagicRobot):
             CLAW
             """
 
-            if self.xbox.getLeftY() > 0:
+            if self.secondary.getLeftY() > 0:
                 self.claw.set_intake(
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
+                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
+                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
                 )
             else:
                 self.claw.set_intake(
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1),
-                    0.5 * applyDeadband(self.xbox.getLeftY(), 0.1) * self.wheel_twist,
+                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
+                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1) * self.wheel_twist,
                 )
-            if self.xbox.getYButton():
+            if self.secondary.getYbutton():
                 self.claw.set_hinge_voltage(-1)
-            if self.xbox.getBButton():
+            if self.secondary.getBbutton():
                 self.claw.set_hinge_voltage(1)
 
             """
             CLIMBER
             """
 
-            if self.xbox.getLeftTriggerAxis() > 0.05:
-                self.climber.set_speed(self.xbox.getLeftTriggerAxis())
-            if self.xbox.getRightTriggerAxis() > 0.05:
-                self.climber.set_speed(-self.xbox.getRightTriggerAxis())
+            if self.secondary.getLeftTrigger() > 0.05:
+                self.climber.set_speed(self.secondary.getLeftTrigger())
+            if self.secondary.getRightTrigger() > 0.05:
+                self.climber.set_speed(-self.secondary.getRightTrigger())
             # if self.controller.startbutton() and self.controller.ybutton():
             #     self.climber.move(0.5)
             # if self.controller.startbutton() and self.controller.bbutton():

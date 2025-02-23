@@ -7,7 +7,7 @@ from wpimath.controller import (
     PIDController,
     ProfiledPIDController,
     SimpleMotorFeedforwardMeters,
-    ElevatorFeedforward,
+    ElevatorFeedforward,ArmFeedforward
 )
 from wpiutil import Sendable, SendableBuilder
 
@@ -254,6 +254,38 @@ class SmartProfile(Sendable):
             setpoint = pid.getSetpoint()
             # add acceleration eventually
             feedforward_output = feedforward.calculate(setpoint.velocity)
+            return pid_output + feedforward_output
+
+        return SmartController(
+            key,
+            calculate,
+            self.tuning_enabled if feedback_enabled is None else feedback_enabled,
+        )
+    @_requires({"kP", "kI", "kD", "kS", "kG", "kV", "kMaxV", "kMaxA"})
+    def create_arm_controller(
+        self, key: str, feedback_enabled: bool = None
+    ) -> SmartController:
+        """Creates a profiled PID controller combined with an arm feedforward controller.
+        Requires kP, kI, kD, kS, kV, kG, [kA optional]
+        """
+        pid = ProfiledPIDController(
+            self.gains["kP"],
+            self.gains["kI"],
+            self.gains["kD"],
+            TrapezoidProfile.Constraints(self.gains["kMaxV"], self.gains["kMaxA"]),
+        )
+        feedforward = ArmFeedforward(
+            self.gains["kS"],
+            self.gains["kG"],
+            self.gains["kV"],
+            self.gains["kA"] if "kA" in self.gains else 0,
+        )
+
+        def calculate(y, r,):
+            pid_output = pid.calculate(y, r)
+            setpoint = pid.getSetpoint()
+            # add acceleration eventually
+            feedforward_output = feedforward.calculate(setpoint.position,setpoint.velocity)
             return pid_output + feedforward_output
 
         return SmartController(

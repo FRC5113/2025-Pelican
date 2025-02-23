@@ -89,15 +89,15 @@ class LemonInput(Sendable):
                     self.button_map = self.ps5_buttons
                     self.contype = "PS5"
 
-    def type(self):
+    def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
         return self.contype
 
-    def leftbumper(self):
+    def getLeftBumper(self):
         """Returns the state of the left bumper button."""
         return self.con.getRawButton(self.button_map["kLeftBumper"])
 
-    def rightbumper(self):
+    def getRightBumper(self):
         """
         Returns the state of the right bumper button.
 
@@ -106,7 +106,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kRightBumper"])
 
-    def startbutton(self):
+    def getStartButton(self):
         """
         Returns the state of the start button.
 
@@ -115,7 +115,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kStart"])
 
-    def backbutton(self):
+    def getBackButton(self):
         """
         Returns the state of the back button.
 
@@ -124,7 +124,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kBack"])
 
-    def abutton(self):
+    def getAbutton(self):
         """
         Returns the state of the 'A' button.
 
@@ -133,7 +133,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kA"])
 
-    def bbutton(self):
+    def getBbutton(self):
         """
         Returns the state of the 'B' button.
 
@@ -142,7 +142,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kB"])
 
-    def xbutton(self):
+    def getXbutton(self):
         """
         Returns the state of the 'X' button.
 
@@ -151,7 +151,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kX"])
 
-    def ybutton(self):
+    def getYbutton(self):
         """
         Returns the state of the 'Y' button.
 
@@ -160,7 +160,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kY"])
 
-    def lstickbutton(self):
+    def getLeftStickButton(self):
         """
         Returns the state of the left stick button.
 
@@ -169,7 +169,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kLeftStick"])
 
-    def rstickbutton(self):
+    def getRightStickButton(self):
         """
         Returns the state of the right stick button.
 
@@ -178,7 +178,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kRightStick"])
 
-    def leftx(self) -> float:
+    def getLeftX(self) -> float:
         """
         Returns the X-axis value of the left joystick.
 
@@ -187,7 +187,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kLeftX"])
 
-    def lefty(self) -> float:
+    def getLeftY(self) -> float:
         """
         Returns the Y-axis value of the left joystick.
 
@@ -196,7 +196,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kLeftY"])
 
-    def rightx(self) -> float:
+    def getRightX(self) -> float:
         """
         Returns the X-axis value of the right joystick.
 
@@ -205,7 +205,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kRightX"])
 
-    def righty(self) -> float:
+    def getRightY(self) -> float:
         """
         Returns the Y-axis value of the right joystick.
 
@@ -214,7 +214,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kRightY"])
 
-    def pov(self) -> int:
+    def getPOV(self) -> int:
         """
         Returns the Point of View (POV) value as an integer.
 
@@ -223,7 +223,7 @@ class LemonInput(Sendable):
         """
         return self.con.getPOV()
 
-    def righttrigger(self) -> float:
+    def getRightTrigger(self) -> float:
         """
         Returns the state of the right trigger button.
 
@@ -232,7 +232,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kRightTrigger"])
 
-    def lefttrigger(self) -> float:
+    def getLeftTrigger(self) -> float:
         """
         Returns the state of the left trigger button.
 
@@ -263,7 +263,7 @@ class LemonInput(Sendable):
             pov_value, (0, 0)
         )  # Return (0, 0) for unmapped POV values
 
-    def pov_x(self) -> float:
+    def getPovX(self) -> float:
         """
         Returns the X-axis value of the POV (Point of View) of a joystick.
 
@@ -281,7 +281,7 @@ class LemonInput(Sendable):
         """
         return self.__pov_xy()[0]
 
-    def pov_y(self) -> float:
+    def getPovY(self) -> float:
         """
         Returns the Y-axis value of the POV (Point of View) of a joystick.
 
@@ -308,21 +308,21 @@ class LemonInput(Sendable):
         """
         builder.setSmartDashboardType("LemonInput")
         builder.addStringProperty("Type", lambda: self.contype, lambda: None)
-        builder.addBooleanProperty("LeftBumper", lambda: self.leftbumper(), lambda: None)
-        builder.addBooleanProperty("RightBumper", lambda: self.rightbumper(), lambda: None)
-        builder.addBooleanProperty("StartButton", lambda: self.startbutton(), lambda: None)
-        builder.addBooleanProperty("BackButton", lambda: self.backbutton(), lambda: None)
-        builder.addBooleanProperty("AButton", lambda: self.abutton(), lambda: None)
-        builder.addBooleanProperty("BButton", lambda: self.bbutton(), lambda: None)
-        builder.addBooleanProperty("XButton", lambda: self.xbutton(), lambda: None)
-        builder.addBooleanProperty("YButton", lambda: self.ybutton(), lambda: None)
-        builder.addBooleanProperty("LStickButton", lambda: self.lstickbutton(), lambda: None)
-        builder.addBooleanProperty("RStickButton", lambda: self.rstickbutton(), lambda: None)
-        builder.addDoubleProperty("LeftX", lambda: self.leftx(), lambda: None)
-        builder.addDoubleProperty("LeftY", lambda: self.lefty(), lambda: None)
-        builder.addDoubleProperty("RightX", lambda: self.rightx(), lambda: None)
-        builder.addDoubleProperty("RightY", lambda: self.righty(), lambda: None)
-        builder.addDoubleProperty("RightTrigger", lambda: self.righttrigger(), lambda: None)
-        builder.addDoubleProperty("LeftTrigger", lambda: self.lefttrigger(), lambda: None)
-        builder.addDoubleProperty("POV_X", lambda: self.pov_x(), lambda: None)
-        builder.addDoubleProperty("POV_Y", lambda: self.pov_y(), lambda: None)
+        builder.addBooleanProperty("LeftBumper", lambda: self.getLeftBumper(), lambda: None)
+        builder.addBooleanProperty("RightBumper", lambda: self.getRightBumper(), lambda: None)
+        builder.addBooleanProperty("StartButton", lambda: self.getStartButton(), lambda: None)
+        builder.addBooleanProperty("BackButton", lambda: self.getBackButton(), lambda: None)
+        builder.addBooleanProperty("AButton", lambda: self.getAbutton(), lambda: None)
+        builder.addBooleanProperty("BButton", lambda: self.getBbutton(), lambda: None)
+        builder.addBooleanProperty("XButton", lambda: self.getXbutton(), lambda: None)
+        builder.addBooleanProperty("YButton", lambda: self.getYbutton(), lambda: None)
+        builder.addBooleanProperty("LStickButton", lambda: self.getLeftStickButton(), lambda: None)
+        builder.addBooleanProperty("RStickButton", lambda: self.getRightStickButton(), lambda: None)
+        builder.addDoubleProperty("LeftX", lambda: self.getLeftX(), lambda: None)
+        builder.addDoubleProperty("LeftY", lambda: self.getLeftY(), lambda: None)
+        builder.addDoubleProperty("RightX", lambda: self.getRightX(), lambda: None)
+        builder.addDoubleProperty("RightY", lambda: self.getRightY(), lambda: None)
+        builder.addDoubleProperty("RightTrigger", lambda: self.getRightTrigger(), lambda: None)
+        builder.addDoubleProperty("LeftTrigger", lambda: self.getLeftTrigger(), lambda: None)
+        builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
+        builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)
