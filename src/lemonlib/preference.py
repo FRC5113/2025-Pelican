@@ -7,7 +7,8 @@ from wpimath.controller import (
     PIDController,
     ProfiledPIDController,
     SimpleMotorFeedforwardMeters,
-    ElevatorFeedforward,ArmFeedforward
+    ElevatorFeedforward,
+    ArmFeedforward,
 )
 from wpiutil import Sendable, SendableBuilder
 
@@ -261,6 +262,7 @@ class SmartProfile(Sendable):
             calculate,
             self.tuning_enabled if feedback_enabled is None else feedback_enabled,
         )
+
     @_requires({"kP", "kI", "kD", "kS", "kG", "kV", "kMaxV", "kMaxA"})
     def create_arm_controller(
         self, key: str, feedback_enabled: bool = None
@@ -281,11 +283,16 @@ class SmartProfile(Sendable):
             self.gains["kA"] if "kA" in self.gains else 0,
         )
 
-        def calculate(y, r,):
+        def calculate(
+            y,
+            r,
+        ):
             pid_output = pid.calculate(y, r)
             setpoint = pid.getSetpoint()
             # add acceleration eventually
-            feedforward_output = feedforward.calculate(setpoint.position,setpoint.velocity)
+            feedforward_output = feedforward.calculate(
+                setpoint.position, setpoint.velocity
+            )
             return pid_output + feedforward_output
 
         return SmartController(

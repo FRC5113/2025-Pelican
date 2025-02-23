@@ -8,7 +8,6 @@ class LemonInput(Sendable):
     LemonInput is a wrapper class for Xbox and PS5 controllers allowing automatic or manual detection and use in code.
     """
 
-
     xbox_buttons = {
         "kLeftTrigger": 2,
         "kLeftX": 0,
@@ -49,8 +48,6 @@ class LemonInput(Sendable):
         "kY": 4,
     }
 
-
-
     def __init__(self, port_number: int, type: str = "auto"):
         """
         Initializes the control object with the specified port number and type.
@@ -71,23 +68,23 @@ class LemonInput(Sendable):
                 self.button_map = self.xbox_buttons
                 self.contype = "Xbox"
             else:
-                    self.button_map = self.ps5_buttons
-                    self.contype = "PS5"
-                    DriverStation.getJoystickType
+                self.button_map = self.ps5_buttons
+                self.contype = "PS5"
+                DriverStation.getJoystickType
         elif type == "Xbox":
-                if RobotBase.isSimulation():
-                    self.button_map = self.xbox_buttons
-                    self.contype = "Sim/Xbox"
-                else:
-                    self.button_map = self.xbox_buttons 
-                    self.contype = "Xbox"
+            if RobotBase.isSimulation():
+                self.button_map = self.xbox_buttons
+                self.contype = "Sim/Xbox"
+            else:
+                self.button_map = self.xbox_buttons
+                self.contype = "Xbox"
         elif type == "PS5":
-                if RobotBase.isSimulation():
-                    self.button_map = self.ps5_buttons
-                    self.contype = "Sim/PS5"
-                else:
-                    self.button_map = self.ps5_buttons
-                    self.contype = "PS5"
+            if RobotBase.isSimulation():
+                self.button_map = self.ps5_buttons
+                self.contype = "Sim/PS5"
+            else:
+                self.button_map = self.ps5_buttons
+                self.contype = "PS5"
 
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
@@ -308,21 +305,37 @@ class LemonInput(Sendable):
         """
         builder.setSmartDashboardType("LemonInput")
         builder.addStringProperty("Type", lambda: self.contype, lambda: None)
-        builder.addBooleanProperty("LeftBumper", lambda: self.getLeftBumper(), lambda: None)
-        builder.addBooleanProperty("RightBumper", lambda: self.getRightBumper(), lambda: None)
-        builder.addBooleanProperty("StartButton", lambda: self.getStartButton(), lambda: None)
-        builder.addBooleanProperty("BackButton", lambda: self.getBackButton(), lambda: None)
+        builder.addBooleanProperty(
+            "LeftBumper", lambda: self.getLeftBumper(), lambda: None
+        )
+        builder.addBooleanProperty(
+            "RightBumper", lambda: self.getRightBumper(), lambda: None
+        )
+        builder.addBooleanProperty(
+            "StartButton", lambda: self.getStartButton(), lambda: None
+        )
+        builder.addBooleanProperty(
+            "BackButton", lambda: self.getBackButton(), lambda: None
+        )
         builder.addBooleanProperty("AButton", lambda: self.getAbutton(), lambda: None)
         builder.addBooleanProperty("BButton", lambda: self.getBbutton(), lambda: None)
         builder.addBooleanProperty("XButton", lambda: self.getXbutton(), lambda: None)
         builder.addBooleanProperty("YButton", lambda: self.getYbutton(), lambda: None)
-        builder.addBooleanProperty("LStickButton", lambda: self.getLeftStickButton(), lambda: None)
-        builder.addBooleanProperty("RStickButton", lambda: self.getRightStickButton(), lambda: None)
+        builder.addBooleanProperty(
+            "LStickButton", lambda: self.getLeftStickButton(), lambda: None
+        )
+        builder.addBooleanProperty(
+            "RStickButton", lambda: self.getRightStickButton(), lambda: None
+        )
         builder.addDoubleProperty("LeftX", lambda: self.getLeftX(), lambda: None)
         builder.addDoubleProperty("LeftY", lambda: self.getLeftY(), lambda: None)
         builder.addDoubleProperty("RightX", lambda: self.getRightX(), lambda: None)
         builder.addDoubleProperty("RightY", lambda: self.getRightY(), lambda: None)
-        builder.addDoubleProperty("RightTrigger", lambda: self.getRightTrigger(), lambda: None)
-        builder.addDoubleProperty("LeftTrigger", lambda: self.getLeftTrigger(), lambda: None)
+        builder.addDoubleProperty(
+            "RightTrigger", lambda: self.getRightTrigger(), lambda: None
+        )
+        builder.addDoubleProperty(
+            "LeftTrigger", lambda: self.getLeftTrigger(), lambda: None
+        )
         builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
         builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)

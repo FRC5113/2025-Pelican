@@ -6,6 +6,7 @@ from wpiutil import SendableBuilder, Sendable
 from wpilib.interfaces import MotorController
 import phoenix6
 
+
 class LemonPigeon(Pigeon2, Sendable):
     """
     Wrapper for the Pigeon2 that makes it easier to use and some fetures in
@@ -23,7 +24,6 @@ class LemonPigeon(Pigeon2, Sendable):
         super().__init__(device_id, can_bus)
         Sendable.__init__(self)
         SmartDashboard.putData("Pigeon", self)
-       
 
     def reset(self):
         """
@@ -56,21 +56,20 @@ class LemonPigeon(Pigeon2, Sendable):
 
     def sim_states_voltage(self, voltage):
         return self.sim_state.set_supply_voltage(voltage)
-    
+
     def initSendable(self, builder: SendableBuilder):
         """
         Initialize the sendable builder to connect with the Gyro widget.
 
         :param builder: The SendableBuilder instance.
         """
-        
+
         builder.setSmartDashboardType("Gyro")
         builder.addDoubleProperty(
             "Value",
             lambda: self.get_yaw().value_as_double,
             lambda _: None,
         )
-
 
 
 class LemonTalonFX(phoenix6.hardware.TalonFX, MotorController):

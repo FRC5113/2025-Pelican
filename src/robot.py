@@ -199,7 +199,7 @@ class MyRobot(magicbot.MagicRobot):
         self.period = 0.02
 
         self.primary = LemonInput(0, "PS5")
-        self.secondary =  LemonInput(1, "Xbox")
+        self.secondary = LemonInput(1, "Xbox")
         # if DriverStation.getJoystickIsXbox(0):
         #     # switch controller ports if necessary
         #     self.ps5 = PS5Controller(1)
@@ -220,7 +220,9 @@ class MyRobot(magicbot.MagicRobot):
         # odometry
         # self.camera = PhotonCamera("Global_Shutter_Camera")
         self.robot_to_camera = Transform3d()
-        self.field_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeAndyMark)
+        self.field_layout = AprilTagFieldLayout.loadField(
+            AprilTagField.k2025ReefscapeAndyMark
+        )
 
         # alerts
         AlertManager(self.logger)
@@ -263,7 +265,9 @@ class MyRobot(magicbot.MagicRobot):
             ELEVATOR
             """
 
-            self.elevator.set_voltage(-1.5 * applyDeadband(self.secondary.getXbutton(), 0.1))
+            self.elevator.set_voltage(
+                -1.5 * applyDeadband(self.secondary.getXbutton(), 0.1)
+            )
             # if self.xbox.getAButton():
             #     self.elevator.set_target_height(0.0)
             # if self.xbox.getBButton():
@@ -285,7 +289,9 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.claw.set_intake(
                     0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
-                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1) * self.wheel_twist,
+                    0.5
+                    * applyDeadband(self.secondary.getLeftY(), 0.1)
+                    * self.wheel_twist,
                 )
             if self.secondary.getYbutton():
                 self.claw.set_hinge_voltage(-1)

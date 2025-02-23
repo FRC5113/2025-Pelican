@@ -6,7 +6,7 @@ import math
 
 class LemonCamera(PhotonCamera):
     """Wrapper for photonlibpy PhotonCamera"""
-   
+
     def __init__(
         self,
         name: str,
@@ -79,7 +79,6 @@ class LemonCamera(PhotonCamera):
                 return self.tag_poses[id]
             return self.tag_poses[id].relativeTo(Pose2d().relativeTo(robot_pose))
         return None
-    
 
 
 class LemonCameraSim(LemonCamera):
@@ -124,7 +123,9 @@ class LemonCameraSim(LemonCamera):
         self.latency = 0.02
         for tag in self.field_layout.getTags():
             tag_pose = tag.pose.toPose2d()
-            relative_pose = tag_pose.relativeTo(self.robot_pose.transformBy(self.camera_to_bot))
+            relative_pose = tag_pose.relativeTo(
+                self.robot_pose.transformBy(self.camera_to_bot)
+            )
             dist = relative_pose.translation().norm()
             # calculate estimated tag ambiguity based on distance and angle
             ambiguity = (

@@ -1,12 +1,12 @@
 import wpilib
 import wpilib.drive
-from wpilib.drive import RobotDriveBase,DifferentialDrive,MecanumDrive
-from wpilib import SmartDashboard,RobotBase
+from wpilib.drive import RobotDriveBase, DifferentialDrive, MecanumDrive
+from wpilib import SmartDashboard, RobotBase
 from wpimath import applyDeadband
 from lemonlib.preference import SmartPreference
 import math
-from wpiutil import Sendable,SendableBuilder
-from wpilib import interfaces,Spark
+from wpiutil import Sendable, SendableBuilder
+from wpilib import interfaces, Spark
 from wpimath import geometry
 from lemonlib.util import clamp
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Twist2d
@@ -26,7 +26,6 @@ class SwagDrive(Sendable):
         self.rightMotor = rightMotor
         self.robotDrive = DifferentialDrive(self.leftMotor, self.rightMotor)
 
-
         # Swag-related variables
         self.swagLevel = 0
         self.swagPeriod = 0
@@ -44,8 +43,6 @@ class SwagDrive(Sendable):
 
         moveToSend = moveValue
         rotateToSend = rotateValue
-
-
 
         if self.swagPeriod == 0:
             moveDiff = abs(moveValue - self.oldMove)
@@ -65,12 +62,11 @@ class SwagDrive(Sendable):
                 self.swagPeriod = SWAG_PERIOD
                 self.swagLevel = 0
 
-
         else:
             moveToSend = 0
             rotateToSend = 1.0
             self.swagPeriod -= 1
-         
+
         self.rotatediff = rotateDiff
         self.movediff = moveDiff
         # Call arcadeDrive with modified move and rotate values
@@ -78,11 +74,16 @@ class SwagDrive(Sendable):
 
         self.oldMove = moveValue
         self.oldRotate = rotateValue
+
     def initSendable(self, builder):
         builder.setSmartDashboardType("SwagDrive")
         builder.addDoubleProperty("Swag Level", lambda: self.swagLevel, lambda _: None)
-        builder.addDoubleProperty("Swag Period", lambda: self.swagPeriod, lambda _: None)
-        builder.addDoubleProperty("Rotate Diff", lambda: self.rotatediff, lambda _: None)
+        builder.addDoubleProperty(
+            "Swag Period", lambda: self.swagPeriod, lambda _: None
+        )
+        builder.addDoubleProperty(
+            "Rotate Diff", lambda: self.rotatediff, lambda _: None
+        )
         builder.addDoubleProperty("Move Diff", lambda: self.movediff, lambda _: None)
         self.robotDrive.initSendable(builder)
 
@@ -115,14 +116,19 @@ class KilloughDrive(RobotDriveBase, Sendable):
     kDefaultRightMotorAngle = 120.0
     kDefaultBackMotorAngle = 270.0
 
-    def __init__(self, leftMotor, rightMotor, backMotor,
-                 leftMotorAngle=kDefaultLeftMotorAngle,
-                 rightMotorAngle=kDefaultRightMotorAngle,
-                 backMotorAngle=kDefaultBackMotorAngle):
+    def __init__(
+        self,
+        leftMotor,
+        rightMotor,
+        backMotor,
+        leftMotorAngle=kDefaultLeftMotorAngle,
+        rightMotorAngle=kDefaultRightMotorAngle,
+        backMotorAngle=kDefaultBackMotorAngle,
+    ):
         """
         Constructs a Killough drive.
         Angles are measured in degrees clockwise from the positive X axis.
-        
+
         The default motor angles make the wheels on each corner parallel to their
         respective opposite sides.
 
@@ -143,15 +149,23 @@ class KilloughDrive(RobotDriveBase, Sendable):
         self.backMotor = backMotor
 
         # Create a dummy MecanumDrive instance (for compatibility).
-        self.mechDrive = MecanumDrive(self.leftMotor, self.backMotor, self.rightMotor, self.backMotor)
+        self.mechDrive = MecanumDrive(
+            self.leftMotor, self.backMotor, self.rightMotor, self.backMotor
+        )
 
         # Compute each wheel’s unit driving vector (in the robot frame: x forward, y right)
-        self.leftVec = Vector2d(math.cos(math.radians(leftMotorAngle)),
-                                math.sin(math.radians(leftMotorAngle)))
-        self.rightVec = Vector2d(math.cos(math.radians(rightMotorAngle)),
-                                 math.sin(math.radians(rightMotorAngle)))
-        self.backVec = Vector2d(math.cos(math.radians(backMotorAngle)),
-                                math.sin(math.radians(backMotorAngle)))
+        self.leftVec = Vector2d(
+            math.cos(math.radians(leftMotorAngle)),
+            math.sin(math.radians(leftMotorAngle)),
+        )
+        self.rightVec = Vector2d(
+            math.cos(math.radians(rightMotorAngle)),
+            math.sin(math.radians(rightMotorAngle)),
+        )
+        self.backVec = Vector2d(
+            math.cos(math.radians(backMotorAngle)),
+            math.sin(math.radians(backMotorAngle)),
+        )
 
     def driveCartesian(self, ySpeed, xSpeed, zRotation, gyroAngle=0.0):
         """Drive method for Killough platform.
@@ -179,7 +193,7 @@ class KilloughDrive(RobotDriveBase, Sendable):
         wheelSpeeds = [
             input_vec.scalarProject(self.leftVec) + zRotation,
             input_vec.scalarProject(self.rightVec) + zRotation,
-            input_vec.scalarProject(self.backVec) + zRotation
+            input_vec.scalarProject(self.backVec) + zRotation,
         ]
 
         KilloughDrive.normalize(wheelSpeeds)
@@ -203,9 +217,12 @@ class KilloughDrive(RobotDriveBase, Sendable):
         :param zRotation: The robot's rotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive.
         """
         magnitude = clamp(magnitude, -1, 1) * math.sqrt(2)
-        self.driveCartesian(magnitude * math.sin(math.radians(angle)),
-                            magnitude * math.cos(math.radians(angle)),
-                            zRotation, gyroAngle=0)
+        self.driveCartesian(
+            magnitude * math.sin(math.radians(angle)),
+            magnitude * math.cos(math.radians(angle)),
+            zRotation,
+            gyroAngle=0,
+        )
 
     def stopMotor(self):
         self.leftMotor.stopMotor()
@@ -218,9 +235,15 @@ class KilloughDrive(RobotDriveBase, Sendable):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("KilloughDrive")
-        builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
-        builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
-        builder.addDoubleProperty("Back Motor Speed", self.backMotor.get, self.backMotor.set)
+        builder.addDoubleProperty(
+            "Left Motor Speed", self.leftMotor.get, self.leftMotor.set
+        )
+        builder.addDoubleProperty(
+            "Right Motor Speed", self.rightMotor.get, self.rightMotor.set
+        )
+        builder.addDoubleProperty(
+            "Back Motor Speed", self.backMotor.get, self.backMotor.set
+        )
         self.mechDrive.initSendable(builder)
 
     @staticmethod
@@ -234,6 +257,8 @@ class KilloughDrive(RobotDriveBase, Sendable):
         if maxMagnitude > 1.0:
             for i in range(len(wheelSpeeds)):
                 wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude
+
+
 class Vector2d:
     def __init__(self, x=0.0, y=0.0):
         self.x = x  # forward component
@@ -262,6 +287,7 @@ class Vector2d:
             return 0.0
         return self.dot(other) / mag
 
+
 # --- Killough Drive Simulation Using WPIMath Geometry ---
 class KilloughDriveSim:
     def __init__(self, drive, mass=50.0, moment_of_inertia=10.0, wheel_force=100.0):
@@ -276,7 +302,6 @@ class KilloughDriveSim:
         self.mass = mass
         self.moment_of_inertia = moment_of_inertia
         self.wheel_force = wheel_force
-        
 
         # Represent the robot’s pose as a WPIMath Pose2d (in meters and radians).
         self.pose = Pose2d(Translation2d(0.0, 0.0), Rotation2d(0.0))
@@ -284,22 +309,30 @@ class KilloughDriveSim:
         # Chassis velocities in the robot frame (m/s and rad/s).
         self.vx_robot = 0.0  # forward speed (m/s)
         self.vy_robot = 0.0  # sideways speed (m/s)
-        self.omega = 0.0     # angular velocity (rad/s)
+        self.omega = 0.0  # angular velocity (rad/s)
 
         # Assume the wheels are arranged in an equilateral triangle.
         self.R = 0.5  # Distance (meters) from robot center to each wheel.
         self.wheel_positions = [
-            Vector2d(self.R * math.cos(math.radians(KilloughDrive.kDefaultLeftMotorAngle)),
-                     self.R * math.sin(math.radians(KilloughDrive.kDefaultLeftMotorAngle))),
-            Vector2d(self.R * math.cos(math.radians(KilloughDrive.kDefaultRightMotorAngle)),
-                     self.R * math.sin(math.radians(KilloughDrive.kDefaultRightMotorAngle))),
-            Vector2d(self.R * math.cos(math.radians(KilloughDrive.kDefaultBackMotorAngle)),
-                     self.R * math.sin(math.radians(KilloughDrive.kDefaultBackMotorAngle)))
+            Vector2d(
+                self.R * math.cos(math.radians(KilloughDrive.kDefaultLeftMotorAngle)),
+                self.R * math.sin(math.radians(KilloughDrive.kDefaultLeftMotorAngle)),
+            ),
+            Vector2d(
+                self.R * math.cos(math.radians(KilloughDrive.kDefaultRightMotorAngle)),
+                self.R * math.sin(math.radians(KilloughDrive.kDefaultRightMotorAngle)),
+            ),
+            Vector2d(
+                self.R * math.cos(math.radians(KilloughDrive.kDefaultBackMotorAngle)),
+                self.R * math.sin(math.radians(KilloughDrive.kDefaultBackMotorAngle)),
+            ),
         ]
         # Use the same wheel vectors defined in the drive (robot frame).
-        self.wheel_directions = [self.drive.leftVec,
-                                 self.drive.rightVec,
-                                 self.drive.backVec]
+        self.wheel_directions = [
+            self.drive.leftVec,
+            self.drive.rightVec,
+            self.drive.backVec,
+        ]
 
     def update(self, dt=0.02):
         """
@@ -317,7 +350,7 @@ class KilloughDriveSim:
         forces = [
             left_output * self.wheel_force,
             right_output * self.wheel_force,
-            back_output * self.wheel_force
+            back_output * self.wheel_force,
         ]
 
         net_force_robot_x = 0.0
@@ -334,7 +367,7 @@ class KilloughDriveSim:
             net_force_robot_y += fy
             # Compute torque: torque = r_x * F_y - r_y * F_x
             r = self.wheel_positions[i]
-            net_torque += (r.x * fy - r.y * fx)
+            net_torque += r.x * fy - r.y * fx
 
         # Compute accelerations in the robot frame.
         ax_robot = net_force_robot_x / self.mass
@@ -353,7 +386,9 @@ class KilloughDriveSim:
         self.omega *= damping_factor
 
         # Create a twist (displacement in the robot frame over dt).
-        twist = Twist2d(self.vx_robot * self.dt, self.vy_robot * self.dt, self.omega * self.dt)
+        twist = Twist2d(
+            self.vx_robot * self.dt, self.vy_robot * self.dt, self.omega * self.dt
+        )
         # Update the robot’s pose using the exponential map.
         self.pose = self.pose.exp(twist)
 
@@ -364,4 +399,4 @@ class KilloughDriveSim:
         x = self.pose.translation().x
         y = self.pose.translation().y
         theta_deg = self.pose.rotation().radians()
-        return (Pose2d(x, y, theta_deg))
+        return Pose2d(x, y, theta_deg)

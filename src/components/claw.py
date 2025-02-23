@@ -1,4 +1,4 @@
-from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder,SparkLimitSwitch
+from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder, SparkLimitSwitch
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 from enum import Enum
@@ -79,9 +79,9 @@ class Claw:
         if angle > 180:
             angle -= 360
         return angle
-    
+
     @feedback
-    def get_intake(self) -> bool:
+    def get_intake_limit(self) -> bool:
         return self.intake_limit.get()
 
     """
@@ -105,19 +105,20 @@ class Claw:
     """
 
     def execute(self):
-        if not self.intake_limit.get() or (self.intake_left_motor_voltage < 0 and self.intake_right_motor_voltage < 0):
-            self.left_motor.set(self.intake_left_motor_voltage)
-            self.right_motor.set(-self.intake_right_motor_voltage)
+        if self.intake_limit.get() and (
+            self.intake_left_motor_voltage < 0 and self.intake_right_motor_voltage < 0
+        ):
+            self.intake_left_motor_voltage = 0
+            self.intake_right_motor_voltage = 0
+        # positive voltage (left) = intake
+        self.left_motor.set(self.intake_left_motor_voltage)
+        self.right_motor.set(-self.intake_right_motor_voltage)
+
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
             self.hinge_voltage = self.controller.calculate(
                 self.get_angle(), self.target_angle.value
             )
-        # will eventually need to be tweaked!!!
-        if self.get_angle() < self.max_angle and self.get_angle() > self.min_angle:
-           self.hinge_motor.set(self.hinge_voltage)
-        else:
-           self.hinge_motor.stopMotor()
         if (
             self.get_angle() - self.max_angle > 10
             or self.min_angle - self.get_angle() > 10
@@ -128,9 +129,9 @@ class Claw:
             )
         else:
             self.hinge_alert.disable()
-        # negative voltage = increase angle
         if self.get_angle() > self.max_angle and self.hinge_voltage < 0:
-            return
+            self.hinge_voltage = 0
         if self.get_angle() < self.min_angle and self.hinge_voltage > 0:
-            return
+            self.hinge_voltage = 0
+        # positive voltage = decrease angle = raise claw
         self.hinge_motor.setVoltage(self.hinge_voltage)

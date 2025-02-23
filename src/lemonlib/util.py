@@ -280,8 +280,6 @@ class Elastic:
             print(f"Error serializing alert: {e}")
 
 
-
-
 def clamp(value: float, min_value: float, max_value: float) -> float:
     """Restrict value between min_value and max_value."""
     return max(min(value, max_value), min_value)
@@ -351,7 +349,6 @@ def cubic_curve(
     absolute_offset: bool = True,
 ) -> Callable[[float], float]:
     return curve(lambda x: scalar * x**3, offset, deadband, max_mag, absolute_offset)
-
 
 
 class MagicSysIdRoutine:
