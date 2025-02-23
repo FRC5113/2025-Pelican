@@ -266,7 +266,7 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             self.elevator.set_voltage(
-                -1.5 * applyDeadband(self.secondary.getXbutton(), 0.1)
+                -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
             )
             # if self.xbox.getAButton():
             #     self.elevator.set_target_height(0.0)
