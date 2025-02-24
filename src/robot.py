@@ -22,8 +22,8 @@ from lemonlib.vision import LemonCamera, LemonCameraSim
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
-from components.elevator import Elevator
-from components.claw import Claw
+from components.elevator import Elevator, ElevatorHeight
+from components.claw import Claw, ClawAngle
 from components.climber import Climber
 
 
@@ -252,7 +252,7 @@ class MyRobot(magicbot.MagicRobot):
                 -self.sammi_curve(self.y_filter.calculate(self.primary.getLeftX()))
                 * mult
                 * self.top_speed,
-                -self.sammi_curve(self.theta_filter.calculate(self.primary.getRightY()))
+                -self.sammi_curve(self.theta_filter.calculate(self.primary.getRightX()))
                 * mult
                 * self.top_omega,
                 not self.primary.getLeftBumper(),
@@ -270,13 +270,13 @@ class MyRobot(magicbot.MagicRobot):
                 -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
             )
             if self.secondary.getAbutton():
-                self.elevator.set_target_height(0.0)
+                self.elevator.set_target_height(ElevatorHeight.L1)
             if self.secondary.getBbutton():
-                self.elevator.set_target_height(0.2)
-            if self.secondary.getYbutton():
-                self.elevator.set_target_height(0.7)
+                self.elevator.set_target_height(ElevatorHeight.L2)
             if self.secondary.getXbutton():
-                self.elevator.set_target_height(0.4)
+                self.elevator.set_target_height(ElevatorHeight.L3)
+            if self.secondary.getYbutton():
+                self.elevator.set_target_height(ElevatorHeight.L4)
 
             """
             CLAW
@@ -294,16 +294,18 @@ class MyRobot(magicbot.MagicRobot):
                     * applyDeadband(self.secondary.getLeftY(), 0.1)
                     * self.wheel_twist,
                 )
-            if self.secondary.getYbutton():
+            if self.secondary.getLeftBumper():
                 self.claw.set_hinge_voltage(-1)
-            if self.secondary.getBbutton():
+            if self.secondary.getRightBumper():
                 self.claw.set_hinge_voltage(1)
             if self.secondary.getPOV() == 0:
-                self.claw.set_target_angle(0.0)
+                self.claw.set_target_angle(ClawAngle.STOWED)
             if self.secondary.getPOV() == 90:
-                self.claw.set_target_angle(45.0)
+                self.claw.set_target_angle(ClawAngle.BRANCH)
             if self.secondary.getPOV() == 180:
-                self.claw.set_target_angle(115.0)
+                self.claw.set_target_angle(ClawAngle.TROUGH)
+            if self.secondary.getPOV() == 270:
+                self.claw.set_target_angle(ClawAngle.STATION)
 
             """
             CLIMBER

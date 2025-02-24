@@ -9,9 +9,10 @@ from lemonlib.util import Alert, AlertType
 
 
 class ClawAngle(float, Enum):
-    # values likely inaccurate
-    UP = 0.0
-    DOWN = 119.2
+    STOWED = 0.0
+    STATION = 30.0
+    TROUGH = 100.0
+    BRANCH = 115.0
 
 
 class Claw:
@@ -24,7 +25,7 @@ class Claw:
     max_angle: units.degrees  # maximum angle claw can rotate downwards
     hinge_encoder: SparkAbsoluteEncoder
     intake_limit: SparkLimitSwitch
-    target_angle = will_reset_to(ClawAngle.UP)
+    target_angle = will_reset_to(ClawAngle.STOWED)
     intake_left_motor_voltage = will_reset_to(0)
     intake_right_motor_voltage = will_reset_to(0)
     hinge_voltage = will_reset_to(0)
@@ -36,12 +37,12 @@ class Claw:
 
     def setup(self):
         self.right_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
         self.left_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
+            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
@@ -109,7 +110,7 @@ class Claw:
 
     def execute(self):
         if self.intake_limit.get() and (
-            self.intake_left_motor_voltage < 0 and self.intake_right_motor_voltage < 0
+            self.intake_left_motor_voltage > 0 and self.intake_right_motor_voltage > 0
         ):
             self.intake_left_motor_voltage = 0
             self.intake_right_motor_voltage = 0
@@ -119,7 +120,7 @@ class Claw:
 
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
-            self.hinge_voltage = self.controller.calculate(
+            self.hinge_voltage = -self.controller.calculate(
                 self.get_angle(), self.target_angle
             )
         if self.get_angle() - self.max_angle > 10 or self.get_angle() < -10:

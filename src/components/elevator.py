@@ -12,8 +12,11 @@ from lemonlib.util import Alert, AlertType
 
 class ElevatorHeight(float, Enum):
     # values likely inaccurate
-    BOTTOM = 0.0
-    TOP = 2.0
+    L1 = 0.0
+    L2 = 0.15
+    L3 = 0.36
+    L4 = 0.69
+    
 
 
 class Elevator:
@@ -29,7 +32,7 @@ class Elevator:
     spool_radius: units.meters
     elevator_profile: SmartProfile
 
-    target_height = will_reset_to(ElevatorHeight.BOTTOM)
+    target_height = will_reset_to(ElevatorHeight.L1)
     motor_voltage = will_reset_to(0)
     manual_control = False
     homed = False
