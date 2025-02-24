@@ -2,6 +2,7 @@ import math
 
 
 from wpilib import SmartDashboard
+from wpimath import units
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import (
@@ -19,11 +20,11 @@ from lemonlib.ctre import LemonPigeon
 
 
 class SwerveDrive(Sendable):
-    offset_x: float
-    offset_y: float
+    offset_x: units.meters
+    offset_y: units.meters
     drive_gear_ratio: float
-    wheel_radius: float
-    max_speed: float
+    wheel_radius: units.meters
+    max_speed: units.meters_per_second
     front_left: SwerveWheel
     front_right: SwerveWheel
     rear_left: SwerveWheel
@@ -143,16 +144,13 @@ class SwerveDrive(Sendable):
     CONTROL METHODS
     """
 
-    def set_rotationX(self, value: float):
-        self.rotationX = value
-
     def drive(
         self,
-        translationX: float,
-        translationY: float,
-        rotationX: float,
+        translationX: units.meters_per_second,
+        translationY: units.meters_per_second,
+        rotationX: units.radians_per_second,
         field_relative: bool,
-        period: float,
+        period: units.seconds,
     ):
         self.translationX = translationX
         self.translationY = translationY

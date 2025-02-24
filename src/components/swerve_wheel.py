@@ -4,9 +4,9 @@ from phoenix6 import controls
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.hardware import CANcoder, TalonFX
 from phoenix6.signals import NeutralModeValue
+from wpimath import units
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
-from wpimath import applyDeadband
 
 from magicbot import will_reset_to
 from lemonlib.preference import SmartPreference, SmartProfile
@@ -14,7 +14,7 @@ from lemonlib.preference import SmartPreference, SmartProfile
 
 class SwerveWheel:
     drive_gear_ratio: float
-    wheel_radius: float
+    wheel_radius: units.meters
     speed_motor: TalonFX
     speed_profile: SmartProfile
     direction_motor: TalonFX

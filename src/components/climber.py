@@ -2,7 +2,9 @@ from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals import NeutralModeValue
 from wpilib import DutyCycleEncoder
+from wpimath import units
 from magicbot import feedback, will_reset_to
+
 from lemonlib.util import Alert, AlertType
 
 
@@ -10,8 +12,8 @@ class Climber:
 
     motor: TalonFX
     encoder: DutyCycleEncoder
-    min_position: float
-    max_position: float
+    min_position: units.turns
+    max_position: units.turns
 
     motor_speed = will_reset_to(0)
 
@@ -29,7 +31,7 @@ class Climber:
     """
 
     @feedback
-    def get_position(self):
+    def get_position(self) -> units.turns:
         return self.encoder.get()
 
     """

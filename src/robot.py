@@ -76,11 +76,11 @@ class MyRobot(magicbot.MagicRobot):
         self.rear_right_cancoder = CANcoder(43)
 
         # physical constants
-        self.offset_x = 0.381
-        self.offset_y = 0.381
+        self.offset_x: units.meters = 0.381
+        self.offset_y: units.meters = 0.381
         self.drive_gear_ratio = 6.75
-        self.wheel_radius = 0.0508
-        self.max_speed = 4.7
+        self.wheel_radius: units.meters = 0.0508
+        self.max_speed: units.meters_per_second = 4.7
 
         # profiles
         self.speed_profile = SmartProfile(
@@ -130,7 +130,7 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_min_height = 0.0254
         self.elevator_max_height = 2.032
         self.elevator_gearing = 10.0
-        self.elevator_spool_radius = 0.0223
+        self.elevator_spool_radius: units.meters = 0.0223
 
         # profile (estimated)
         self.elevator_profile = SmartProfile(
@@ -162,8 +162,7 @@ class MyRobot(magicbot.MagicRobot):
 
         # physical constants
         self.claw_gearing = 82.5
-        self.claw_min_angle = -111.6
-        self.claw_max_angle = 7.6
+        self.claw_max_angle: units.degrees = 119.2
 
         # profile (estimated)
         self.claw_profile = SmartProfile(
@@ -189,6 +188,8 @@ class MyRobot(magicbot.MagicRobot):
         # hardware
         self.climber_motor = TalonFX(51)
         self.climber_encoder = DutyCycleEncoder(2)
+
+        # physical constants
         self.climber_min_position = 0.0  # placeholder
         self.climber_max_position = 1.0  # placeholder
 
@@ -196,7 +197,7 @@ class MyRobot(magicbot.MagicRobot):
         MISCELLANEOUS
         """
 
-        self.period = 0.02
+        self.period: units.seconds = 0.02
 
         self.primary = LemonInput(0, "PS5")
         self.secondary = LemonInput(1, "Xbox")
@@ -268,14 +269,14 @@ class MyRobot(magicbot.MagicRobot):
             self.elevator.set_voltage(
                 -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
             )
-            # if self.xbox.getAButton():
-            #     self.elevator.set_target_height(0.0)
-            # if self.xbox.getBButton():
-            #     self.elevator.set_target_height(0.2)
-            # if self.xbox.getYButton():
-            #     self.elevator.set_target_height(0.7)
-            # if self.xbox.getXButton():
-            #     self.elevator.set_target_height(0.4)
+            if self.secondary.getAbutton():
+                self.elevator.set_target_height(0.0)
+            if self.secondary.getBbutton():
+                self.elevator.set_target_height(0.2)
+            if self.secondary.getYbutton():
+                self.elevator.set_target_height(0.7)
+            if self.secondary.getXbutton():
+                self.elevator.set_target_height(0.4)
 
             """
             CLAW
@@ -297,6 +298,12 @@ class MyRobot(magicbot.MagicRobot):
                 self.claw.set_hinge_voltage(-1)
             if self.secondary.getBbutton():
                 self.claw.set_hinge_voltage(1)
+            if self.secondary.getPOV() == 0:
+                self.claw.set_target_angle(0.0)
+            if self.secondary.getPOV() == 90:
+                self.claw.set_target_angle(45.0)
+            if self.secondary.getPOV() == 180:
+                self.claw.set_target_angle(115.0)
 
             """
             CLIMBER
@@ -306,12 +313,6 @@ class MyRobot(magicbot.MagicRobot):
                 self.climber.set_speed(self.secondary.getLeftTrigger())
             if self.secondary.getRightTrigger() > 0.05:
                 self.climber.set_speed(-self.secondary.getRightTrigger())
-            # if self.controller.startbutton() and self.controller.ybutton():
-            #     self.climber.move(0.5)
-            # if self.controller.startbutton() and self.controller.bbutton():
-            #     self.climber.move(-0.5)
-            # if self.controller.startbutton() and self.controller.abutton():
-            #     self.climber.move_manual(0.1)
 
     @feedback
     def get_voltage(self) -> units.volts:

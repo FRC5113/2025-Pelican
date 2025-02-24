@@ -1,6 +1,7 @@
 import math
 from enum import Enum
 
+from wpimath import units
 from magicbot import feedback, will_reset_to
 from wpilib import DigitalInput
 from lemonlib.preference import SmartProfile
@@ -24,8 +25,8 @@ class Elevator:
     left_encoder: SparkRelativeEncoder
     upper_switch: DigitalInput
     lower_switch: DigitalInput
-    gearing: float  # ratio (10:1)
-    spool_radius: float  # meters (1.5 inches)
+    gearing: float
+    spool_radius: units.meters
     elevator_profile: SmartProfile
 
     target_height = will_reset_to(ElevatorHeight.BOTTOM)
@@ -67,7 +68,7 @@ class Elevator:
     INFORMATIONAL METHODS
     """
 
-    def get_encoder_rotations(self) -> float:
+    def get_encoder_rotations(self) -> units.turns:
         """Return the average position of the encoders in motor
         rotations. 0 should correspond to the lowest position.
         (Assumes right motor must be inverted)
@@ -75,7 +76,7 @@ class Elevator:
         return (self.left_encoder.getPosition() - self.right_encoder.getPosition()) / 2
 
     @feedback
-    def get_height(self) -> float:
+    def get_height(self) -> units.meters:
         """Get the current height of the elevator."""
         return (
             self.get_encoder_rotations() / self.gearing * math.tau * self.spool_radius
@@ -85,7 +86,7 @@ class Elevator:
     CONTROL METHODS
     """
 
-    def set_target_height(self, height: float):
+    def set_target_height(self, height: units.meters):
         """Set the target height for the elevator."""
         self.target_height = height
         self.manual_control = False
@@ -95,7 +96,7 @@ class Elevator:
         self.left_encoder.setPosition(0)
         self.right_encoder.setPosition(0)
 
-    def set_voltage(self, voltage: float):
+    def set_voltage(self, voltage: units.volts):
         """Move the elevator at a specified voltage. (Testing only)"""
         self.motor_voltage = voltage
         self.manual_control = True
@@ -112,7 +113,7 @@ class Elevator:
 
         if not self.homed:
             # move elevator down slowly until limit switch is reached and position is known
-            self.motor_voltage = -0.5
+            self.motor_voltage = -1.0
         else:
             if not self.manual_control:
                 # calculate voltage from feedforward (only if voltage has not already been set)
