@@ -35,7 +35,6 @@ class Elevator:
     target_height = will_reset_to(ElevatorHeight.L1)
     motor_voltage = will_reset_to(0)
     manual_control = False
-    homed = False
 
     """
     INITIALIZATION METHODS
@@ -53,10 +52,6 @@ class Elevator:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-
-        self.unhomed_alert = Alert(
-            "Elevator encoders not calibrated! Moving elevator down.", AlertType.WARNING
-        )
         self.limit_error_alert = Alert(
             "At least one elevator limit switch is unplugged! Halting elevator.",
             AlertType.ERROR,
@@ -64,8 +59,6 @@ class Elevator:
 
     def on_enable(self):
         self.controller = self.elevator_profile.create_elevator_controller("elevator")
-        self.homed = False
-        self.unhomed_alert.enable()
 
     """
     INFORMATIONAL METHODS

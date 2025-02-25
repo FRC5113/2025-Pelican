@@ -69,7 +69,7 @@ class ArmControl(StateMachine):
         self.claw.set_target_angle(self.claw_setpoint)
         if self.elevator.at_setpoint() and self.claw.at_setpoint():
             self.next_state("standby")
-        if self.claw.is_safe() and not self.elevator.at_setpoint():
+        if self.claw.is_safe() and (not self.elevator.at_setpoint() or self.elevator_setpoint != self.elevator.get_setpoint()):
             self.next_state("positioning_arm")
 
     @state
@@ -90,14 +90,15 @@ class ArmControl(StateMachine):
             self.drive_scalar = 1.0
         else:
             self.drive_scalar = 0.25
-        self.claw.set_wheel_voltage(
-            self.wheel_voltage,
-            self.wheel_twist if self.claw.get_setpoint() == ClawAngle.TROUGH else 1.0,
-        )
+        if self.claw_setpoint != ClawAngle.STOWED:
+            self.claw.set_wheel_voltage(
+                self.wheel_voltage,
+                self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,
+            )
         self.elevator.set_target_height(self.elevator_setpoint)
         self.claw.set_target_angle(self.claw_setpoint)
         if self.claw.is_safe():
-            if not self.elevator.at_setpoint():
+            if not self.elevator.at_setpoint() or not self.claw.at_setpoint():
                 self.next_state("positioning_arm")
         else:
             if not self.claw.at_setpoint():

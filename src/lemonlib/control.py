@@ -50,7 +50,7 @@ class LemonInput(Sendable):
     }
 
     def __init__(
-        self, port_number: int, type: str = "auto", primary: int = 0, secondary: int = 1
+        self, port_number: int, type: str = "auto", switch: bool = False
     ):
         """
         Initializes the control object with the specified port number and type.
@@ -60,19 +60,11 @@ class LemonInput(Sendable):
                 - "auto": Automatically detects the controller type.
                 - "Xbox": Forces the controller type to Xbox.
                 - "PS5": Forces the controller type to PS5.
-            primary (int, optional): The port number of the primary controller.
-            secondary (int, optional): The port number of the secondary controller.
+            switch (bool, optional): allows for auto switch if the wrong tpe of con is selected.
         """
         Sendable.__init__(self)
         self.con = GenericHID(port_number)
-        self.primary = primary
-        self.secondary = secondary
-
-        def switch_ports():
-            self.con = GenericHID(
-                self.secondary if port_number == self.primary else self.primary
-            )
-
+        
         if type == "auto":
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
@@ -84,29 +76,53 @@ class LemonInput(Sendable):
                 self.button_map = self.ps5_buttons
                 self.contype = "PS5"
         elif type == "Xbox":
-            if RobotBase.isSimulation():
-                self.button_map = self.xbox_buttons
-                self.contype = "Sim/Xbox"
+            if switch == True:
+                if not DriverStation.getJoystickIsXbox(port_number):
+                    if RobotBase.isSimulation():
+                        self.button_map = self.ps5_buttons
+                        self.contype = "Sim/PS5"
+                    else:
+                        self.button_map = self.ps5_buttons
+                        self.contype = "PS5"
+                else: 
+                    if RobotBase.isSimulation():
+                        self.button_map = self.xbox_buttons
+                        self.contype = "Sim/Xbox"
+                    else:
+                        self.button_map = self.xbox_buttons
+                        self.contype = "Xbox"
             else:
-                if DriverStation.getJoystickIsXbox(port_number):
+                if RobotBase.isSimulation():
                     self.button_map = self.xbox_buttons
-                    self.contype = "Xbox"
+                    self.contype = "Sim/Xbox"
                 else:
-                    switch_ports()
                     self.button_map = self.xbox_buttons
                     self.contype = "Xbox"
         elif type == "PS5":
-            if RobotBase.isSimulation():
-                self.button_map = self.ps5_buttons
-                self.contype = "Sim/PS5"
+            if switch == True:
+                if DriverStation.getJoystickIsXbox(port_number):
+                    if RobotBase.isSimulation():
+                        self.button_map = self.xbox_buttons
+                        self.contype = "Sim/Xbox"
+                    else:
+                        self.button_map = self.xbox_buttons
+                        self.contype = "Xbox"
+                else: 
+                    if RobotBase.isSimulation():
+                        self.button_map = self.ps5_buttons
+                        self.contype = "Sim/PS5"
+                    else:
+                        self.button_map = self.ps5_buttons
+                        self.contype = "PS5"
             else:
-                if not DriverStation.getJoystickIsXbox(port_number):
+                if RobotBase.isSimulation():
                     self.button_map = self.ps5_buttons
-                    self.contype = "PS5"
+                    self.contype = "Sim/PS5"
                 else:
-                    switch_ports()
                     self.button_map = self.ps5_buttons
                     self.contype = "PS5"
+            
+
 
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
@@ -321,7 +337,7 @@ class LemonInput(Sendable):
         Returns:
             tuple: The X and Y values of the POV as a tuple.
         """
-        pov_value = self.pov()
+        pov_value = self.getPOV()
         pov_mapping = {
             0: (1, 0),
             45: (0.707, -0.707),

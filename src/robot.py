@@ -4,7 +4,7 @@ import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation
+from wpilib import RobotController, DigitalInput, DutyCycleEncoder, SmartDashboard, DriverStation,XboxController,PS5Controller
 
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
@@ -200,8 +200,11 @@ class MyRobot(magicbot.MagicRobot):
 
         self.period: units.seconds = 0.02
 
-        self.primary = LemonInput(0, "PS5", 0, 1)
-        self.secondary = LemonInput(1, "Xbox", 0, 1)
+        #self.primary = LemonInput(0, "PS5", True)
+        #self.secondary = LemonInput(1, "Xbox", True)
+
+        self.primary = PS5Controller(0)
+        self.secondary = XboxController(1)
 
         self.pigeon = Pigeon2(30)
 
@@ -237,9 +240,9 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             mult = 1
-            if self.primary.getRightTrigger() >= 0.8:
+            if self.primary.getR2Axis() >= 0.8:
                 mult *= 0.5
-            if self.primary.getLeftTrigger() >= 0.8:
+            if self.primary.getL2Axis() >= 0.8:
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
 
@@ -254,11 +257,11 @@ class MyRobot(magicbot.MagicRobot):
                 -self.sammi_curve(self.theta_filter.calculate(self.primary.getRightX()))
                 * mult
                 * self.top_omega,
-                not self.primary.getLeftBumper(),
+                not self.primary.getL1Button(),
                 self.period,
             )
 
-            if self.primary.getXButton():
+            if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
 
             """
@@ -295,10 +298,10 @@ class MyRobot(magicbot.MagicRobot):
             CLIMBER
             """
 
-            if self.secondary.getLeftTrigger() > 0.05:
-                self.climber.set_speed(self.secondary.getLeftTrigger())
-            if self.secondary.getRightTrigger() > 0.05:
-                self.climber.set_speed(-self.secondary.getRightTrigger())
+            if self.secondary.getLeftTriggerAxis() > 0.05:
+                self.climber.set_speed(self.secondary.getLeftTriggerAxis())
+            if self.secondary.getRightTriggerAxis() > 0.05:
+                self.climber.set_speed(-self.secondary.getRightTriggerAxis())
 
     @feedback
     def get_voltage(self) -> units.volts:
