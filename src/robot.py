@@ -20,13 +20,14 @@ from lemonlib.preference import SmartPreference, SmartProfile
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
-from components.elevator import Elevator
-from components.claw import Claw
+from components.elevator import Elevator, ElevatorHeight
+from components.claw import Claw, ClawAngle
 from components.climber import Climber
 from components.arm_control import ArmControl
 
 
 class MyRobot(magicbot.MagicRobot):
+    arm_control: ArmControl
     odometry: Odometry
 
     swerve_drive: SwerveDrive
@@ -37,14 +38,12 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
-    arm_control: ArmControl
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
     top_speed = SmartPreference(3.0)
     top_omega = SmartPreference(6.0)
     slew_rate = SmartPreference(5.0)
-    wheel_twist = SmartPreference(1.0)
 
     def createObjects(self):
         """This method is where all attributes to be injected are
@@ -148,6 +147,7 @@ class MyRobot(magicbot.MagicRobot):
             },
             not self.low_bandwidth,
         )
+        self.elevator_tolerance = 0.02
 
         """
         CLAW
@@ -180,6 +180,7 @@ class MyRobot(magicbot.MagicRobot):
             },
             not self.low_bandwidth,
         )
+        self.claw_hinge_tolerance = 3.0
 
         """
         CLIMBER
@@ -240,7 +241,9 @@ class MyRobot(magicbot.MagicRobot):
                 mult *= 0.5
             if self.primary.getLeftTrigger() >= 0.8:
                 mult *= 0.5
+            mult *= self.arm_control.get_drive_scalar()
 
+            # consider putting filters outside of curve and mult
             self.swerve_drive.drive(
                 -self.sammi_curve(self.x_filter.calculate(self.primary.getLeftY()))
                 * mult
@@ -259,59 +262,34 @@ class MyRobot(magicbot.MagicRobot):
                 self.swerve_drive.reset_gyro()
 
             """
-            ELEVATOR
+            ARM
             """
 
-            self.elevator.set_voltage(
-                -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
-            )
-            """if self.secondary.getAbutton():
-                self.elevator.set_target_height(ElevatorHeight.L1)
-            if self.secondary.getBbutton():
-                self.elevator.set_target_height(ElevatorHeight.L2)
-            if self.secondary.getXbutton():
-                self.elevator.set_target_height(ElevatorHeight.L3)
-            if self.secondary.getYbutton():
-                self.elevator.set_target_height(ElevatorHeight.L4)"""
-
-            """
-            CLAW
-            """
-
-            if self.secondary.getLeftY() > 0:
-                self.claw.set_intake(
-                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
-                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
-                )
-            else:
-                self.claw.set_intake(
-                    0.5 * applyDeadband(self.secondary.getLeftY(), 0.1),
-                    0.5
-                    * applyDeadband(self.secondary.getLeftY(), 0.1)
-                    * self.wheel_twist,
-                )
-
+            self.arm_control.engage()
+            if self.elevator.error_detected():
+                self.arm_control.next_state("elevator_failsafe")
+            # self.elevator.set_voltage(
+            #     -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
+            # )
             if self.secondary.getAButton():
-                self.arm_control.request_level1()
+                self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
             if self.secondary.getBButton():
-                self.arm_control.request_level2()
+                self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
             if self.secondary.getXButton():
-                self.arm_control.request_level3()
+                self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
-                self.arm_control.request_level4()
+                self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+            if self.secondary.getStartButton():
+                self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
 
-            """if self.secondary.getLeftBumper():
-                self.claw.set_hinge_voltage(-1)
-            if self.secondary.getRightBumper():
-                self.claw.set_hinge_voltage(1)
-            if self.secondary.getPOV() == 0:
-                self.claw.set_target_angle(ClawAngle.STOWED)
-            if self.secondary.getPOV() == 90:
-                self.claw.set_target_angle(ClawAngle.BRANCH)
-            if self.secondary.getPOV() == 180:
-                self.claw.set_target_angle(ClawAngle.TROUGH)
-            if self.secondary.getPOV() == 270:
-                self.claw.set_target_angle(ClawAngle.STATION)"""
+            self.arm_control.set_wheel_voltage(
+                6.0 * applyDeadband(self.secondary.getLeftY(), 0.1)
+            )
+
+            # if self.secondary.getLeftBumper():
+            #     self.claw.set_hinge_voltage(-1)
+            # if self.secondary.getRightBumper():
+            #     self.claw.set_hinge_voltage(1)
 
             """
             CLIMBER

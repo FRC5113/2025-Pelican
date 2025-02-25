@@ -12,7 +12,6 @@ from lemonlib.util import Alert, AlertType
 
 class ElevatorHeight(float, Enum):
     # values likely inaccurate
-    TOP = 2.0
     L1 = 0.0
     L2 = 0.15
     L3 = 0.36
@@ -31,6 +30,7 @@ class Elevator:
     gearing: float
     spool_radius: units.meters
     elevator_profile: SmartProfile
+    tolerance: units.meters
 
     target_height = will_reset_to(ElevatorHeight.L1)
     motor_voltage = will_reset_to(0)
@@ -85,6 +85,18 @@ class Elevator:
             self.get_encoder_rotations() / self.gearing * math.tau * self.spool_radius
         )
 
+    def get_setpoint(self) -> units.meters:
+        return self.target_height
+
+    def get_lower_switch(self) -> bool:
+        return self.lower_switch.get()
+
+    def at_setpoint(self) -> bool:
+        return abs(self.target_height - self.get_height()) <= self.tolerance
+
+    def error_detected(self) -> bool:
+        self.lower_switch.get() and self.upper_switch.get()
+
     """
     CONTROL METHODS
     """
@@ -114,11 +126,12 @@ class Elevator:
             self.reset_encoders()
 
         # calculate voltage from feedforward (only if voltage has not already been set)
-        self.motor_voltage = self.controller.calculate(
-            self.get_height(), self.target_height
-        )
+        if not self.manual_control:
+            self.motor_voltage = self.controller.calculate(
+                self.get_height(), self.target_height
+            )
 
-        if self.lower_switch.get() and self.upper_switch.get():
+        if self.error_detected():
             self.limit_error_alert.enable()
             return
         else:

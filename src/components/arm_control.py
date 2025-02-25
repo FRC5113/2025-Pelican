@@ -1,11 +1,12 @@
+from wpilib import DigitalInput
+from wpimath import units
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state
 
 from components.claw import Claw, ClawAngle
 from components.elevator import Elevator, ElevatorHeight
 from lemonlib.util import Alert, AlertType
-
-from wpilib import DigitalInput
+from lemonlib.preference import SmartPreference
 
 
 class ArmControl(StateMachine):
@@ -16,138 +17,106 @@ class ArmControl(StateMachine):
     # other components
     claw: Claw
     elevator: Elevator
-    elevator_upper_switch: DigitalInput
-    elevator_lower_switch: DigitalInput
 
-    # eject_trigger will override intake_trigger
-    pclaw_trigger = will_reset_to(False)
-    parm_trigger = will_reset_to(False)
-    disabled_trigger = will_reset_to(False)
-
-    hinge_setpoint = will_reset_to(ClawAngle.STOWED)
+    claw_setpoint = will_reset_to(ClawAngle.STOWED)
     elevator_setpoint = will_reset_to(ElevatorHeight.L1)
-
-    homed = False
-    _efail = False  # should prob change just cound not think of name
+    wheel_voltage = will_reset_to(0)
+    wheel_twist = SmartPreference(0.2)
 
     def setup(self):
         self.engage()
         self.unhomed_alert = Alert(
             "Elevator encoders not calibrated! Moving elevator down.", AlertType.WARNING
         )
-
-    def request_stowed(self):
-        self.hinge_setpoint = ClawAngle.STOWED
-        self.pclaw_trigger = True
-
-    def request_station(self):
-        self.hinge_setpoint = ClawAngle.STATION
-        self.pclaw_trigger = True
-
-    def request_trough(self):
-        self.hinge_setpoint = ClawAngle.TROUGH
-        self.pclaw_trigger = True
-
-    def request_branch(self):
-        self.hinge_setpoint = ClawAngle.BRANCH
-        self.pclaw_trigger = True
-
-    def request_level1(self):
-        self.elevator_setpoint = ElevatorHeight.L1
-        self.hinge_setpoint = ClawAngle.TROUGH
-        self.pclaw_trigger = True
-        self.parm_trigger = True
-
-    def request_level2(self):
-        self.elevator_setpoint = ElevatorHeight.L2
-        self.hinge_setpoint = ClawAngle.BRANCH
-        self.pclaw_trigger = True
-        self.parm_trigger = True
-
-    def request_level3(self):
-        self.elevator_setpoint = ElevatorHeight.L3
-        self.hinge_setpoint = ClawAngle.BRANCH
-        self.pclaw_trigger = True
-        self.parm_trigger = True
-
-    def request_level4(self):
-        self.elevator_setpoint = ElevatorHeight.L4
-        self.hinge_setpoint = ClawAngle.BRANCH
-        self.pclaw_trigger = True
-        self.parm_trigger = True
-
-    def request_elevator_fail(self):
-        self.efail = True
+        self.disabled_alert = Alert(
+            "Arm StateMachine has been disabled!", AlertType.ERROR
+        )
+        self.drive_scalar = 1.0
 
     def on_enable(self):
         self.unhomed_alert.enable()
-        self.homed = False
 
-    # states
+    def get_drive_scalar(self) -> float:
+        return self.drive_scalar
+
+    def set(self, elevator_setpoint: units.meters, claw_setpoint: units.degrees):
+        self.elevator_setpoint = elevator_setpoint
+        self.claw_setpoint = claw_setpoint
+
+    def set_wheel_voltage(self, voltage: units.volts):
+        self.wheel_voltage = voltage
+
+    """
+    STATES
+    """
+
     @state(first=True)
     def homing(self):
-        if self.elevator_lower_switch.get():
-            self.homed = True
+        self.drive_scalar = 0.5
+        if self.elevator.get_lower_switch():
             self.unhomed_alert.disable()
             self.elevator.reset_encoders()
-            self.next_state("pclaw")
-
-        if not self.homed:
-            # move elevator down slowly until limit switch is reached and position is known
-            self.elevator.set_voltage(-1.0)
+            self.next_state("positioning_claw")
+        self.elevator.set_voltage(-1.0)
 
     @state
-    def pclaw(self):
-        self.claw.set_target_angle(self.hinge_setpoint)
-
-        if (
-            self.claw.get_angle() == self.hinge_setpoint
-            and self.elevator.get_height() == self.elevator_setpoint
-        ):
+    def positioning_claw(self):
+        if self.claw.get_setpoint() == ClawAngle.STOWED:
+            self.drive_scalar = 1.0
+        else:
+            self.drive_scalar = 0.5
+        self.elevator.set_voltage(0.0)
+        self.claw.set_target_angle(self.claw_setpoint)
+        if self.elevator.at_setpoint() and self.claw.at_setpoint():
             self.next_state("standby")
-        if self._efail:
-            self.next_state("efail")
-        if (
-            self.claw.get_angle() >= ClawAngle.SAFE_START
-            and self.claw.get_angle() <= ClawAngle.SAFE_END
-            and self.elevator.get_height() != self.elevator_setpoint
-        ):
-            self.next_state("parm")
+        if self.claw.is_safe() and not self.elevator.at_setpoint():
+            self.next_state("positioning_arm")
 
     @state
-    def parm(self):
+    def positioning_arm(self):
+        # consider scaling proportional to elevator height
+        self.drive_scalar = 0.25
         self.elevator.set_target_height(self.elevator_setpoint)
-
-        if (
-            self.elevator.get_height() == self.elevator_setpoint
-            and self.claw.get_angle() == self.hinge_setpoint
-        ):
-            self.next_state("standby")
-        if (
-            self.elevator.get_height() == self.elevator_setpoint
-            and self.claw.get_angle() != self.hinge_setpoint
-        ):
-            self.next_state("pclaw")
+        self.claw.set_target_angle(max(ClawAngle.SAFE_START, self.claw_setpoint))
+        if self.elevator.at_setpoint():
+            if self.claw.at_setpoint() and self.claw_setpoint >= ClawAngle.SAFE_START:
+                self.next_state("standby")
+            else:
+                self.next_state("positioning_claw")
 
     @state
     def standby(self):
-        if self.claw.get_angle() != self.hinge_setpoint:
-            self.next_state("pclaw")
-        if (
-            self.elevator.get_height() != self.elevator_setpoint
-            and self.claw.get_angle() >= ClawAngle.SAFE_START
-            and self.claw.get_angle() <= ClawAngle.SAFE_END
-        ):
-            self.next_state("parm")
-        self.next_state("standby")
+        if self.elevator.get_setpoint() == ElevatorHeight.L1:
+            self.drive_scalar = 1.0
+        else:
+            self.drive_scalar = 0.25
+        self.claw.set_wheel_voltage(
+            self.wheel_voltage,
+            self.wheel_twist if self.claw.get_setpoint() == ClawAngle.TROUGH else 1.0,
+        )
+        self.elevator.set_target_height(self.elevator_setpoint)
+        self.claw.set_target_angle(self.claw_setpoint)
+        if self.claw.is_safe():
+            if not self.elevator.at_setpoint():
+                self.next_state("positioning_arm")
+        else:
+            if not self.claw.at_setpoint():
+                self.next_state("positioning_claw")
 
     @state
-    def efail(self):
-        self.elevator.set_voltage(0)
-        self.next_state("parm")
+    def elevator_failsafe(self):
+        if self.claw.get_setpoint() == ClawAngle.STOWED:
+            self.drive_scalar = 1.0
+        else:
+            self.drive_scalar = 0.5
+        self.elevator.set_voltage(0.0)
+        self.claw.set_wheel_voltage(
+            self.wheel_voltage,
+            self.wheel_twist if self.claw.get_setpoint() == ClawAngle.TROUGH else 1.0,
+        )
+        self.claw.set_target_angle(self.claw_setpoint)
 
     @state
     def disabled(self):
-        self.claw.set_hinge_voltage(0)
-        self.elevator.set_voltage(0)
-        self.next_state("disabled")
+        self.drive_scalar = 1.0
+        self.disabled_alert.enable()

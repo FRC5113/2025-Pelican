@@ -25,11 +25,13 @@ class Claw:
     claw_profile: SmartProfile
     gearing: float
     max_angle: units.degrees  # maximum angle claw can rotate downwards
+    hinge_tolerance: units.degrees
     hinge_encoder: SparkAbsoluteEncoder
     intake_limit: SparkLimitSwitch
+
     target_angle = will_reset_to(ClawAngle.STOWED)
-    intake_left_motor_voltage = will_reset_to(0)
-    intake_right_motor_voltage = will_reset_to(0)
+    left_wheel_voltage = will_reset_to(0)
+    right_wheel_voltage = will_reset_to(0)
     hinge_voltage = will_reset_to(0)
     hinge_manual_control = False
 
@@ -86,17 +88,28 @@ class Claw:
             angle -= 360
         return angle
 
+    def get_setpoint(self) -> units.degrees:
+        return self.target_angle
+
     @feedback
     def get_intake_limit(self) -> bool:
         return self.intake_limit.get()
+
+    def is_safe(self) -> bool:
+        return ClawAngle.SAFE_START <= self.get_angle() <= ClawAngle.SAFE_END
+
+    def at_setpoint(self) -> bool:
+        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
 
     """
     CONTROL METHODS
     """
 
-    def set_intake(self, left_voltage: units.volts, right_voltage: units.volts):
-        self.intake_left_motor_voltage = left_voltage
-        self.intake_right_motor_voltage = right_voltage
+    def set_wheel_voltage(self, voltage: units.volts, eject_differential: float):
+        self.left_wheel_voltage = voltage
+        self.right_wheel_voltage = voltage
+        if voltage < 0:
+            self.right_wheel_voltage *= eject_differential
 
     def set_target_angle(self, angle: units.degrees):
         self.target_angle = angle
@@ -112,13 +125,13 @@ class Claw:
 
     def execute(self):
         if self.intake_limit.get() and (
-            self.intake_left_motor_voltage > 0 and self.intake_right_motor_voltage > 0
+            self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0
         ):
-            self.intake_left_motor_voltage = 0
-            self.intake_right_motor_voltage = 0
+            self.left_wheel_voltage = 0
+            self.right_wheel_voltage = 0
         # positive voltage (left) = intake
-        self.left_motor.set(self.intake_left_motor_voltage)
-        self.right_motor.set(-self.intake_right_motor_voltage)
+        self.left_motor.setVoltage(self.left_wheel_voltage)
+        self.right_motor.setVoltage(-self.right_wheel_voltage)
 
         if not self.hinge_manual_control:
             # calculate voltage from feedforward (only if voltage has not already been set)
