@@ -1,7 +1,7 @@
 from wpilib import DriverStation, RobotBase
 from wpilib.interfaces import GenericHID
 from wpiutil import Sendable
-from lemonlib.util import Alert,AlertType
+from lemonlib.util import Alert, AlertType
 
 
 class LemonInput(Sendable):
@@ -49,7 +49,9 @@ class LemonInput(Sendable):
         "kY": 4,
     }
 
-    def __init__(self, port_number: int, type: str = "auto", primary: int = 0, secondary: int = 1):
+    def __init__(
+        self, port_number: int, type: str = "auto", primary: int = 0, secondary: int = 1
+    ):
         """
         Initializes the control object with the specified port number and type.
         Args:
@@ -67,7 +69,9 @@ class LemonInput(Sendable):
         self.secondary = secondary
 
         def switch_ports():
-            self.con = GenericHID(self.secondary if port_number == self.primary else self.primary)
+            self.con = GenericHID(
+                self.secondary if port_number == self.primary else self.primary
+            )
 
         if type == "auto":
             if RobotBase.isSimulation():
@@ -103,12 +107,12 @@ class LemonInput(Sendable):
                     switch_ports()
                     self.button_map = self.ps5_buttons
                     self.contype = "PS5"
-            
-        
 
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
         return self.contype
+
+    """Xbox funcs but still work with PS5 just for ease of use"""
 
     def getLeftBumper(self):
         """Returns the state of the left bumper button."""
@@ -195,6 +199,76 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kRightStick"])
 
+    def getRightTrigger(self) -> float:
+        """
+        Returns the state of the right trigger button.
+
+        Returns:
+            float: The state of the right trigger button ranging from 0.0 to 1.0.
+        """
+        return self.con.getRawAxis(self.button_map["kRightTrigger"])
+
+    def getLeftTrigger(self) -> float:
+        """
+        Returns the state of the left trigger button.
+
+        Returns:
+            float: The state of the left trigger button ranging from 0.0 to 1.0.
+        """
+        return self.con.getRawAxis(self.button_map["kLeftTrigger"])
+
+    """PS5 funcs still work with Xbox just for ease of use"""
+
+    def getL1(self):
+        """Returns the state of the L1 button."""
+        return self.con.getRawButton(self.button_map["kLeftBumper"])
+
+    def getR1(self):
+        """Returns the state of the R1 button."""
+        return self.con.getRawButton(self.button_map["kRightBumper"])
+
+    def getOptionsButton(self):
+        """Returns the state of the Options button."""
+        return self.con.getRawButton(self.button_map["kStart"])
+
+    def getCreateButton(self):
+        """Returns the state of the Create button."""
+        return self.con.getRawButton(self.button_map["kBack"])
+
+    def getCrossButton(self):
+        """Returns the state of the Cross (X) button."""
+        return self.con.getRawButton(self.button_map["kA"])
+
+    def getCircleButton(self):
+        """Returns the state of the Circle (O) button."""
+        return self.con.getRawButton(self.button_map["kB"])
+
+    def getSquareButton(self):
+        """Returns the state of the Square button."""
+        return self.con.getRawButton(self.button_map["kX"])
+
+    def getTriangleButton(self):
+        """Returns the state of the Triangle button."""
+        return self.con.getRawButton(self.button_map["kY"])
+
+    def getL3(self):
+        """Returns the state of the L3 (left stick) button."""
+        return self.con.getRawButton(self.button_map["kLeftStick"])
+
+    def getR3(self):
+        """Returns the state of the R3 (right stick) button."""
+        return self.con.getRawButton(self.button_map["kRightStick"])
+
+    def getR2(self) -> float:
+        """Returns the state of the R2 trigger."""
+        return self.con.getRawAxis(self.button_map["kRightTrigger"])
+
+    def getL2(self) -> float:
+        """Returns the state of the L2 trigger."""
+        return self.con.getRawAxis(self.button_map["kLeftTrigger"])
+
+    """Both Xbox and PS5 funcs"""
+
     def getLeftX(self) -> float:
         """
         Returns the X-axis value of the left joystick.
@@ -239,24 +313,6 @@ class LemonInput(Sendable):
             int: The current POV value. Returns -1 if no POV is pressed.
         """
         return self.con.getPOV()
-
-    def getRightTrigger(self) -> float:
-        """
-        Returns the state of the right trigger button.
-
-        Returns:
-            float: The state of the right trigger button ranging from 0.0 to 1.0.
-        """
-        return self.con.getRawAxis(self.button_map["kRightTrigger"])
-
-    def getLeftTrigger(self) -> float:
-        """
-        Returns the state of the left trigger button.
-
-        Returns:
-            float: The state of the left trigger button ranging from 0.0 to 1.0.
-        """
-        return self.con.getRawAxis(self.button_map["kLeftTrigger"])
 
     def __pov_xy(self):
         """

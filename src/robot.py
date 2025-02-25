@@ -199,12 +199,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.period: units.seconds = 0.02
 
-        self.primary = LemonInput(0, "PS5", 0,1)
-        self.secondary = LemonInput(1, "Xbox", 0,1)
-        # if DriverStation.getJoystickIsXbox(0):
-        #     # switch controller ports if necessary
-        #     self.ps5 = PS5Controller(1)
-        #     self.xbox = XboxController(0)
+        self.primary = LemonInput(0, "PS5", 0, 1)
+        self.secondary = LemonInput(1, "Xbox", 0, 1)
 
         self.pigeon = Pigeon2(30)
 
@@ -294,7 +290,7 @@ class MyRobot(magicbot.MagicRobot):
                     * applyDeadband(self.secondary.getLeftY(), 0.1)
                     * self.wheel_twist,
                 )
-            
+
             if self.secondary.getAButton():
                 self.arm_control.request_level1()
             if self.secondary.getBButton():
