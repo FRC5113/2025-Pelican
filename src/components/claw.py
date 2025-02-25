@@ -13,6 +13,8 @@ class ClawAngle(float, Enum):
     STATION = 30.0
     TROUGH = 100.0
     BRANCH = 115.0
+    SAFE_START = 15.0  # has to be adusted just an estimate
+    SAFE_END = 115.0  # has to be adusted just an estimate
 
 
 class Claw:

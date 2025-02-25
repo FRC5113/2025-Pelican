@@ -1,30 +1,29 @@
 import math
-from pathlib import Path
 
 import wpilib
-from wpilib import XboxController, PS5Controller
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation
+
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d, Rotation3d, Transform2d, Rotation2d
+from wpimath.geometry import Transform3d
+
 import magicbot
 from magicbot import feedback
-from photonlibpy.photonCamera import PhotonCamera
 
 from lemonlib.control import LemonInput
-from lemonlib.util import curve, Alert, AlertManager, AlertType
+from lemonlib.util import curve, AlertManager, AlertType
 from lemonlib.preference import SmartPreference, SmartProfile
-from lemonlib.vision import LemonCamera, LemonCameraSim
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
-from components.elevator import Elevator, ElevatorHeight
-from components.claw import Claw, ClawAngle
+from components.elevator import Elevator
+from components.claw import Claw
 from components.climber import Climber
+from components.arm_control import ArmControl
 
 
 class MyRobot(magicbot.MagicRobot):
@@ -38,6 +37,7 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
+    arm_control: ArmControl
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -199,8 +199,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.period: units.seconds = 0.02
 
-        self.primary = LemonInput(0, "PS5")
-        self.secondary = LemonInput(1, "Xbox")
+        self.primary = LemonInput(0, "PS5", 0,1)
+        self.secondary = LemonInput(1, "Xbox", 0,1)
         # if DriverStation.getJoystickIsXbox(0):
         #     # switch controller ports if necessary
         #     self.ps5 = PS5Controller(1)
@@ -259,7 +259,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.period,
             )
 
-            if self.primary.getXbutton():
+            if self.primary.getXButton():
                 self.swerve_drive.reset_gyro()
 
             """
@@ -269,14 +269,14 @@ class MyRobot(magicbot.MagicRobot):
             self.elevator.set_voltage(
                 -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
             )
-            if self.secondary.getAbutton():
+            """if self.secondary.getAbutton():
                 self.elevator.set_target_height(ElevatorHeight.L1)
             if self.secondary.getBbutton():
                 self.elevator.set_target_height(ElevatorHeight.L2)
             if self.secondary.getXbutton():
                 self.elevator.set_target_height(ElevatorHeight.L3)
             if self.secondary.getYbutton():
-                self.elevator.set_target_height(ElevatorHeight.L4)
+                self.elevator.set_target_height(ElevatorHeight.L4)"""
 
             """
             CLAW
@@ -294,7 +294,17 @@ class MyRobot(magicbot.MagicRobot):
                     * applyDeadband(self.secondary.getLeftY(), 0.1)
                     * self.wheel_twist,
                 )
-            if self.secondary.getLeftBumper():
+            
+            if self.secondary.getAButton():
+                self.arm_control.request_level1()
+            if self.secondary.getBButton():
+                self.arm_control.request_level2()
+            if self.secondary.getXButton():
+                self.arm_control.request_level3()
+            if self.secondary.getYButton():
+                self.arm_control.request_level4()
+
+            """if self.secondary.getLeftBumper():
                 self.claw.set_hinge_voltage(-1)
             if self.secondary.getRightBumper():
                 self.claw.set_hinge_voltage(1)
@@ -305,7 +315,7 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getPOV() == 180:
                 self.claw.set_target_angle(ClawAngle.TROUGH)
             if self.secondary.getPOV() == 270:
-                self.claw.set_target_angle(ClawAngle.STATION)
+                self.claw.set_target_angle(ClawAngle.STATION)"""
 
             """
             CLIMBER

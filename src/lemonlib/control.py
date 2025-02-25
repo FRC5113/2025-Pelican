@@ -1,6 +1,7 @@
 from wpilib import DriverStation, RobotBase
 from wpilib.interfaces import GenericHID
-from wpiutil import Sendable, SendableBuilder
+from wpiutil import Sendable
+from lemonlib.util import Alert,AlertType
 
 
 class LemonInput(Sendable):
@@ -48,7 +49,7 @@ class LemonInput(Sendable):
         "kY": 4,
     }
 
-    def __init__(self, port_number: int, type: str = "auto"):
+    def __init__(self, port_number: int, type: str = "auto", primary: int = 0, secondary: int = 1):
         """
         Initializes the control object with the specified port number and type.
         Args:
@@ -57,9 +58,17 @@ class LemonInput(Sendable):
                 - "auto": Automatically detects the controller type.
                 - "Xbox": Forces the controller type to Xbox.
                 - "PS5": Forces the controller type to PS5.
+            primary (int, optional): The port number of the primary controller.
+            secondary (int, optional): The port number of the secondary controller.
         """
         Sendable.__init__(self)
         self.con = GenericHID(port_number)
+        self.primary = primary
+        self.secondary = secondary
+
+        def switch_ports():
+            self.con = GenericHID(self.secondary if port_number == self.primary else self.primary)
+
         if type == "auto":
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
@@ -70,21 +79,32 @@ class LemonInput(Sendable):
             else:
                 self.button_map = self.ps5_buttons
                 self.contype = "PS5"
-                DriverStation.getJoystickType
         elif type == "Xbox":
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
                 self.contype = "Sim/Xbox"
             else:
-                self.button_map = self.xbox_buttons
-                self.contype = "Xbox"
+                if DriverStation.getJoystickIsXbox(port_number):
+                    self.button_map = self.xbox_buttons
+                    self.contype = "Xbox"
+                else:
+                    switch_ports()
+                    self.button_map = self.xbox_buttons
+                    self.contype = "Xbox"
         elif type == "PS5":
             if RobotBase.isSimulation():
                 self.button_map = self.ps5_buttons
                 self.contype = "Sim/PS5"
             else:
-                self.button_map = self.ps5_buttons
-                self.contype = "PS5"
+                if not DriverStation.getJoystickIsXbox(port_number):
+                    self.button_map = self.ps5_buttons
+                    self.contype = "PS5"
+                else:
+                    switch_ports()
+                    self.button_map = self.ps5_buttons
+                    self.contype = "PS5"
+            
+        
 
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
@@ -121,7 +141,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kBack"])
 
-    def getAbutton(self):
+    def getAButton(self):
         """
         Returns the state of the 'A' button.
 
@@ -130,7 +150,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kA"])
 
-    def getBbutton(self):
+    def getBButton(self):
         """
         Returns the state of the 'B' button.
 
@@ -139,7 +159,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kB"])
 
-    def getXbutton(self):
+    def getXButton(self):
         """
         Returns the state of the 'X' button.
 
@@ -148,7 +168,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kX"])
 
-    def getYbutton(self):
+    def getYButton(self):
         """
         Returns the state of the 'Y' button.
 
@@ -317,10 +337,10 @@ class LemonInput(Sendable):
         builder.addBooleanProperty(
             "BackButton", lambda: self.getBackButton(), lambda: None
         )
-        builder.addBooleanProperty("AButton", lambda: self.getAbutton(), lambda: None)
-        builder.addBooleanProperty("BButton", lambda: self.getBbutton(), lambda: None)
-        builder.addBooleanProperty("XButton", lambda: self.getXbutton(), lambda: None)
-        builder.addBooleanProperty("YButton", lambda: self.getYbutton(), lambda: None)
+        builder.addBooleanProperty("AButton", lambda: self.getAButton(), lambda: None)
+        builder.addBooleanProperty("BButton", lambda: self.getBButton(), lambda: None)
+        builder.addBooleanProperty("XButton", lambda: self.getXButton(), lambda: None)
+        builder.addBooleanProperty("YButton", lambda: self.getYButton(), lambda: None)
         builder.addBooleanProperty(
             "LStickButton", lambda: self.getLeftStickButton(), lambda: None
         )
