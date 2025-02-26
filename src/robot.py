@@ -32,10 +32,12 @@ from components.elevator import Elevator, ElevatorHeight
 from components.claw import Claw, ClawAngle
 from components.climber import Climber
 from components.arm_control import ArmControl
+# from components.drive_control import DriveControl
 
 
 class MyRobot(magicbot.MagicRobot):
     arm_control: ArmControl
+    # drive_control: DriveControl
     odometry: Odometry
 
     swerve_drive: SwerveDrive
@@ -46,6 +48,7 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
+    
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -199,8 +202,8 @@ class MyRobot(magicbot.MagicRobot):
         self.climber_encoder = DutyCycleEncoder(2)
 
         # physical constants
-        self.climber_min_position = 0.0  # placeholder
-        self.climber_max_position = 1.0  # placeholder
+        self.climber_min_position = -0.28  # placeholder
+        self.climber_max_position = 0.0  # placeholder
 
         """
         MISCELLANEOUS
@@ -219,9 +222,6 @@ class MyRobot(magicbot.MagicRobot):
         self.sammi_curve = curve(
             lambda x: 1.89 * x**3 + 0.61 * x, 0.0, deadband=0.1, max_mag=1.0
         )
-        self.x_filter = SlewRateLimiter(self.slew_rate)
-        self.y_filter = SlewRateLimiter(self.slew_rate)
-        self.theta_filter = SlewRateLimiter(self.slew_rate)
 
         # odometry
         # self.camera = PhotonCamera("Global_Shutter_Camera")
@@ -241,6 +241,10 @@ class MyRobot(magicbot.MagicRobot):
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(type="PS5")
         self.secondary = LemonInput(type="Xbox")
+
+        self.x_filter = SlewRateLimiter(self.slew_rate)
+        self.y_filter = SlewRateLimiter(self.slew_rate)
+        self.theta_filter = SlewRateLimiter(self.slew_rate)
 
     def teleopPeriodic(self):
         with self.consumeExceptions():

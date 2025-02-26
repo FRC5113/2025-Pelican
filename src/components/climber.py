@@ -32,7 +32,10 @@ class Climber:
 
     @feedback
     def get_position(self) -> units.turns:
-        return self.encoder.get()
+        angle = self.encoder.get()
+        if angle > 0.5:
+            angle -= 1.0
+        return angle
 
     """
     CONTROL METHODS
@@ -47,8 +50,6 @@ class Climber:
 
     def execute(self):
         # assumes a positive voltage creates an increase in angle
-        # if self.get_position() < self.min_position and self.motor_speed < 0:
-        #     return
-        # if self.get_position() > self.max_position and self.motor_speed > 0:
-        #     return
+        if (self.get_position() < self.min_position and self.motor_speed < 0) or (self.get_position() > self.max_position and self.motor_speed > 0):
+            self.motor_speed = 0
         self.motor.set(self.motor_speed)
