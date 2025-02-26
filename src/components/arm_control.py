@@ -69,7 +69,10 @@ class ArmControl(StateMachine):
         self.claw.set_target_angle(self.claw_setpoint)
         if self.elevator.at_setpoint() and self.claw.at_setpoint():
             self.next_state("standby")
-        if self.claw.is_safe() and (not self.elevator.at_setpoint() or self.elevator_setpoint != self.elevator.get_setpoint()):
+        if self.claw.is_safe() and (
+            not self.elevator.at_setpoint()
+            or self.elevator_setpoint != self.elevator.get_setpoint()
+        ):
             self.next_state("positioning_arm")
 
     @state

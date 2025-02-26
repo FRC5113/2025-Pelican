@@ -49,13 +49,12 @@ class LemonInput(Sendable):
         "kY": 4,
     }
 
-    def __init__(
-        self, port_number: int, type: str = "auto", switch: bool = False
-    ):
+    def __init__(self, port: int = None, type: str = "auto"):  # , switch: bool = False
         """
         Initializes the control object with the specified port number and type.
         Args:
-            port_number (int): The port number of the controller.
+            port (int, optional): The port number of the controller. If unset,
+                chooses first controller matching type.
             type (str, optional): The type of the controller. Defaults to "auto".
                 - "auto": Automatically detects the controller type.
                 - "Xbox": Forces the controller type to Xbox.
@@ -63,66 +62,48 @@ class LemonInput(Sendable):
             switch (bool, optional): allows for auto switch if the wrong tpe of con is selected.
         """
         Sendable.__init__(self)
-        self.con = GenericHID(port_number)
-        
+
+        if port is None:
+            port = 0
+            while port < 5:
+                # assumes DS gives empty string if no joystick at port
+                if DriverStation.getJoystickName(port) != "":
+                    if type == "auto":
+                        break
+                    if type == "Xbox" and DriverStation.getJoystickIsXbox(port):
+                        break
+                    if type == "PS5" and not DriverStation.getJoystickIsXbox(port):
+                        break
+                port += 1
+            else:
+                print(f"ERROR: No Joystick found matching type: {type}")
+
+        self.con = GenericHID(port)
+
         if type == "auto":
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
                 self.contype = "Sim/Xbox"
-            elif DriverStation.getJoystickIsXbox(port_number):
+            elif DriverStation.getJoystickIsXbox(port):
                 self.button_map = self.xbox_buttons
                 self.contype = "Xbox"
             else:
                 self.button_map = self.ps5_buttons
                 self.contype = "PS5"
         elif type == "Xbox":
-            if switch == True:
-                if not DriverStation.getJoystickIsXbox(port_number):
-                    if RobotBase.isSimulation():
-                        self.button_map = self.ps5_buttons
-                        self.contype = "Sim/PS5"
-                    else:
-                        self.button_map = self.ps5_buttons
-                        self.contype = "PS5"
-                else: 
-                    if RobotBase.isSimulation():
-                        self.button_map = self.xbox_buttons
-                        self.contype = "Sim/Xbox"
-                    else:
-                        self.button_map = self.xbox_buttons
-                        self.contype = "Xbox"
+            if RobotBase.isSimulation():
+                self.button_map = self.xbox_buttons
+                self.contype = "Sim/Xbox"
             else:
-                if RobotBase.isSimulation():
-                    self.button_map = self.xbox_buttons
-                    self.contype = "Sim/Xbox"
-                else:
-                    self.button_map = self.xbox_buttons
-                    self.contype = "Xbox"
+                self.button_map = self.xbox_buttons
+                self.contype = "Xbox"
         elif type == "PS5":
-            if switch == True:
-                if DriverStation.getJoystickIsXbox(port_number):
-                    if RobotBase.isSimulation():
-                        self.button_map = self.xbox_buttons
-                        self.contype = "Sim/Xbox"
-                    else:
-                        self.button_map = self.xbox_buttons
-                        self.contype = "Xbox"
-                else: 
-                    if RobotBase.isSimulation():
-                        self.button_map = self.ps5_buttons
-                        self.contype = "Sim/PS5"
-                    else:
-                        self.button_map = self.ps5_buttons
-                        self.contype = "PS5"
+            if RobotBase.isSimulation():
+                self.button_map = self.ps5_buttons
+                self.contype = "Sim/PS5"
             else:
-                if RobotBase.isSimulation():
-                    self.button_map = self.ps5_buttons
-                    self.contype = "Sim/PS5"
-                else:
-                    self.button_map = self.ps5_buttons
-                    self.contype = "PS5"
-            
-
+                self.button_map = self.ps5_buttons
+                self.contype = "PS5"
 
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
@@ -215,7 +196,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawButton(self.button_map["kRightStick"])
 
-    def getRightTrigger(self) -> float:
+    def getRightTriggerAxis(self) -> float:
         """
         Returns the state of the right trigger button.
 
@@ -224,7 +205,7 @@ class LemonInput(Sendable):
         """
         return self.con.getRawAxis(self.button_map["kRightTrigger"])
 
-    def getLeftTrigger(self) -> float:
+    def getLeftTriggerAxis(self) -> float:
         """
         Returns the state of the left trigger button.
 
@@ -235,11 +216,11 @@ class LemonInput(Sendable):
 
     """PS5 funcs still work with Xbox just for ease of use"""
 
-    def getL1(self):
+    def getL1Button(self):
         """Returns the state of the L1 button."""
         return self.con.getRawButton(self.button_map["kLeftBumper"])
 
-    def getR1(self):
+    def getR1Button(self):
         """Returns the state of the R1 button."""
         return self.con.getRawButton(self.button_map["kRightBumper"])
 
@@ -275,11 +256,11 @@ class LemonInput(Sendable):
         """Returns the state of the R3 (right stick) button."""
         return self.con.getRawButton(self.button_map["kRightStick"])
 
-    def getR2(self) -> float:
+    def getR2Axis(self) -> float:
         """Returns the state of the R2 trigger."""
         return self.con.getRawAxis(self.button_map["kRightTrigger"])
 
-    def getL2(self) -> float:
+    def getL2Axis(self) -> float:
         """Returns the state of the L2 trigger."""
         return self.con.getRawAxis(self.button_map["kLeftTrigger"])
 

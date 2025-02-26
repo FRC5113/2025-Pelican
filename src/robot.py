@@ -4,7 +4,15 @@ import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotController, DigitalInput, DutyCycleEncoder, SmartDashboard, DriverStation,XboxController,PS5Controller
+from wpilib import (
+    RobotController,
+    DigitalInput,
+    DutyCycleEncoder,
+    SmartDashboard,
+    DriverStation,
+    XboxController,
+    PS5Controller,
+)
 
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
@@ -200,11 +208,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.period: units.seconds = 0.02
 
-        #self.primary = LemonInput(0, "PS5", True)
-        #self.secondary = LemonInput(1, "Xbox", True)
-
-        self.primary = PS5Controller(0)
-        self.secondary = XboxController(1)
+        # self.primary = PS5Controller(0)
+        # self.secondary = XboxController(1)
 
         self.pigeon = Pigeon2(30)
 
@@ -232,6 +237,11 @@ class MyRobot(magicbot.MagicRobot):
                 "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.WARNING
             )
 
+    def teleopInit(self):
+        # initialize HIDs here in case they are changed after robot initializes
+        self.primary = LemonInput(type="PS5")
+        self.secondary = LemonInput(type="Xbox")
+
     def teleopPeriodic(self):
         with self.consumeExceptions():
 
@@ -248,15 +258,15 @@ class MyRobot(magicbot.MagicRobot):
 
             # consider putting filters outside of curve and mult
             self.swerve_drive.drive(
-                -self.sammi_curve(self.x_filter.calculate(self.primary.getLeftY()))
-                * mult
-                * self.top_speed,
-                -self.sammi_curve(self.y_filter.calculate(self.primary.getLeftX()))
-                * mult
-                * self.top_speed,
-                -self.sammi_curve(self.theta_filter.calculate(self.primary.getRightX()))
-                * mult
-                * self.top_omega,
+                self.x_filter.calculate(
+                    -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
+                ),
+                self.y_filter.calculate(
+                    -self.sammi_curve(self.primary.getLeftX()) * mult * self.top_speed
+                ),
+                self.theta_filter.calculate(
+                    -self.sammi_curve(self.primary.getRightX()) * mult * self.top_omega
+                ),
                 not self.primary.getL1Button(),
                 self.period,
             )
