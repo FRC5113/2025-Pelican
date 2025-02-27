@@ -253,6 +253,11 @@ class MyRobot(magicbot.MagicRobot):
             SWERVE
             """
 
+            if self.primary.getL1Button():
+                self.swerve_drive.set_pigeon_offset(54.0)
+            else:
+                self.swerve_drive.set_pigeon_offset(180.0)
+
             mult = 1
             if self.primary.getR2Axis() >= 0.8:
                 mult *= 0.5
@@ -260,7 +265,6 @@ class MyRobot(magicbot.MagicRobot):
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
 
-            # consider putting filters outside of curve and mult
             self.swerve_drive.drive(
                 self.x_filter.calculate(
                     -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
@@ -271,7 +275,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.theta_filter.calculate(
                     -self.sammi_curve(self.primary.getRightX()) * mult * self.top_omega
                 ),
-                not self.primary.getL1Button(),
+                not self.primary.getL1Button(), # temporary
                 self.period,
             )
 

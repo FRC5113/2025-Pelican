@@ -77,6 +77,7 @@ class SwerveDrive(Sendable):
         )
         self.period = 0.02
 
+        self.pigeon_offset = Rotation2d()
         self.pigeon_alert = Alert(
             "Pigeon heading has been reset.", AlertType.INFO, timeout=3.0
         )
@@ -165,6 +166,10 @@ class SwerveDrive(Sendable):
     def add_vision_measurement(self, pose, timestamp):
         self.pose_estimator.addVisionMeasurement(pose, timestamp)
 
+    def set_pigeon_offset(self, offset: units.degrees):
+        """set angle added to reading from pigeon"""
+        self.pigeon_offset = Rotation2d.fromDegrees(offset)
+
     """
     TELEMETRY METHODS
     """
@@ -211,7 +216,7 @@ class SwerveDrive(Sendable):
                     self.translationX,
                     self.translationY,
                     self.rotationX,
-                    self.pigeon.getRotation2d(),
+                    self.pigeon.getRotation2d()+self.pigeon_offset,
                 )
                 if self.field_relative
                 else ChassisSpeeds.fromFieldRelativeSpeeds(
