@@ -248,6 +248,9 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
+            SmartDashboard.putData("primary", self.primary)
+            SmartDashboard.putData("secondary", self.secondary)
+            
 
             """
             SWERVE

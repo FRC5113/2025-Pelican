@@ -405,10 +405,10 @@ class LemonInput(Sendable):
         builder.addDoubleProperty("RightX", lambda: self.getRightX(), lambda: None)
         builder.addDoubleProperty("RightY", lambda: self.getRightY(), lambda: None)
         builder.addDoubleProperty(
-            "RightTrigger", lambda: self.getRightTrigger(), lambda: None
+            "RightTrigger", lambda: self.getRightTriggerAxis(), lambda: None
         )
         builder.addDoubleProperty(
-            "LeftTrigger", lambda: self.getLeftTrigger(), lambda: None
+            "LeftTrigger", lambda: self.getLeftTriggerAxis(), lambda: None
         )
         builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
         builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)

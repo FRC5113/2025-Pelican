@@ -183,29 +183,8 @@ class SwerveDrive(Sendable):
         swerve_measurements += self.rear_right.getMeasuredState()
         SmartDashboard.putNumberArray("Swerve Measurements", swerve_measurements)
 
-    """
-    EXECUTE
-    """
-
-    def execute(self) -> None:
-        self.sendAdvantageScopeData()
-        self.pose_estimator.update(
-            Rotation2d(self.pigeon.get_yaw().value / 180 * math.pi),
-            (
-                self.front_left.getPosition(),
-                self.front_right.getPosition(),
-                self.rear_left.getPosition(),
-                self.rear_right.getPosition(),
-            ),
-        )
-
-        if self.translationX == self.translationY == self.rotationX == 0:
-            # below line is only to keep NT updated
-            self.swerve_module_states = self.still_states
-            self.chassis_speeds = ChassisSpeeds()
-            return
-
-        self.chassis_speeds = ChassisSpeeds.discretize(
+    def chassis(self,chassis_speeds:ChassisSpeeds):
+        chassis_speeds = ChassisSpeeds.discretize(
             (
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                     self.translationX,
@@ -234,3 +213,27 @@ class SwerveDrive(Sendable):
         self.front_right.setDesiredState(self.swerve_module_states[1])
         self.rear_left.setDesiredState(self.swerve_module_states[2])
         self.rear_right.setDesiredState(self.swerve_module_states[3])
+
+    """
+    EXECUTE
+    """
+
+    def execute(self) -> None:
+        self.sendAdvantageScopeData()
+        self.pose_estimator.update(
+            Rotation2d(self.pigeon.get_yaw().value / 180 * math.pi),
+            (
+                self.front_left.getPosition(),
+                self.front_right.getPosition(),
+                self.rear_left.getPosition(),
+                self.rear_right.getPosition(),
+            ),
+        )
+
+        if self.translationX == self.translationY == self.rotationX == 0:
+            # below line is only to keep NT updated
+            self.swerve_module_states = self.still_states
+            self.chassis_speeds = ChassisSpeeds()
+            return
+
+        
