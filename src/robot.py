@@ -32,6 +32,7 @@ from components.elevator import Elevator, ElevatorHeight
 from components.claw import Claw, ClawAngle
 from components.climber import Climber
 from components.arm_control import ArmControl
+
 # from components.drive_control import DriveControl
 
 
@@ -48,7 +49,6 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
-    
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -250,7 +250,6 @@ class MyRobot(magicbot.MagicRobot):
         with self.consumeExceptions():
             SmartDashboard.putData("primary", self.primary)
             SmartDashboard.putData("secondary", self.secondary)
-            
 
             """
             SWERVE

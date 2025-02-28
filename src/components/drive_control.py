@@ -2,7 +2,7 @@ from components.swerve_drive import SwerveDrive
 import math
 
 from phoenix6.hardware import Pigeon2
-from wpilib import SmartDashboard,DriverStation,Timer
+from wpilib import SmartDashboard, DriverStation, Timer
 from wpimath import units
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
@@ -23,19 +23,18 @@ class DriveControl(StateMachine):
     auto_y_profile: SmartProfile
     auto_heading_profile: SmartProfile
 
-    def __init__(self) -> None:
-        
-
     def setup(self):
         self.engage()
-        
 
     def on_enable(self):
         self.auto_x_controller = self.auto_x_profile.create_pid_controller("auto_x")
         self.auto_y_controller = self.auto_y_profile.create_pid_controller("auto_y")
-        self.auto_heading_controller = self.auto_heading_profile.create_pid_controller("auto_heading")
+        self.auto_heading_controller = self.auto_heading_profile.create_pid_controller(
+            "auto_heading"
+        )
 
-    def drive_manual(self,
+    def drive_manual(
+        self,
         translationX: units.meters_per_second,
         translationY: units.meters_per_second,
         rotationX: units.radians_per_second,
@@ -49,13 +48,16 @@ class DriveControl(StateMachine):
             self.period = period
             self.field_relative = field_relative
 
-    def drive_auto(self):
-        
-
     @state(first=True)
     def free(self):
         print("free")
-        self.swerve_drive.drive(self.translationX, self.translationY, self.rotationX, self.field_relative, self.period)
+        self.swerve_drive.drive(
+            self.translationX,
+            self.translationY,
+            self.rotationX,
+            self.field_relative,
+            self.period,
+        )
         if DriverStation.isAutonomousEnabled():
             self.next_state("auto")
 
@@ -64,8 +66,3 @@ class DriveControl(StateMachine):
         print("auto")
         if DriverStation.isTeleop():
             self.next_state("free")
-
-
-
-
-

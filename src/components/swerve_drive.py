@@ -183,7 +183,7 @@ class SwerveDrive(Sendable):
         swerve_measurements += self.rear_right.getMeasuredState()
         SmartDashboard.putNumberArray("Swerve Measurements", swerve_measurements)
 
-    def chassis(self,chassis_speeds:ChassisSpeeds):
+    def chassis(self, chassis_speeds: ChassisSpeeds):
         chassis_speeds = ChassisSpeeds.discretize(
             (
                 ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -235,5 +235,3 @@ class SwerveDrive(Sendable):
             self.swerve_module_states = self.still_states
             self.chassis_speeds = ChassisSpeeds()
             return
-
-        
