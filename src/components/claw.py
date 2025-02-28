@@ -9,11 +9,11 @@ from lemonlib.util import Alert, AlertType
 
 
 class ClawAngle(float, Enum):
-    STOWED = 0.0
+    STOWED = 29.0 #for 
     STATION = 30.0
     TROUGH = 100.0
     BRANCH = 115.0
-    SAFE_START = 30.0  # has to be adusted just an estimate
+    SAFE_START = 45.0  # has to be adusted just an estimate
     SAFE_END = 115.0  # has to be adusted just an estimate
 
 

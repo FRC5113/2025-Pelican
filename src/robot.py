@@ -166,8 +166,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # hardware
         self.claw_hinge_motor = SparkMax(56, BRUSHLESS)
-        self.claw_left_motor = SparkMax(55, BRUSHLESS)
-        self.claw_right_motor = SparkMax(58, BRUSHLESS)
+        self.claw_left_motor = SparkMax(55, SparkLowLevel.MotorType.kBrushed)
+        self.claw_right_motor = SparkMax(58, SparkLowLevel.MotorType.kBrushed)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
         self.claw_intake_limit = self.claw_hinge_motor.getReverseLimitSwitch()
 
@@ -253,8 +253,9 @@ class MyRobot(magicbot.MagicRobot):
             SWERVE
             """
 
-            if self.primary.getL1Button():
-                self.swerve_drive.set_pigeon_offset(54.0)
+            if self.primary.getR1Button():
+                # SAMMI: Replace -54.0 with 126.0 to flip orientiation
+                self.swerve_drive.set_pigeon_offset(-54.0)
             else:
                 self.swerve_drive.set_pigeon_offset(180.0)
 
@@ -273,7 +274,7 @@ class MyRobot(magicbot.MagicRobot):
                     -self.sammi_curve(self.primary.getLeftX()) * mult * self.top_speed
                 ),
                 self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX()) * mult * self.top_omega
+                    -self.sammi_curve(self.primary.getRightX()) * self.top_omega
                 ),
                 not self.primary.getL1Button(), # temporary
                 self.period,
