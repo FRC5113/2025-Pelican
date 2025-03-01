@@ -1,5 +1,5 @@
 from enum import Enum
-
+from wpimath import applyDeadband
 from wpimath import units
 from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder, SparkLimitSwitch
 from lemonlib.preference import SmartProfile
@@ -14,7 +14,7 @@ class ClawAngle(float, Enum):
     TROUGH = 100.0
     BRANCH = 115.0
     SAFE_START = 45.0  # has to be adusted just an estimate
-    SAFE_END = 115.0  # has to be adusted just an estimate
+    SAFE_END = 117.0  # has to be adusted just an estimate
 
 
 class Claw:
@@ -99,8 +99,7 @@ class Claw:
         return ClawAngle.SAFE_START <= self.get_angle() <= ClawAngle.SAFE_END
 
     def at_setpoint(self) -> bool:
-        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
-
+        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance 
     """
     CONTROL METHODS
     """

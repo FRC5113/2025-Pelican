@@ -169,7 +169,7 @@ class MyRobot(magicbot.MagicRobot):
         self.claw_left_motor = SparkMax(55, SparkLowLevel.MotorType.kBrushed)
         self.claw_right_motor = SparkMax(58, SparkLowLevel.MotorType.kBrushed)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
-        self.claw_intake_limit = self.claw_hinge_motor.getReverseLimitSwitch()
+        self.claw_intake_limit = self.claw_left_motor.getReverseLimitSwitch()
 
         # physical constants
         self.claw_gearing = 82.5
@@ -305,7 +305,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
 
             self.arm_control.set_wheel_voltage(
-                6.0 * applyDeadband(self.secondary.getLeftY(), 0.1)
+                (6.0 * applyDeadband(self.secondary.getLeftY(), 0.1) * 0.4 )
             )
 
             # if self.secondary.getLeftBumper():
