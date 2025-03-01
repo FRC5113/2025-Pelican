@@ -32,12 +32,12 @@ from components.elevator import Elevator, ElevatorHeight
 from components.claw import Claw, ClawAngle
 from components.climber import Climber
 from components.arm_control import ArmControl
-# from components.drive_control import DriveControl
+from components.drive_control import DriveControl
 
 
 class MyRobot(magicbot.MagicRobot):
     arm_control: ArmControl
-    # drive_control: DriveControl
+    drive_control: DriveControl
     odometry: Odometry
 
     swerve_drive: SwerveDrive
@@ -48,7 +48,6 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
-    
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -266,7 +265,20 @@ class MyRobot(magicbot.MagicRobot):
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
 
-            self.swerve_drive.drive(
+            # self.swerve_drive.drive(
+            #     self.x_filter.calculate(
+            #         -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
+            #     ),
+            #     self.y_filter.calculate(
+            #         -self.sammi_curve(self.primary.getLeftX()) * mult * self.top_speed
+            #     ),
+            #     self.theta_filter.calculate(
+            #         -self.sammi_curve(self.primary.getRightX()) * self.top_omega
+            #     ),
+            #     not self.primary.getL1Button(), # temporary
+            #     self.period,
+            # )
+            self.drive_control.drive_manual(
                 self.x_filter.calculate(
                     -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
                 ),
@@ -276,9 +288,18 @@ class MyRobot(magicbot.MagicRobot):
                 self.theta_filter.calculate(
                     -self.sammi_curve(self.primary.getRightX()) * self.top_omega
                 ),
-                not self.primary.getL1Button(), # temporary
+                not self.primary.getL1Button(),  # temporary
                 self.period,
             )
+
+            if self.primary.getCircleButton():
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L1, ClawAngle.TROUGH, self.period
+                )
+            if self.primary.getXButton():
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L2, ClawAngle.TROUGH, self.period
+                )
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
@@ -305,7 +326,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
 
             self.arm_control.set_wheel_voltage(
-                (6.0 * applyDeadband(self.secondary.getLeftY(), 0.1) * 0.4 )
+                (6.0 * applyDeadband(self.secondary.getLeftY(), 0.1) * 0.4)
             )
 
             # if self.secondary.getLeftBumper():

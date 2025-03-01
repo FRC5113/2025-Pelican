@@ -1,5 +1,5 @@
 from wpilib import DigitalInput
-from wpimath import units,applyDeadband
+from wpimath import units, applyDeadband
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state
 
@@ -46,6 +46,9 @@ class ArmControl(StateMachine):
     def set_wheel_voltage(self, voltage: units.volts):
         self.wheel_voltage = voltage
 
+    def at_setpoint(self) -> bool:
+        return self.elevator.at_setpoint() and self.claw.at_setpoint()
+
     """
     STATES
     """
@@ -85,11 +88,13 @@ class ArmControl(StateMachine):
             if self.claw.at_setpoint() and self.claw_setpoint >= ClawAngle.SAFE_START:
                 self.next_state("standby")
 
-            #TEMP FIX FOR L4 PLZ FOR THE LOVE OF GOD CHANGE
+            # TEMP FIX FOR L4 PLZ FOR THE LOVE OF GOD CHANGE
             elif self.elevator_setpoint == ElevatorHeight.L4:
-                if applyDeadband(self.claw.get_angle(), 2.0) == self.claw_setpoint and self.claw_setpoint >= ClawAngle.SAFE_START:
+                if (
+                    applyDeadband(self.claw.get_angle(), 2.0) == self.claw_setpoint
+                    and self.claw_setpoint >= ClawAngle.SAFE_START
+                ):
                     self.next_state("standby")
-
 
             else:
                 self.next_state("positioning_claw")

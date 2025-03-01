@@ -216,7 +216,7 @@ class SwerveDrive(Sendable):
                     self.translationX,
                     self.translationY,
                     self.rotationX,
-                    self.pigeon.getRotation2d()+self.pigeon_offset,
+                    self.pigeon.getRotation2d() + self.pigeon_offset,
                 )
                 if self.field_relative
                 else ChassisSpeeds.fromFieldRelativeSpeeds(

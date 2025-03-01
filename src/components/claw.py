@@ -6,10 +6,11 @@ from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 
 from lemonlib.util import Alert, AlertType
+from lemonlib.preference import SmartPreference
 
 
 class ClawAngle(float, Enum):
-    STOWED = 29.0 #for 
+    STOWED = 29.0  # for
     STATION = 30.0
     TROUGH = 100.0
     BRANCH = 115.0
@@ -99,7 +100,8 @@ class Claw:
         return ClawAngle.SAFE_START <= self.get_angle() <= ClawAngle.SAFE_END
 
     def at_setpoint(self) -> bool:
-        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance 
+        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
+
     """
     CONTROL METHODS
     """
