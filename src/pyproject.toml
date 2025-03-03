@@ -20,7 +20,7 @@ robotpy_extras = [
     # "phoenix5",
      "phoenix6",
     # "playingwithfusion",
-    # "rev",
+     "rev",
     # "romi",
     # "sim",
     # "xrp",
@@ -28,5 +28,5 @@ robotpy_extras = [
 
 # Other pip packages to install
 requires = [
-    "photonlibpy==2025.1.1","robotpy-rev==2025.0.2"
+    "photonlibpy==2025.1.1"
 ]

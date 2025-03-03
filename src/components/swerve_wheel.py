@@ -1,7 +1,8 @@
 import math
 
 from phoenix6 import controls
-from phoenix6.configs import TalonFXConfiguration
+from phoenix6.units import ampere
+from phoenix6.configs import TalonFXConfiguration,CurrentLimitsConfigs
 from phoenix6.hardware import CANcoder, TalonFX
 from phoenix6.signals import NeutralModeValue
 from wpimath import units
@@ -21,6 +22,9 @@ class SwerveWheel:
     direction_profile: SmartProfile
     cancoder: CANcoder
 
+    direction_amps: units.amperes = 60
+    speed_amps: units.amperes = 40
+
     """Module must be explicitly told to move (via setDesiredState) each
     loop, otherwise it defaults to stopped for safety.
     """
@@ -38,9 +42,15 @@ class SwerveWheel:
 
         # apply configs
         self.motor_configs = TalonFXConfiguration()
+        self.speed_current_limit_configs = CurrentLimitsConfigs()
+        self.direction_current_limit_configs = CurrentLimitsConfigs()
+        self.direction_current_limit_configs.supply_current_limit = 60
+        self.speed_current_limit_configs.supply_current_limit = 40
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.COAST
         self.direction_motor.configurator.apply(self.motor_configs)
+        self.direction_motor.configurator.apply(self.direction_current_limit_configs)
         self.speed_motor.configurator.apply(self.motor_configs)
+        self.speed_motor.configurator.apply(self.speed_current_limit_configs)
 
         self.desired_state = None
 
@@ -89,14 +99,17 @@ class SwerveWheel:
     """
 
     def execute(self) -> None:
-        if self.stopped:
-            self.speed_motor.set_control(controls.static_brake.StaticBrake())
-            self.direction_motor.set_control(controls.coast_out.CoastOut())
-            return
-
         encoder_rotation = Rotation2d(
             self.cancoder.get_absolute_position().value * 2 * math.pi
         )
+
+        if self.stopped:
+            self.speed_motor.set_control(controls.static_brake.StaticBrake())
+            self.direction_motor.set_control(controls.coast_out.CoastOut())
+            self.speed_controller.calculate(0.0, 0.0)
+            self.direction_controller.calculate(encoder_rotation.radians(), encoder_rotation.radians())
+            return
+        
         state = self.desired_state
         state.optimize(encoder_rotation)
         # scale speed while turning

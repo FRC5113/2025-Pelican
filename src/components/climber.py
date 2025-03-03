@@ -50,8 +50,8 @@ class Climber:
 
     def execute(self):
         # assumes a positive voltage creates an increase in angle
-        if (
-            self.get_position() < self.min_position and self.motor_speed < 0
-        ):  # or (self.get_position() > self.max_position and self.motor_speed > 0):
-            self.motor_speed = 0
+        # if (
+        #     self.get_position() < self.min_position and self.motor_speed < 0
+        # ):  # or (self.get_position() > self.max_position and self.motor_speed > 0):
+        #     self.motor_speed = 0
         self.motor.set(self.motor_speed)

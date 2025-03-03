@@ -67,10 +67,12 @@ class DriveControl(StateMachine):
             self.field_relative,
             self.period,
         )
+        if self.remove_algae:
+            self.next_state("remove_algae_state")
         if DriverStation.isAutonomousEnabled():
             self.next_state("auto")
 
-    @state
+    @timed_state(duration=4)
     def remove_algae_state(self):
         self.arm_control.set(self.elevator_setpoint, self.claw_setpoint)
         if self.arm_control.at_setpoint():

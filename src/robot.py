@@ -278,6 +278,7 @@ class MyRobot(magicbot.MagicRobot):
             #     not self.primary.getL1Button(), # temporary
             #     self.period,
             # )
+            self.drive_control.engage()
             self.drive_control.drive_manual(
                 self.x_filter.calculate(
                     -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
@@ -288,15 +289,15 @@ class MyRobot(magicbot.MagicRobot):
                 self.theta_filter.calculate(
                     -self.sammi_curve(self.primary.getRightX()) * self.top_omega
                 ),
-                not self.primary.getL1Button(),  # temporary
+                not self.primary.getCreateButton(),  # temporary
                 self.period,
             )
 
-            if self.primary.getCircleButton():
+            if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L1, ClawAngle.TROUGH, self.period
                 )
-            if self.primary.getXButton():
+            if self.primary.getPOV() == 180:
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L2, ClawAngle.TROUGH, self.period
                 )
@@ -338,10 +339,10 @@ class MyRobot(magicbot.MagicRobot):
             CLIMBER
             """
 
-            if self.secondary.getLeftTriggerAxis() > 0.05:
-                self.climber.set_speed(self.secondary.getLeftTriggerAxis())
-            if self.secondary.getRightTriggerAxis() > 0.05:
-                self.climber.set_speed(-self.secondary.getRightTriggerAxis())
+            if self.primary.getTriangleButton():
+                self.climber.set_speed(1)
+            if self.primary.getCrossButton():
+                self.climber.set_speed(-1)
 
     @feedback
     def get_voltage(self) -> units.volts:
