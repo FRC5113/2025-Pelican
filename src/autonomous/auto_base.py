@@ -4,7 +4,6 @@ import choreo
 import wpilib
 from choreo.trajectory import SwerveSample
 from magicbot import AutonomousStateMachine, state, timed_state
-from wpilib import RobotBase
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
@@ -14,7 +13,7 @@ from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
 from components.odometry import Odometry
 from components.claw import Claw,ClawAngle
-from components.elevator import Elevator,ElevatorHeight
+from components.elevator import ElevatorHeight
 
 
 x_controller = PIDController(1.0, 0.0, 0.0)
@@ -46,16 +45,16 @@ class AutoBase(AutonomousStateMachine):
                 self.trajectories.append(choreo.load_swerve_trajectory(trajectory_name))
                 if self.starting_pose is None:
                     self.starting_pose = self.get_starting_pose()
-            except ValueError:
-                pass
+            except ValueError as e:
+                wpilib.SmartDashboard.putString("AutoBase Error", f"Failed to load trajectory {trajectory_name}: {e}")
 
     def setup(self) -> None:
         pass
 
     def on_enable(self) -> None:
-        starting_pose = self.get_starting_pose()
-        if RobotBase.isSimulation() and starting_pose is not None:
-            self.odometry.set_pose(starting_pose)
+        #starting_pose = self.get_starting_pose()
+        # if RobotBase.isSimulation() and starting_pose is not None:
+        #     self.odometry.set_pose(starting_pose)
         self.current_leg = -1
 
         super().on_enable()
@@ -76,17 +75,17 @@ class AutoBase(AutonomousStateMachine):
             self.done()
             return
 
-        final_pose = self.trajectories[self.current_trajectory_index].get_final_pose(self.is_red)
+        final_pose = self.trajectories[self.current_leg].get_final_pose(self.is_red)
         if final_pose is None:
             self.done()
             return
 
-        sample = self.trajectories[self.current_trajectory_index].sample_at(state_tm, self.is_red)
+        sample = self.trajectories[self.current_leg].sample_at(state_tm, self.is_red)
         if sample is not None:
             self.follow_trajectory(sample)
 
     def follow_trajectory(self, sample: SwerveSample):
-        pose = self.odometry.get_pose()
+        pose = self.swerve_drive.get_estimated_pose()
 
         speeds = ChassisSpeeds(
             sample.vx + x_controller.calculate(pose.X(), sample.x),

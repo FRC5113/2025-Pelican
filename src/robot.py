@@ -5,7 +5,7 @@ import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation
+from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation,RobotBase
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d
@@ -235,8 +235,12 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes
-        self.primary = LemonInput(type="PS5")
-        self.secondary = LemonInput(type="Xbox")
+        if RobotBase.isSimulation():
+            self.primary = LemonInput(0)
+            self.secondary = LemonInput(1)
+        else:
+            self.primary = LemonInput(type="PS5")
+            self.secondary = LemonInput(type="Xbox")
 
         self.x_filter = SlewRateLimiter(self.slew_rate)
         self.y_filter = SlewRateLimiter(self.slew_rate)

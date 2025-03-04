@@ -1,7 +1,7 @@
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
-from components.claw import Claw
-from components.elevator import Elevator
+from components.claw import Claw, ClawAngle
+from components.elevator import Elevator, ElevatorHeight
 import math
 
 
@@ -17,6 +17,7 @@ from wpimath.kinematics import (
 )
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state, timed_state
+
 
 
 class DriveControl(StateMachine):
@@ -82,6 +83,7 @@ class DriveControl(StateMachine):
     def remove_algae_state(self):
         self.arm_control.set(self.elevator_setpoint, self.claw_setpoint)
         if self.arm_control.at_setpoint():
+            self.arm_control.set(ElevatorHeight.L1, ClawAngle.STOWED)
             self.swerve_drive.drive(-1, 0, 0, True, self.period)
             self.next_state("free")
 
