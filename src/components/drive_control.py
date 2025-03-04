@@ -24,6 +24,7 @@ class DriveControl(StateMachine):
     pigeon: Pigeon2
     arm_control: ArmControl
     remove_algae = will_reset_to(False)
+    period: units.seconds
 
     def setup(self):
         self.engage()
@@ -35,13 +36,11 @@ class DriveControl(StateMachine):
         translationY: units.meters_per_second,
         rotationX: units.radians_per_second,
         field_relative: bool,
-        period: units.seconds,
     ):
         if self.current_state == "free":
             self.translationX = translationX
             self.translationY = translationY
             self.rotationX = rotationX
-            self.period = period
             self.field_relative = field_relative
 
     def request_remove_algae(
@@ -55,8 +54,15 @@ class DriveControl(StateMachine):
         self.period = period
         self.remove_algae = True
 
-    def drive_auto():
-        return
+    def drive_auto(self,
+        translationX: units.meters_per_second,
+        translationY: units.meters_per_second,
+        rotationX: units.radians_per_second):
+        self.translationX = translationX
+        self.translationY = translationY
+        self.rotationX = rotationX
+        self.field_relative = True
+        
 
     @state(first=True)
     def free(self):
@@ -81,5 +87,12 @@ class DriveControl(StateMachine):
 
     @state
     def auto(self):
+        self.swerve_drive.drive(
+            self.translationX,
+            self.translationY,
+            self.rotationX,
+            self.field_relative,
+            self.period,
+        )
         if DriverStation.isTeleop():
             self.next_state("free")

@@ -22,8 +22,8 @@ class SwerveWheel:
     direction_profile: SmartProfile
     cancoder: CANcoder
 
-    direction_amps: units.amperes = 60
-    speed_amps: units.amperes = 40
+    direction_amps: units.amperes
+    speed_amps: units.amperes
 
     """Module must be explicitly told to move (via setDesiredState) each
     loop, otherwise it defaults to stopped for safety.
@@ -44,8 +44,8 @@ class SwerveWheel:
         self.motor_configs = TalonFXConfiguration()
         self.speed_current_limit_configs = CurrentLimitsConfigs()
         self.direction_current_limit_configs = CurrentLimitsConfigs()
-        self.direction_current_limit_configs.supply_current_limit = 60
-        self.speed_current_limit_configs.supply_current_limit = 40
+        self.direction_current_limit_configs.supply_current_limit = self.direction_amps
+        self.speed_current_limit_configs.supply_current_limit = self.speed_amps
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.COAST
         self.direction_motor.configurator.apply(self.motor_configs)
         self.direction_motor.configurator.apply(self.direction_current_limit_configs)
@@ -61,6 +61,8 @@ class SwerveWheel:
         self.direction_controller = self.direction_profile.create_turret_controller(
             f"{self.direction_motor.device_id}_direction"
         )
+
+
 
     """
     INFORMATIONAL METHODS
