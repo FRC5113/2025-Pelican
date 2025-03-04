@@ -4,10 +4,13 @@ from phoenix6.hardware.talon_fx import TalonFX
 from rev import SparkMaxSim, SparkRelativeEncoderSim, SparkMax, SparkAbsoluteEncoderSim
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
+from pyfrc.physics.visionsim import VisionSim, VisionSimTarget
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
 from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from robot import MyRobot
+
+from lemonlib.vision import get_vision_sim_targets
 
 
 class FalconSim:
@@ -91,6 +94,23 @@ class PhysicsEngine:
         # Put Mechanism to SmartDashboard
         SmartDashboard.putData("Elevator Sim", self.mech2d)
 
+        # Vision Simulation
+        self.vision_sim = VisionSim(
+            # get_vision_sim_targets(robot.field_layout),
+            [
+                # right
+                VisionSimTarget(15, 13, 250, 0),
+                # middle
+                VisionSimTarget(16.5, 15.5, 295, 65),
+                # left
+                VisionSimTarget(15, 18, 0, 110),
+            ],
+            61.0,
+            1.5,
+            15,
+            physics_controller=self.physics_controller,
+        )
+
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)
@@ -137,3 +157,10 @@ class PhysicsEngine:
 
             # Update the Elevator length based on the simulated elevator height
             self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())
+
+            # Simulate Vision
+            data = self.vision_sim.compute(
+                now, pose.x, pose.y, pose.rotation().degrees()
+            )
+            if data is not None:
+                SmartDashboard.putNumberArray("target", data[0][2:])

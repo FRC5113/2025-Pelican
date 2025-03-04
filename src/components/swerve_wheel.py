@@ -2,7 +2,7 @@ import math
 
 from phoenix6 import controls
 from phoenix6.units import ampere
-from phoenix6.configs import TalonFXConfiguration,CurrentLimitsConfigs
+from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs
 from phoenix6.hardware import CANcoder, TalonFX
 from phoenix6.signals import NeutralModeValue
 from wpimath import units
@@ -107,9 +107,11 @@ class SwerveWheel:
             self.speed_motor.set_control(controls.static_brake.StaticBrake())
             self.direction_motor.set_control(controls.coast_out.CoastOut())
             self.speed_controller.calculate(0.0, 0.0)
-            self.direction_controller.calculate(encoder_rotation.radians(), encoder_rotation.radians())
+            self.direction_controller.calculate(
+                encoder_rotation.radians(), encoder_rotation.radians()
+            )
             return
-        
+
         state = self.desired_state
         state.optimize(encoder_rotation)
         # scale speed while turning

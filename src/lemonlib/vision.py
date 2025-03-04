@@ -1,7 +1,26 @@
 from photonlibpy.photonCamera import PhotonCamera
 from robotpy_apriltag import AprilTagFieldLayout
 from wpimath.geometry import Pose2d, Pose3d, Transform3d
-import math
+from wpimath import units
+from pyfrc.physics.visionsim import VisionSimTarget
+
+
+def get_vision_sim_targets(
+    field_layout: AprilTagFieldLayout, max_viewing_angle: units.degrees = 60.0
+) -> list[VisionSimTarget]:
+    tags = field_layout.getTags()
+    targets = []
+    for tag in tags:
+        pose = tag.pose
+        targets.append(
+            VisionSimTarget(
+                pose.X(),
+                pose.Y(),
+                (-pose.rotation().z_degrees - max_viewing_angle) % 360,
+                (-pose.rotation().z_degrees + max_viewing_angle) % 360,
+            )
+        )
+    return targets
 
 
 class LemonCamera(PhotonCamera):

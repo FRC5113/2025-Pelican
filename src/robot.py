@@ -4,20 +4,11 @@ import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import (
-    RobotController,
-    DigitalInput,
-    DutyCycleEncoder,
-    SmartDashboard,
-    DriverStation,
-    XboxController,
-    PS5Controller,
-)
-
+from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d
-
+from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
 
@@ -223,7 +214,7 @@ class MyRobot(magicbot.MagicRobot):
         )
 
         # odometry
-        # self.camera = PhotonCamera("Global_Shutter_Camera")
+        self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d()
         self.field_layout = AprilTagFieldLayout.loadField(
             AprilTagField.k2025ReefscapeAndyMark
