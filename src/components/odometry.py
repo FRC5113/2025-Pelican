@@ -8,13 +8,12 @@ from components.swerve_drive import SwerveDrive
 
 
 class Odometry:
-    # camera: PhotonCamera
+    camera: PhotonCamera
     robot_to_camera: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive
 
     def setup(self):
-        return
         self.camera_pose_estimator = PhotonPoseEstimator(
             self.field_layout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -25,7 +24,6 @@ class Odometry:
         SmartDashboard.putData("Estimated Field", self.estimated_field)
 
     def execute(self):
-        return
         # may need to tweak timestamp to match system time
         camera_estimator_result = self.camera_pose_estimator.update()
         if camera_estimator_result is not None:

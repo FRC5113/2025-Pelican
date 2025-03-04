@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 
 import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
@@ -216,9 +217,12 @@ class MyRobot(magicbot.MagicRobot):
         # odometry
         self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d()
-        self.field_layout = AprilTagFieldLayout.loadField(
-            AprilTagField.k2025ReefscapeAndyMark
+        self.field_layout = AprilTagFieldLayout(
+            str(Path(__file__).parent.resolve() / "test_reef.json")
         )
+        # self.field_layout = AprilTagFieldLayout.loadField(
+        #     AprilTagField.k2025ReefscapeAndyMark
+        # )
 
         # alerts
         AlertManager(self.logger)
