@@ -12,6 +12,7 @@ from lemonlib.util import Alert, AlertType
 
 class ElevatorHeight(float, Enum):
     # values likely inaccurate
+    STATION = 0.04
     L1 = 0.0
     L2 = 0.15
     L3 = 0.36

@@ -11,7 +11,7 @@ from lemonlib.preference import SmartPreference
 
 class ClawAngle(float, Enum):
     STOWED = 29.0  # for
-    STATION = 30.0
+    STATION = 21.0
     TROUGH = 100.0
     BRANCH = 115.0
     SAFE_START = 45.0  # has to be adusted just an estimate

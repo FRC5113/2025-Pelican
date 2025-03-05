@@ -88,7 +88,10 @@ class DriveControl(StateMachine):
         self.swerve_drive.set_desired_pose(self.desired_pose)
 
     @state
-    def auto(self):
+    def run_auton_routine(self):
+        # used to drive the bot and used here to keep driving in one place
+        # main controls are in the auto_base.py like intake eject etc
+    
         self.swerve_drive.drive(
             self.translationX,
             self.translationY,

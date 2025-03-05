@@ -80,7 +80,10 @@ class ArmControl(StateMachine):
             self.drive_scalar = 1.0
         else:
             self.drive_scalar = 0.5
-        self.elevator.set_voltage(0.0)
+        if self.elevator_setpoint < 0.1 and self.elevator.get_height() < 0.1:
+            self.elevator.set_target_height(self.elevator_setpoint)
+        else:
+            self.elevator.set_voltage(0.0)
         self.claw.set_target_angle(self.claw_setpoint)
         if self.elevator.at_setpoint() and self.claw.at_setpoint():
             self.next_state("standby")

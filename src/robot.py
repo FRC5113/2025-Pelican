@@ -14,7 +14,7 @@ from wpilib import (
 )
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d, Pose2d, Translation2d, Rotation2d
+from wpimath.geometry import Transform3d, Pose2d, Translation2d, Rotation2d, Rotation3d
 from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
@@ -246,7 +246,7 @@ class MyRobot(magicbot.MagicRobot):
 
         # odometry
         self.camera = PhotonCamera("USB_Camera")
-        self.robot_to_camera = Transform3d()
+        self.robot_to_camera = Transform3d(0.0,0.0,0.0,Rotation3d(0.0,0.0,math.pi))
         self.field_layout = AprilTagFieldLayout(
             str(Path(__file__).parent.resolve() / "test_reef.json")
         )
@@ -320,17 +320,19 @@ class MyRobot(magicbot.MagicRobot):
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
-            if self.primary.getCircleButton():
-                self.drive_control.request_pose(Pose2d(Translation2d(0.0,0.0), Rotation2d.fromDegrees(90)))
+            if self.primary.getPOV() == 90:
+                self.drive_control.request_pose(Pose2d(Translation2d(-0.33, -0.10), Rotation2d()))
+            if self.primary.getPOV() == 270:
+                self.drive_control.request_pose(Pose2d(Translation2d(-0.33, 0.18), Rotation2d()))
 
-            if self.primary.getPOV() == 0:
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L1, ClawAngle.TROUGH, self.period
-                )
-            if self.primary.getPOV() == 180:
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L2, ClawAngle.TROUGH, self.period
-                )
+            # if self.primary.getPOV() == 0:
+            #     self.drive_control.request_remove_algae(
+            #         ElevatorHeight.L1, ClawAngle.TROUGH, self.period
+            #     )
+            # if self.primary.getPOV() == 180:
+            #     self.drive_control.request_remove_algae(
+            #         ElevatorHeight.L2, ClawAngle.TROUGH, self.period
+            #     )
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
@@ -354,11 +356,17 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getYButton():
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
             if self.secondary.getStartButton():
-                self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
+                self.arm_control.set(ElevatorHeight.STATION, ClawAngle.STATION)
 
-            self.arm_control.set_wheel_voltage(
-                (6.0 * applyDeadband(self.secondary.getLeftY(), 0.1) * 0.4)
-            )
+            if self.secondary.getLeftTriggerAxis() > 0.9:
+                self.arm_control.set_wheel_voltage(
+                    6.0 * applyDeadband(self.secondary.getLeftTriggerAxis(), 0.1)
+                )
+            if self.secondary.getRightTriggerAxis() > 0.9:
+                self.arm_control.set_wheel_voltage(
+                    6.0 * applyDeadband(-self.secondary.getRightTriggerAxis(), 0.1)
+                )
+            
 
             # if self.secondary.getLeftBumper():
             #     self.claw.set_hinge_voltage(-1)
