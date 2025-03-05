@@ -247,12 +247,12 @@ class MyRobot(magicbot.MagicRobot):
         # odometry
         self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d()
-        # self.field_layout = AprilTagFieldLayout(
-        #     str(Path(__file__).parent.resolve() / "test_reef.json")
-        # )
-        self.field_layout = AprilTagFieldLayout.loadField(
-            AprilTagField.k2025ReefscapeAndyMark
+        self.field_layout = AprilTagFieldLayout(
+            str(Path(__file__).parent.resolve() / "test_reef.json")
         )
+        # self.field_layout = AprilTagFieldLayout.loadField(
+        #     AprilTagField.k2025ReefscapeAndyMark
+        # )
 
         # alerts
         AlertManager(self.logger)
@@ -321,7 +321,7 @@ class MyRobot(magicbot.MagicRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
             if self.primary.getCircleButton():
-                self.drive_control.request_pose(Pose2d(Translation2d(), Rotation2d()))
+                self.drive_control.request_pose(Pose2d(Translation2d(0.0,0.0), Rotation2d.fromDegrees(90)))
 
             if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(

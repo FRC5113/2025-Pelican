@@ -214,7 +214,7 @@ class SwerveDrive(Sendable):
     def execute(self) -> None:
         self.sendAdvantageScopeData()
         self.pose_estimator.update(
-            Rotation2d(self.pigeon.get_yaw().value / 180 * math.pi),
+            self.pigeon.getRotation2d(),
             (
                 self.front_left.getPosition(),
                 self.front_right.getPosition(),
@@ -225,7 +225,7 @@ class SwerveDrive(Sendable):
 
         if self.has_desired_pose:
             self.chassis_speeds = self.holonomic_controller.calculate(
-                self.get_estimated_pose(), self.desired_pose, 0.0, Rotation2d()
+                self.get_estimated_pose(), self.desired_pose, 0.0, Rotation2d.fromDegrees(90)
             )
         else:
             if self.translationX == self.translationY == self.rotationX == 0:
