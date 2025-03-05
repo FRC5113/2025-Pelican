@@ -44,8 +44,8 @@ class SwerveWheel:
         self.motor_configs = TalonFXConfiguration()
         self.speed_current_limit_configs = CurrentLimitsConfigs()
         self.direction_current_limit_configs = CurrentLimitsConfigs()
-        self.direction_current_limit_configs.supply_current_limit = self.direction_amps
-        self.speed_current_limit_configs.supply_current_limit = self.speed_amps
+        self.direction_current_limit_configs.stator_current_limit = self.direction_amps
+        self.speed_current_limit_configs.stator_current_limit = self.speed_amps
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.COAST
         self.direction_motor.configurator.apply(self.motor_configs)
         self.direction_motor.configurator.apply(self.direction_current_limit_configs)

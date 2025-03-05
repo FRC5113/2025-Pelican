@@ -88,8 +88,8 @@ class MyRobot(magicbot.MagicRobot):
         self.drive_gear_ratio = 6.75
         self.wheel_radius: units.meters = 0.0508
         self.max_speed: units.meters_per_second = 4.7
-        self.direction_amps: units.amperes = 60.0
-        self.speed_amps: units.amperes = 40.0
+        self.direction_amps: units.amperes = 40.0
+        self.speed_amps: units.amperes = 60.0
 
         # profiles
         self.speed_profile = SmartProfile(
