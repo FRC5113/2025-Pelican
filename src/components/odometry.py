@@ -1,5 +1,5 @@
 from wpilib import Field2d, SmartDashboard, Timer
-from wpimath.geometry import Transform3d
+from wpimath.geometry import Transform3d, Pose2d
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 from robotpy_apriltag import AprilTagFieldLayout
@@ -28,7 +28,7 @@ class Odometry:
         camera_estimator_result = self.camera_pose_estimator.update()
         if camera_estimator_result is not None:
             self.swerve_drive.add_vision_measurement(
-                camera_estimator_result.estimatedPose,
+                camera_estimator_result.estimatedPose.toPose2d(),
                 self.camera.getLatestResult().getTimestampSeconds(),
             )
         self.estimated_field.setRobotPose(self.swerve_drive.get_estimated_pose())

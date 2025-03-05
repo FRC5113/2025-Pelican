@@ -3,6 +3,7 @@ import math
 
 from wpilib import SmartDashboard
 from wpimath import units
+from wpimath.controller import HolonomicDriveController
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import (
@@ -17,6 +18,7 @@ from components.swerve_wheel import SwerveWheel
 from magicbot import will_reset_to
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
+from lemonlib.preference import SmartProfile
 
 
 class SwerveDrive(Sendable):
@@ -30,11 +32,14 @@ class SwerveDrive(Sendable):
     rear_left: SwerveWheel
     rear_right: SwerveWheel
     pigeon: Pigeon2
+    translation_profile: SmartProfile
+    rotation_profile: SmartProfile
 
     translationX = will_reset_to(0)
     translationY = will_reset_to(0)
     rotationX = will_reset_to(0)
     field_relative = will_reset_to(True)
+    has_desired_pose = will_reset_to(False)
 
     def __init__(self) -> None:
         Sendable.__init__(self)
@@ -76,6 +81,8 @@ class SwerveDrive(Sendable):
             Pose2d(),
         )
         self.period = 0.02
+
+        self.desired_pose = Pose2d()
 
         self.pigeon_offset = Rotation2d()
         self.pigeon_alert = Alert(
@@ -132,6 +139,14 @@ class SwerveDrive(Sendable):
         )
 
     def on_enable(self):
+        self.x_controller = self.translation_profile.create_wpi_pid_controller()
+        self.y_controller = self.translation_profile.create_wpi_pid_controller()
+        self.theta_controller = (
+            self.rotation_profile.create_wpi_profiled_pid_controller_radians()
+        )
+        self.holonomic_controller = HolonomicDriveController(
+            self.x_controller, self.y_controller, self.theta_controller
+        )
         self.pigeon.reset()
 
     """
@@ -159,11 +174,15 @@ class SwerveDrive(Sendable):
         self.period = period
         self.field_relative = field_relative
 
+    def set_desired_pose(self, pose: Pose2d):
+        self.desired_pose = pose
+        self.has_desired_pose = True
+
     def reset_gyro(self) -> None:
         self.pigeon.reset()
         self.pigeon_alert.enable()
 
-    def add_vision_measurement(self, pose, timestamp):
+    def add_vision_measurement(self, pose: Pose2d, timestamp: units.seconds):
         self.pose_estimator.addVisionMeasurement(pose, timestamp)
 
     def set_pigeon_offset(self, offset: units.degrees):
@@ -204,30 +223,35 @@ class SwerveDrive(Sendable):
             ),
         )
 
-        if self.translationX == self.translationY == self.rotationX == 0:
-            # below line is only to keep NT updated
-            self.swerve_module_states = self.still_states
-            self.chassis_speeds = ChassisSpeeds()
-            return
+        if self.has_desired_pose:
+            self.chassis_speeds = self.holonomic_controller.calculate(
+                self.get_estimated_pose(), self.desired_pose, 0.0, Rotation2d()
+            )
+        else:
+            if self.translationX == self.translationY == self.rotationX == 0:
+                # below line is only to keep NT updated
+                self.swerve_module_states = self.still_states
+                self.chassis_speeds = ChassisSpeeds()
+                return
+            self.chassis_speeds = ChassisSpeeds.discretize(
+                (
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        self.translationX,
+                        self.translationY,
+                        self.rotationX,
+                        self.pigeon.getRotation2d() + self.pigeon_offset,
+                    )
+                    if self.field_relative
+                    else ChassisSpeeds.fromFieldRelativeSpeeds(
+                        self.translationX,
+                        self.translationY,
+                        self.rotationX,
+                        Rotation2d(),
+                    )
+                ),
+                self.period,
+            )
 
-        self.chassis_speeds = ChassisSpeeds.discretize(
-            (
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                    self.translationX,
-                    self.translationY,
-                    self.rotationX,
-                    self.pigeon.getRotation2d() + self.pigeon_offset,
-                )
-                if self.field_relative
-                else ChassisSpeeds.fromFieldRelativeSpeeds(
-                    self.translationX,
-                    self.translationY,
-                    self.rotationX,
-                    Rotation2d(),
-                )
-            ),
-            self.period,
-        )
         self.swerve_module_states = self.kinematics.toSwerveModuleStates(
             self.chassis_speeds
         )

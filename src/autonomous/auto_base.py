@@ -12,7 +12,7 @@ from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
 from components.odometry import Odometry
-from components.claw import Claw,ClawAngle
+from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight
 
 
@@ -29,7 +29,9 @@ class AutoBase(AutonomousStateMachine):
     arm_control: ArmControl
     odometry: Odometry
     claw: Claw
-    is_red: bool = wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
+    is_red: bool = (
+        wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
+    )
 
     DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -46,13 +48,16 @@ class AutoBase(AutonomousStateMachine):
                 if self.starting_pose is None:
                     self.starting_pose = self.get_starting_pose()
             except ValueError as e:
-                wpilib.SmartDashboard.putString("AutoBase Error", f"Failed to load trajectory {trajectory_name}: {e}")
+                wpilib.SmartDashboard.putString(
+                    "AutoBase Error",
+                    f"Failed to load trajectory {trajectory_name}: {e}",
+                )
 
     def setup(self) -> None:
         pass
 
     def on_enable(self) -> None:
-        #starting_pose = self.get_starting_pose()
+        # starting_pose = self.get_starting_pose()
         # if RobotBase.isSimulation() and starting_pose is not None:
         #     self.odometry.set_pose(starting_pose)
         self.current_leg = -1
@@ -90,7 +95,7 @@ class AutoBase(AutonomousStateMachine):
         speeds = ChassisSpeeds(
             sample.vx + x_controller.calculate(pose.X(), sample.x),
             sample.vy + y_controller.calculate(pose.Y(), sample.y),
-            sample.omega
+            sample.omega,
         )
 
         self.drive_control.drive_auto(speeds.vx, speeds.vy, speeds.omega)
@@ -98,7 +103,7 @@ class AutoBase(AutonomousStateMachine):
     @timed_state(duration=2)
     def intaking_coral(self) -> None:
         if self.current_leg == 0:
-            self.arm_control.set(ElevatorHeight.L1,ClawAngle.STATION)
+            self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
             if self.arm_control.at_setpoint():
                 self.arm_control.set_wheel_voltage(-1)
         if self.claw.get_intake_limit():
@@ -106,30 +111,32 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=2)
     def level_one(self) -> None:
-        self.arm_control.set(ElevatorHeight.L1,ClawAngle.TROUGH)
+        self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
             self.next_state("tracking_trajectory")
+
     @timed_state(duration=2)
     def level_two(self) -> None:
-        self.arm_control.set(ElevatorHeight.L2,ClawAngle.BRANCH)
+        self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
             self.next_state("tracking_trajectory")
+
     @timed_state(duration=2)
     def level_three(self) -> None:
-        self.arm_control.set(ElevatorHeight.L3,ClawAngle.BRANCH)
+        self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
             self.next_state("tracking_trajectory")
+
     @timed_state(duration=2)
     def level_four(self) -> None:
-        self.arm_control.set(ElevatorHeight.L4,ClawAngle.BRANCH)
+        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
             self.next_state("tracking_trajectory")
-    

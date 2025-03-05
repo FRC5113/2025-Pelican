@@ -23,6 +23,10 @@ class ArmControl(StateMachine):
     wheel_voltage = will_reset_to(0)
     wheel_twist = SmartPreference(0.2)
 
+    """
+    INITIALIZATION METHODS
+    """
+
     def setup(self):
         self.engage()
         self.unhomed_alert = Alert(
@@ -36,8 +40,19 @@ class ArmControl(StateMachine):
     def on_enable(self):
         self.unhomed_alert.enable()
 
+    """
+    INFORMATIONAL METHODS
+    """
+
     def get_drive_scalar(self) -> float:
         return self.drive_scalar
+
+    def at_setpoint(self) -> bool:
+        return self.elevator.at_setpoint() and self.claw.at_setpoint()
+
+    """
+    CONTROL METHODS
+    """
 
     def set(self, elevator_setpoint: units.meters, claw_setpoint: units.degrees):
         self.elevator_setpoint = elevator_setpoint
@@ -45,9 +60,6 @@ class ArmControl(StateMachine):
 
     def set_wheel_voltage(self, voltage: units.volts):
         self.wheel_voltage = voltage
-
-    def at_setpoint(self) -> bool:
-        return self.elevator.at_setpoint() and self.claw.at_setpoint()
 
     """
     STATES

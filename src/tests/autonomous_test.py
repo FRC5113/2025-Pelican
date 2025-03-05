@@ -5,6 +5,7 @@ from robotpy_ext.autonomous.selector_tests import (  # type: ignore[import-untyp
 )
 from wpilib.simulation import DriverStationSim
 
+
 @pytest.mark.parametrize("alliance", ["Red", "Blue"])
 def test_all_autonomous(control, alliance):
     station = getattr(hal.AllianceStationID, f"k{alliance}1")

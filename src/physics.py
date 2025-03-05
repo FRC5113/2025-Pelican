@@ -4,13 +4,14 @@ from phoenix6.hardware.talon_fx import TalonFX
 from rev import SparkMaxSim, SparkRelativeEncoderSim, SparkMax, SparkAbsoluteEncoderSim
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
-from pyfrc.physics.visionsim import VisionSim, VisionSimTarget
+from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
+from photonlibpy.simulation.simCameraProperties import SimCameraProperties
+from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
 from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
+from wpimath.geometry import Rotation2d, Transform3d
 from robot import MyRobot
-
-from lemonlib.vision import get_vision_sim_targets
 
 
 class FalconSim:
@@ -95,21 +96,15 @@ class PhysicsEngine:
         SmartDashboard.putData("Elevator Sim", self.mech2d)
 
         # Vision Simulation
-        self.vision_sim = VisionSim(
-            # get_vision_sim_targets(robot.field_layout),
-            [
-                # right
-                VisionSimTarget(15, 13, 250, 0),
-                # middle
-                VisionSimTarget(16.5, 15.5, 295, 65),
-                # left
-                VisionSimTarget(15, 18, 0, 110),
-            ],
-            61.0,
-            1.5,
-            15,
-            physics_controller=self.physics_controller,
-        )
+        self.vision_sim = VisionSystemSim("vision_sim")
+        self.vision_sim.addAprilTags(robot.field_layout)
+        self.camera_props = SimCameraProperties()
+        self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
+        self.camera_props.setFPS(20)
+        self.camera_props.setAvgLatency(0.035)
+        self.camera_props.setLatencyStdDev(0.005)
+        self.camera_sim = PhotonCameraSim(robot.camera, self.camera_props)
+        self.vision_sim.addCamera(self.camera_sim, Transform3d())
 
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
@@ -159,8 +154,4 @@ class PhysicsEngine:
             self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())
 
             # Simulate Vision
-            data = self.vision_sim.compute(
-                now, pose.x, pose.y, pose.rotation().degrees()
-            )
-            if data is not None:
-                SmartDashboard.putNumberArray("target", data[0][2:])
+            self.vision_sim.update(pose)

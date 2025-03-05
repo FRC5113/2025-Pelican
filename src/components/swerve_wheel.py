@@ -62,8 +62,6 @@ class SwerveWheel:
             f"{self.direction_motor.device_id}_direction"
         )
 
-
-
     """
     INFORMATIONAL METHODS
     """

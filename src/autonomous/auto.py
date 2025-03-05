@@ -1,5 +1,6 @@
 from autonomous.auto_base import AutoBase
 
+
 class passline(AutoBase):
     MODE_NAME = "Passline"
 

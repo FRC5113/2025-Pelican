@@ -5,10 +5,16 @@ import wpilib
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotController, DigitalInput, DutyCycleEncoder, DriverStation,RobotBase
+from wpilib import (
+    RobotController,
+    DigitalInput,
+    DutyCycleEncoder,
+    DriverStation,
+    RobotBase,
+)
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d
+from wpimath.geometry import Transform3d, Pose2d, Translation2d, Rotation2d
 from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
@@ -109,6 +115,28 @@ class MyRobot(magicbot.MagicRobot):
                 "kA": 0.0,
                 "kMaxV": 400.0,
                 "kMaxA": 4000.0,
+                "kMinInput": -math.pi,
+                "kMaxInput": math.pi,
+            },
+            not self.low_bandwidth,
+        )
+        self.translation_profile = SmartProfile(
+            "translation",
+            {
+                "kP": 0.0,
+                "kI": 0.0,
+                "kD": 0.0,
+            },
+            not self.low_bandwidth,
+        )
+        self.rotation_profile = SmartProfile(
+            "rotation",
+            {
+                "kP": 0.0,
+                "kI": 0.0,
+                "kD": 0.0,
+                "kMaxV": 10.0,
+                "kMaxA": 100.0,
                 "kMinInput": -math.pi,
                 "kMaxInput": math.pi,
             },
@@ -219,12 +247,12 @@ class MyRobot(magicbot.MagicRobot):
         # odometry
         self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d()
-        self.field_layout = AprilTagFieldLayout(
-            str(Path(__file__).parent.resolve() / "test_reef.json")
-        )
-        # self.field_layout = AprilTagFieldLayout.loadField(
-        #     AprilTagField.k2025ReefscapeAndyMark
+        # self.field_layout = AprilTagFieldLayout(
+        #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
+        self.field_layout = AprilTagFieldLayout.loadField(
+            AprilTagField.k2025ReefscapeAndyMark
+        )
 
         # alerts
         AlertManager(self.logger)
@@ -292,6 +320,8 @@ class MyRobot(magicbot.MagicRobot):
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
+            if self.primary.getCircleButton():
+                self.drive_control.request_pose(Pose2d(Translation2d(), Rotation2d()))
 
             if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(

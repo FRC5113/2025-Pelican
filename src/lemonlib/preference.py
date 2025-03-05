@@ -2,10 +2,11 @@ from wpilib import Preferences, SmartDashboard
 from wpimath.trajectory import TrapezoidProfile
 from wpiutil import Sendable, SendableBuilder
 from wpilib import Preferences, SmartDashboard
-from wpimath.trajectory import TrapezoidProfile
+from wpimath.trajectory import TrapezoidProfile, TrapezoidProfileRadians
 from wpimath.controller import (
     PIDController,
     ProfiledPIDController,
+    ProfiledPIDControllerRadians,
     SimpleMotorFeedforwardMeters,
     ElevatorFeedforward,
     ArmFeedforward,
@@ -134,6 +135,18 @@ class SmartProfile(Sendable):
             self.tuning_enabled if feedback_enabled is None else feedback_enabled,
         )
 
+    def create_wpi_pid_controller(self) -> PIDController:
+        """Creates a wpilib PIDController. Use `create_pid_controller()`
+        instead if possible.
+        Requires kP, kI, kD, [kMinInput, kMaxInput optional]
+        """
+        controller = PIDController(self.gains["kP"], self.gains["kI"], self.gains["kD"])
+        if "kMinInput" in self.gains.keys() and "kMaxInput" in self.gains.keys():
+            controller.enableContinuousInput(
+                self.gains["kMinInput"], self.gains["kMaxInput"]
+            )
+        return controller
+
     @_requires({"kP", "kI", "kD", "kMaxV", "kMaxA"})
     def create_profiled_pid_controller(
         self, key: str, feedback_enabled: bool = None
@@ -156,6 +169,25 @@ class SmartProfile(Sendable):
             (lambda y, r: controller.calculate(y, r)),
             self.tuning_enabled if feedback_enabled is None else feedback_enabled,
         )
+
+    def create_wpi_profiled_pid_controller_radians(
+        self,
+    ) -> ProfiledPIDControllerRadians:
+        """Creates a wpilib ProfiledPIDControllerRadians.
+        Requires kP, kI, kD, kMaxV, kMaxA, kMinInput, kMaxInput
+        """
+        controller = ProfiledPIDControllerRadians(
+            self.gains["kP"],
+            self.gains["kI"],
+            self.gains["kD"],
+            TrapezoidProfileRadians.Constraints(
+                self.gains["kMaxV"], self.gains["kMaxA"]
+            ),
+        )
+        controller.enableContinuousInput(
+            self.gains["kMinInput"], self.gains["kMaxInput"]
+        )
+        return controller
 
     @_requires({"kS", "kV"})
     def create_simple_feedforward(
