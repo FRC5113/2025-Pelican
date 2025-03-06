@@ -122,11 +122,11 @@ class ArmControl(StateMachine):
             self.drive_scalar = 1.0
         else:
             self.drive_scalar = 0.25
-        if self.claw_setpoint != ClawAngle.STOWED:
-            self.claw.set_wheel_voltage(
-                self.wheel_voltage,
-                self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,
-            )
+        #if self.claw_setpoint != ClawAngle.STOWED:
+        self.claw.set_wheel_voltage(
+            self.wheel_voltage,
+            self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,
+        )
         if self.claw.is_safe():
             if not self.elevator.at_setpoint() or not self.claw.at_setpoint():
                 self.next_state("positioning_arm")
