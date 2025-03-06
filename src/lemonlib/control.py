@@ -6,7 +6,7 @@ from lemonlib.util import Alert, AlertType
 from enum import IntEnum
 
 
-class LemonInput(GenericHID, Sendable):
+class LemonInput(GenericHID,Sendable):
     """
     LemonInput is a wrapper class for Xbox and PS5 controllers allowing automatic or manual detection and use in code.
     """
@@ -59,7 +59,7 @@ class LemonInput(GenericHID, Sendable):
                 - "PS5": Forces the controller type to PS5.
         """
         Sendable.__init__(self)
-        super().__init__(port)
+        
 
         if port is None:
             port = 0
@@ -75,6 +75,7 @@ class LemonInput(GenericHID, Sendable):
                 port += 1
             else:
                 print(f"ERROR: No Joystick found matching type: {type}")
+        GenericHID.__init__(self,port)
 
         if type == "auto":
             if RobotBase.isSimulation():

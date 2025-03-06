@@ -14,7 +14,7 @@ class ElevatorHeight(float, Enum):
     # values likely inaccurate
     STATION = 0.04
     L1 = 0.0
-    L2 = 0.15
+    L2 = 0.17
     L3 = 0.36
     L4 = 0.69
 

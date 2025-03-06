@@ -101,7 +101,7 @@ class DriveControl(StateMachine):
         self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
         self.swerve_drive.drive(-1, 0, 0, False, self.period)
         if self.arm_control.at_setpoint():
-            self.next_state("move_back")
+            self.next_state("free")
 
     @state
     def going_to_pose(self):

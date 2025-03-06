@@ -107,7 +107,7 @@ class MyRobot(magicbot.MagicRobot):
         self.direction_profile = SmartProfile(
             "direction",
             {
-                "kP": 18.0,
+                "kP": 3.0,
                 "kI": 0.0,
                 "kD": 0.0,
                 "kS": 0.14,
@@ -123,7 +123,7 @@ class MyRobot(magicbot.MagicRobot):
         self.translation_profile = SmartProfile(
             "translation",
             {
-                "kP": 0.0,
+                "kP": 1.0,
                 "kI": 0.0,
                 "kD": 0.0,
             },
@@ -167,15 +167,15 @@ class MyRobot(magicbot.MagicRobot):
         self.elevator_profile = SmartProfile(
             "elevator",
             {
-                "kP": 0.0,
+                "kP": 50.0,
                 "kI": 0.0,
                 "kD": 0.0,
                 "kS": 0.0,
                 "kV": 0.0,
                 "kA": 0.0,
                 "kG": 0.0,
-                "kMaxV": 10.0,
-                "kMaxA": 100.0,
+                "kMaxV": 2.0,
+                "kMaxA": 20.0,
             },
             not self.low_bandwidth,
         )
@@ -200,15 +200,15 @@ class MyRobot(magicbot.MagicRobot):
         self.claw_profile = SmartProfile(
             "claw",
             {
-                "kP": 0.0,
+                "kP": 0.15,
                 "kI": 0.0,
                 "kD": 0.0,
                 "kS": 0.0,
-                "kV": 1.61,
+                "kV": 0.0,
                 "kA": 0.0,
-                "kG": 0.8,
-                "kMaxV": 0.0,
-                "kMaxA": 0.0,
+                "kG": 0.0,
+                "kMaxV": 150.0,
+                "kMaxA": 500.0,
             },
             not self.low_bandwidth,
         )
@@ -232,12 +232,12 @@ class MyRobot(magicbot.MagicRobot):
 
         self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
-        # self.field_layout = AprilTagFieldLayout(
-        #     str(Path(__file__).parent.resolve() / "test_reef.json")
-        # )
-        self.field_layout = AprilTagFieldLayout.loadField(
-            AprilTagField.k2025ReefscapeAndyMark
+        self.field_layout = AprilTagFieldLayout(
+            str(Path(__file__).parent.resolve() / "test_reef.json")
         )
+        # self.field_layout = AprilTagFieldLayout.loadField(
+        #     AprilTagField.k2025ReefscapeAndyMark
+        # )
 
         """
         MISCELLANEOUS
@@ -336,7 +336,7 @@ class MyRobot(magicbot.MagicRobot):
                 )
             if self.primary.getPOV() == 270:
                 self.drive_control.request_pose(
-                    Pose2d(Translation2d(-0.33, 0.18), Rotation2d())
+                    Pose2d(Translation2d(-0.35, 0.19), Rotation2d())
                 )
 
             if self.primary.getPOV() == 0:

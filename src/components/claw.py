@@ -126,11 +126,11 @@ class Claw:
     """
 
     def execute(self):
-        if self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0:
-            if self.intake_limit.get():
-                self.leds.set_solid_color(tuple[0, 255, 0])
-            else:
-                self.leds.set_solid_color(tuple[255, 0, 0])
+        # if self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0:
+        #     if self.intake_limit.get():
+        #         self.leds.set_solid_color(tuple[0, 255, 0])
+        #     else:
+        #         self.leds.set_solid_color(tuple[255, 0, 0])
 
         if self.intake_limit.get() and (
             self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0
