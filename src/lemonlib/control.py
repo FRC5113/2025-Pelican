@@ -6,10 +6,11 @@ from lemonlib.util import Alert, AlertType
 from enum import IntEnum
 
 
-class LemonInput(GenericHID,Sendable):
+class LemonInput(GenericHID, Sendable):
     """
     LemonInput is a wrapper class for Xbox and PS5 controllers allowing automatic or manual detection and use in code.
     """
+
     class xbox_buttons(IntEnum):
         kLeftTrigger = 2
         kLeftX = 0
@@ -27,6 +28,7 @@ class LemonInput(GenericHID,Sendable):
         kStart = 8
         kX = 3
         kY = 4
+
     class ps5_buttons(IntEnum):
         kLeftTrigger = 3
         kLeftX = 0
@@ -44,9 +46,6 @@ class LemonInput(GenericHID,Sendable):
         kStart = 10
         kX = 1
         kY = 4
-
-
-
 
     def __init__(self, port: int = None, type: str = "auto"):
         """
@@ -81,15 +80,15 @@ class LemonInput(GenericHID,Sendable):
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
                 self.contype = "Xbox"
-                
+
             elif DriverStation.getJoystickIsXbox(port):
                 self.button_map = self.xbox_buttons
                 self.contype = "Xbox"
-                
+
             else:
                 self.button_map = self.ps5_buttons
                 self.contype = "PS5"
-                
+
         elif type == "Xbox":
             if RobotBase.isSimulation():
                 self.button_map = self.xbox_buttons
@@ -97,7 +96,7 @@ class LemonInput(GenericHID,Sendable):
             else:
                 self.button_map = self.xbox_buttons
                 self.contype = "Xbox"
-            
+
         elif type == "PS5":
             if RobotBase.isSimulation():
                 self.button_map = self.ps5_buttons
@@ -105,7 +104,7 @@ class LemonInput(GenericHID,Sendable):
             else:
                 self.button_map = self.ps5_buttons
                 self.contype = "PS5"
- 
+
     def getType(self):
         """Returns the type of controller (Xbox or PS5)."""
         return self.contype
@@ -231,7 +230,7 @@ class LemonInput(GenericHID,Sendable):
 
     def getCreateButton(self):
         """Returns the state of the Create button."""
-        return self.getRawButton(self.button_map.kBack.value)   
+        return self.getRawButton(self.button_map.kBack.value)
 
     def getCrossButton(self):
         """Returns the state of the Cross (X) button."""
@@ -404,50 +403,63 @@ class LemonInput(GenericHID,Sendable):
         )
         builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
         builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)
+
+
 class LemonInputSim(GenericHIDSim):
-    def __init__(self,port:int):
-        GenericHIDSim.__init__(self,port)
+    def __init__(self, port: int):
+        GenericHIDSim.__init__(self, port)
         if LemonInput(port).getType() == "Xbox":
             self.button_map = LemonInput.xbox_buttons
         else:
             self.button_map = LemonInput.ps5_buttons
+
     def setLeftBumper(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kLeftBumper.value, value)
+
     def setRightBumper(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kRightBumper.value, value)
+
     def setStartButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kStart.value, value)
+
     def setBackButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kBack.value, value)
+
     def setAButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kA.value, value)
+
     def setBButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kB.value, value)
+
     def setXButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kX.value, value)
+
     def setYButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kY.value, value)
+
     def setLeftStickButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kLeftStick.value, value)
+
     def setRightStickButton(self, value: bool) -> None:
         return self.setRawButton(self.button_map.kRightStick.value, value)
+
     def setRightTriggerAxis(self, value: float) -> None:
         return self.setRawAxis(self.button_map.kRightTrigger.value, value)
+
     def setLeftTriggerAxis(self, value: float) -> None:
         return self.setRawAxis(self.button_map.kLeftTrigger.value, value)
+
     def setLeftX(self, value: float) -> None:
         return self.setRawAxis(self.button_map.kLeftX.value, value)
+
     def setLeftY(self, value: float) -> None:
         return self.setRawAxis(self.button_map.kLeftY.value, value)
+
     def setRightX(self, value: float) -> None:
-        return self.setRawAxis(self.button_map.kRightX.value, value)    
+        return self.setRawAxis(self.button_map.kRightX.value, value)
+
     def setRightY(self, value: float) -> None:
         return self.setRawAxis(self.button_map.kRightY.value, value)
+
     def setPov(self, value: int) -> None:
         return self.setPOV(value)
-
-
-
-    
-    
-        

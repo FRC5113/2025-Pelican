@@ -51,12 +51,9 @@ class DSInputs:
         self.primary = LemonInputSim(0)
         self.secondary = LemonInputSim(1)
 
-
-
     def fuzz(self) -> None:
         fuzz_gamepad(self.secondary)
         fuzz_gamepad(self.primary)
-
 
 
 def fuzz_gamepad(gamepad: LemonInputSim) -> None:

@@ -10,7 +10,7 @@ from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
 from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
-from wpimath.geometry import Rotation2d, Transform3d
+from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
 
 
@@ -63,6 +63,7 @@ class PhysicsEngine:
             encoder.sim_state.add_position(0.25)
 
         self.robot.pigeon.sim_state.set_supply_voltage(5.0)
+        self.robot.pigeon.sim_state.add_yaw(180.0)
 
         # Elevator Simulation
         self.elevator_gearbox = DCMotor.NEO(2)
@@ -104,7 +105,9 @@ class PhysicsEngine:
         self.camera_props.setAvgLatency(0.035)
         self.camera_props.setLatencyStdDev(0.005)
         self.camera_sim = PhotonCameraSim(robot.camera, self.camera_props)
-        self.vision_sim.addCamera(self.camera_sim, Transform3d())
+        self.vision_sim.addCamera(
+            self.camera_sim, Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        )
 
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():

@@ -227,6 +227,19 @@ class MyRobot(magicbot.MagicRobot):
         self.climber_max_position = 0.0  # placeholder
 
         """
+        ODOMETRY
+        """
+
+        self.camera = PhotonCamera("USB_Camera")
+        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        # self.field_layout = AprilTagFieldLayout(
+        #     str(Path(__file__).parent.resolve() / "test_reef.json")
+        # )
+        self.field_layout = AprilTagFieldLayout.loadField(
+            AprilTagField.k2025ReefscapeAndyMark
+        )
+
+        """
         MISCELLANEOUS
         """
 
@@ -245,16 +258,6 @@ class MyRobot(magicbot.MagicRobot):
         self.sammi_curve = curve(
             lambda x: 1.89 * x**3 + 0.61 * x, 0.0, deadband=0.1, max_mag=1.0
         )
-
-        # odometry
-        self.camera = PhotonCamera("USB_Camera")
-        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
-        self.field_layout = AprilTagFieldLayout(
-            str(Path(__file__).parent.resolve() / "test_reef.json")
-        )
-        # self.field_layout = AprilTagFieldLayout.loadField(
-        #     AprilTagField.k2025ReefscapeAndyMark
-        # )
 
         # alerts
         AlertManager(self.logger)
