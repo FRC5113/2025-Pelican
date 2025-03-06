@@ -20,7 +20,7 @@ import magicbot
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
-from lemonlib.util import curve, AlertManager, AlertType
+from lemonlib.util import curve, AlertManager, AlertType, LEDController
 from lemonlib.preference import SmartPreference, SmartProfile
 
 from components.odometry import Odometry
@@ -235,6 +235,8 @@ class MyRobot(magicbot.MagicRobot):
         # self.primary = PS5Controller(0)
         # self.secondary = XboxController(1)
 
+        self.leds = LEDController(0, 200)  # have to check amount of leds
+
         self.pigeon = Pigeon2(30)
 
         self.fms = DriverStation.isFMSAttached()
@@ -246,7 +248,7 @@ class MyRobot(magicbot.MagicRobot):
 
         # odometry
         self.camera = PhotonCamera("USB_Camera")
-        self.robot_to_camera = Transform3d(0.0,0.0,0.0,Rotation3d(0.0,0.0,math.pi))
+        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
         self.field_layout = AprilTagFieldLayout(
             str(Path(__file__).parent.resolve() / "test_reef.json")
         )
@@ -274,6 +276,16 @@ class MyRobot(magicbot.MagicRobot):
         self.y_filter = SlewRateLimiter(self.slew_rate)
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
+    def snap_x(self, x, y):
+        if x > y:
+            return x
+        return 0.0
+
+    def snap_y(self, x, y):
+        if y > x:
+            return y
+        return 0.0
+
     def teleopPeriodic(self):
         with self.consumeExceptions():
 
@@ -284,8 +296,16 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getR1Button():
                 # SAMMI: Replace -54.0 with 126.0 to flip orientiation
                 self.swerve_drive.set_pigeon_offset(-54.0)
+                self.getLefty = self.snap_y(
+                    self.primary.getLeftX(), self.primary.getLeftY()
+                )
+                self.getLeftX = self.snap_x(
+                    self.primary.getLeftX(), self.primary.getLeftY()
+                )
             else:
                 self.swerve_drive.set_pigeon_offset(180.0)
+                self.getLefty = self.primary.getLeftY()
+                self.getLeftx = self.primary.getLeftX()
 
             mult = 1
             if self.primary.getR2Axis() >= 0.8:
@@ -294,26 +314,13 @@ class MyRobot(magicbot.MagicRobot):
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
 
-            # self.swerve_drive.drive(
-            #     self.x_filter.calculate(
-            #         -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
-            #     ),
-            #     self.y_filter.calculate(
-            #         -self.sammi_curve(self.primary.getLeftX()) * mult * self.top_speed
-            #     ),
-            #     self.theta_filter.calculate(
-            #         -self.sammi_curve(self.primary.getRightX()) * self.top_omega
-            #     ),
-            #     not self.primary.getL1Button(), # temporary
-            #     self.period,
-            # )
             self.drive_control.engage()
             self.drive_control.drive_manual(
                 self.x_filter.calculate(
-                    -self.sammi_curve(self.primary.getLeftY()) * mult * self.top_speed
+                    -self.sammi_curve(self.getLefty) * mult * self.top_speed
                 ),
                 self.y_filter.calculate(
-                    -self.sammi_curve(self.primary.getLeftX()) * mult * self.top_speed
+                    -self.sammi_curve(self.getLeftx) * mult * self.top_speed
                 ),
                 self.theta_filter.calculate(
                     -self.sammi_curve(self.primary.getRightX()) * self.top_omega
@@ -321,18 +328,22 @@ class MyRobot(magicbot.MagicRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
             if self.primary.getPOV() == 90:
-                self.drive_control.request_pose(Pose2d(Translation2d(-0.33, -0.10), Rotation2d()))
+                self.drive_control.request_pose(
+                    Pose2d(Translation2d(-0.33, -0.10), Rotation2d())
+                )
             if self.primary.getPOV() == 270:
-                self.drive_control.request_pose(Pose2d(Translation2d(-0.33, 0.18), Rotation2d()))
+                self.drive_control.request_pose(
+                    Pose2d(Translation2d(-0.33, 0.18), Rotation2d())
+                )
 
-            # if self.primary.getPOV() == 0:
-            #     self.drive_control.request_remove_algae(
-            #         ElevatorHeight.L1, ClawAngle.TROUGH, self.period
-            #     )
-            # if self.primary.getPOV() == 180:
-            #     self.drive_control.request_remove_algae(
-            #         ElevatorHeight.L2, ClawAngle.TROUGH, self.period
-            #     )
+            if self.primary.getPOV() == 0:
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L1, ClawAngle.TROUGH, self.period
+                )
+            if self.primary.getPOV() == 180:
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L2, ClawAngle.TROUGH, self.period
+                )
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
@@ -366,7 +377,6 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set_wheel_voltage(
                     6.0 * applyDeadband(-self.secondary.getRightTriggerAxis(), 0.1)
                 )
-            
 
             # if self.secondary.getLeftBumper():
             #     self.claw.set_hinge_voltage(-1)

@@ -5,7 +5,7 @@ from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder, SparkLimitSwitc
 from lemonlib.preference import SmartProfile
 from magicbot import feedback, will_reset_to
 
-from lemonlib.util import Alert, AlertType
+from lemonlib.util import Alert, AlertType, LEDController
 from lemonlib.preference import SmartPreference
 
 
@@ -29,6 +29,7 @@ class Claw:
     hinge_tolerance: units.degrees
     hinge_encoder: SparkAbsoluteEncoder
     intake_limit: SparkLimitSwitch
+    leds: LEDController
 
     target_angle = will_reset_to(ClawAngle.STOWED)
     left_wheel_voltage = will_reset_to(0)
@@ -125,6 +126,12 @@ class Claw:
     """
 
     def execute(self):
+        if self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0:
+            if self.intake_limit.get():
+                self.leds.set_solid_color(tuple[0, 255, 0])
+            else:
+                self.leds.set_solid_color(tuple[255, 0, 0])
+
         if self.intake_limit.get() and (
             self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0
         ):

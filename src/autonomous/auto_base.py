@@ -2,6 +2,7 @@ import math
 
 import choreo
 import wpilib
+from wpilib import RobotBase
 from choreo.trajectory import SwerveSample
 from magicbot import AutonomousStateMachine, state, timed_state
 from wpimath.controller import PIDController
@@ -57,9 +58,9 @@ class AutoBase(AutonomousStateMachine):
         pass
 
     def on_enable(self) -> None:
-        # starting_pose = self.get_starting_pose()
-        # if RobotBase.isSimulation() and starting_pose is not None:
-        #     self.odometry.set_pose(starting_pose)
+        starting_pose = self.get_starting_pose()
+        if RobotBase.isSimulation() and starting_pose is not None:
+            self.swerve_drive.set_desired_pose(starting_pose)
         self.current_leg = -1
 
         super().on_enable()

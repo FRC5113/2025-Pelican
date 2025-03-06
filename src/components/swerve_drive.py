@@ -225,7 +225,10 @@ class SwerveDrive(Sendable):
 
         if self.has_desired_pose:
             self.chassis_speeds = self.holonomic_controller.calculate(
-                self.get_estimated_pose(), self.desired_pose, 0.0, Rotation2d.fromDegrees(180)
+                self.get_estimated_pose(),
+                self.desired_pose,
+                0.0,
+                Rotation2d.fromDegrees(180),
             )
         else:
             if self.translationX == self.translationY == self.rotationX == 0:

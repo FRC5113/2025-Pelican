@@ -4,7 +4,7 @@ from phoenix6.hardware import Pigeon2
 from wpilib import SmartDashboard, DriverStation, Timer
 from wpimath import units
 from wpimath.controller import HolonomicDriveController
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state, timed_state
 
@@ -23,7 +23,7 @@ class DriveControl(StateMachine):
     pigeon: Pigeon2
     arm_control: ArmControl
 
-    remove_algae = will_reset_to(False)
+    remove_algae_var = will_reset_to(False)
     go_to_pose = will_reset_to(False)
     desired_pose = Pose2d()
     period: units.seconds = 0.02
@@ -41,9 +41,13 @@ class DriveControl(StateMachine):
             self.rotationX = rotationX
             self.field_relative = field_relative
 
-    def request_remove_algae(self, period: units.seconds = 0.02):
+    def request_remove_algae(
+        self, elevatorheight, clawangle, period: units.seconds = 0.02
+    ):
         self.period = period
-        self.remove_algae = True
+        self.remove_algae_var = True
+        self.elevatorheight = elevatorheight
+        self.clawangle = clawangle
 
     def request_pose(self, pose: Pose2d):
         self.go_to_pose = True
@@ -69,17 +73,35 @@ class DriveControl(StateMachine):
             self.field_relative,
             self.period,
         )
-        if self.remove_algae:
-            self.next_state("removing_algae")
+        if self.remove_algae_var:
+            self.next_state("remove_algae_placement")
         if self.go_to_pose:
             self.next_state("going_to_pose")
         if DriverStation.isAutonomousEnabled():
             self.next_state("auto")
 
-    @timed_state(duration=4, next_state="free")
-    def removing_algae(self):
-        self.arm_control.set(ElevatorHeight.L1, ClawAngle.STOWED)
-        self.swerve_drive.drive(-1, 0, 0, True, self.period)
+    @state
+    def move_to_algae(self):
+        if self.swerve_drive.get_estimated_pose() == Pose2d(
+            Translation2d(-0.33, -0.10), Rotation2d()
+        ):
+            self.next_state("remove_algae")
+        self.swerve_drive.set_desired_pose(
+            Pose2d(Translation2d(-0.33, -0.10), Rotation2d())
+        )
+
+    @state
+    def remove_algae_placement(self):
+        self.arm_control.set(self.elevatorheight, self.clawangle)
+        if self.arm_control.at_setpoint():
+            self.next_state("remove_algae")
+
+    @state
+    def remove_algae(self):
+        self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
+        self.swerve_drive.drive(-1, 0, 0, False, self.period)
+        if self.arm_control.at_setpoint():
+            self.next_state("move_back")
 
     @state
     def going_to_pose(self):
@@ -91,7 +113,7 @@ class DriveControl(StateMachine):
     def run_auton_routine(self):
         # used to drive the bot and used here to keep driving in one place
         # main controls are in the auto_base.py like intake eject etc
-    
+
         self.swerve_drive.drive(
             self.translationX,
             self.translationY,
