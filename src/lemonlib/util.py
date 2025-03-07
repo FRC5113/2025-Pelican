@@ -354,12 +354,12 @@ def cubic_curve(
 ) -> Callable[[float], float]:
     return curve(lambda x: scalar * x**3, offset, deadband, max_mag, absolute_offset)
 
-def SnapX(self, x, y) -> float:
+def SnapX( x, y) -> float:
     if abs(x) > abs(y):
         return x
     return 0.0
 
-def SnapY(self, x, y) -> float:
+def SnapY( x, y) -> float:
     if abs(y) > abs(x):
         return y
     return 0.0
@@ -476,7 +476,7 @@ class MagicSysIdRoutine:
     
 
 
-class LEDController:
+class LEDController():
     def __init__(self, pwm_port: int, length: int):
         """
         Initializes the LED controller.
@@ -556,9 +556,9 @@ class LEDController:
         
         self.apply_pattern(LEDPattern.scrollAtRelativeSpeed(velocity))
 
-    def set_solid_color(self, color: Tuple[int, int, int]):
+    def set_solid_color(self, r,g,b):
         """Sets the entire LED strip to a solid color."""
-        r, g, b = color
+        
         for i in range(self.length):
             self.buffer[i].setRGB(r, g, b)
         self.led.setData(self.buffer)

@@ -248,7 +248,8 @@ class MyRobot(magicbot.MagicRobot):
         # self.primary = PS5Controller(0)
         # self.secondary = XboxController(1)
 
-        self.leds = LEDController(0, 200)  # have to check amount of leds
+        self.leds = LEDController(0, 150)  # have to check amount of leds
+        self.leds.set_solid_color(255,255,255)
 
         self.pigeon = Pigeon2(30)
 
@@ -282,6 +283,16 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
+
+            if self.primary.getSquareButton():
+                self.leds.set_solid_color(255,0,0)
+            if self.primary.getTriangleButton():
+                self.leds.set_solid_color(0,255,0)
+            if self.primary.getCircleButton():
+                self.leds.set_solid_color(0,0,255)
+            if self.primary.getCrossButton():
+                self.leds.set_solid_color(255,255,255)
+
 
             """
             SWERVE
@@ -323,7 +334,7 @@ class MyRobot(magicbot.MagicRobot):
             )
             if self.primary.getPOV() == 90:
                 self.drive_control.request_pose(
-                    Pose2d(Translation2d(-0.33, -0.10), Rotation2d())
+                    Pose2d(Translation2d(-0.35, -0.18), Rotation2d())
                 )
             if self.primary.getPOV() == 270:
                 self.drive_control.request_pose(
