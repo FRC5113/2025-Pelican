@@ -20,7 +20,7 @@ import magicbot
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
-from lemonlib.util import curve, AlertManager, AlertType, LEDController
+from lemonlib.util import curve, AlertManager, AlertType, LEDController,SnapX,SnapY
 from lemonlib.preference import SmartPreference, SmartProfile
 
 from components.odometry import Odometry
@@ -279,15 +279,6 @@ class MyRobot(magicbot.MagicRobot):
         self.y_filter = SlewRateLimiter(self.slew_rate)
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
-    def snap_x(self, x, y):
-        if x > y:
-            return x
-        return 0.0
-
-    def snap_y(self, x, y):
-        if y > x:
-            return y
-        return 0.0
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
@@ -299,10 +290,10 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getR1Button():
                 # SAMMI: Replace -54.0 with 126.0 to flip orientiation
                 self.swerve_drive.set_pigeon_offset(-54.0)
-                self.getLefty = self.snap_y(
+                self.getLefty = SnapY(
                     self.primary.getLeftX(), self.primary.getLeftY()
                 )
-                self.getLeftX = self.snap_x(
+                self.getLeftX = SnapX(
                     self.primary.getLeftX(), self.primary.getLeftY()
                 )
             else:

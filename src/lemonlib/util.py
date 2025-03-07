@@ -1,7 +1,7 @@
 from enum import Enum
 from logging import Logger
 from typing import List, Dict
-from wpilib import SmartDashboard, Timer, AddressableLED, LEDPattern
+from wpilib import SmartDashboard, Timer, AddressableLED, LEDPattern,Color
 import wpimath.units
 from wpiutil import Sendable, SendableBuilder
 from ntcore import NetworkTableInstance, PubSubOptions
@@ -354,6 +354,16 @@ def cubic_curve(
 ) -> Callable[[float], float]:
     return curve(lambda x: scalar * x**3, offset, deadband, max_mag, absolute_offset)
 
+def SnapX(self, x, y) -> float:
+    if abs(x) > abs(y):
+        return x
+    return 0.0
+
+def SnapY(self, x, y) -> float:
+    if abs(y) > abs(x):
+        return y
+    return 0.0
+
 
 class MagicSysIdRoutine:
     """Magicbot implementation of SysIdRoutine from commands2.
@@ -463,6 +473,7 @@ class MagicSysIdRoutine:
         self.mechanism.drive(self.outputVolts)
         self.mechanism.log(self.log)
         self.record_state(self.state)
+    
 
 
 class LEDController:
@@ -481,10 +492,13 @@ class LEDController:
         self.led.setData(self.buffer)
         self.led.start()
 
-    def apply_pattern(self, pattern_func):
-        """A wrapper that applies a pattern function to the LED buffer and updates the strip."""
-        pattern_func(self.buffer)
+    def apply_pattern(self, pattern: LEDPattern):
+        """Applies a wpilib.LEDPattern to the LED buffer and updates the strip."""
+        pattern.applyTo(self.buffer, self._write_data)
         self.led.setData(self.buffer)
+
+    def _write_data(self, index: int, color: Color):
+        self.buffer[index].setRGB(color.red, color.green, color.blue)
 
     def blink(self, onTime, offTime):
         """
@@ -539,6 +553,7 @@ class LEDController:
         10 LEDs long will travel twice as fast as on a segment that's only 5 LEDs
         long (assuming equal LED density on both segments).
         """
+        
         self.apply_pattern(LEDPattern.scrollAtRelativeSpeed(velocity))
 
     def set_solid_color(self, color: Tuple[int, int, int]):

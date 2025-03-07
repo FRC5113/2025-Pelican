@@ -79,16 +79,6 @@ class DriveControl(StateMachine):
             self.next_state("going_to_pose")
         if DriverStation.isAutonomousEnabled():
             self.next_state("run_auton_routine")
-
-    @timed_state(duration=5)
-    def move_to_algae(self):
-        self.swerve_drive.set_desired_pose(
-            Pose2d(Translation2d(-0.33, -0.10), Rotation2d())
-        )
-        if self.swerve_drive.get_estimated_pose() == Pose2d(
-            Translation2d(-0.33, -0.10), Rotation2d()
-        ):
-            self.next_state("remove_algae")
         
 
     @state
@@ -97,11 +87,9 @@ class DriveControl(StateMachine):
         if self.arm_control.at_setpoint():
             self.next_state("remove_algae")
 
-    @state
+    @timed_state(duration=2,next_state="free")
     def remove_algae(self):
         self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
-        if self.arm_control.at_setpoint():
-            self.next_state("free")
 
     @state
     def going_to_pose(self):
