@@ -44,6 +44,7 @@ class DriveControl(StateMachine):
     def request_remove_algae(
         self, elevatorheight, clawangle, period: units.seconds = 0.02
     ):
+        
         self.period = period
         self.remove_algae_var = True
         self.elevatorheight = elevatorheight
@@ -59,6 +60,7 @@ class DriveControl(StateMachine):
         translationY: units.meters_per_second,
         rotationX: units.radians_per_second,
     ):
+        self.engage()
         self.translationX = translationX
         self.translationY = translationY
         self.rotationX = rotationX

@@ -500,65 +500,10 @@ class LEDController():
     def _write_data(self, index: int, color: Color):
         self.buffer[index].setRGB(color.red, color.green, color.blue)
 
-    def blink(self, onTime, offTime):
-        """
-        Creates a pattern that switches between playing this pattern and turning
-        Creates a pattern that switches between playing this pattern and turning
-        the entire LED strip off.
 
-        :param onTime:  how long the pattern should play for, per cycle
-        :param offTime: how long the pattern should be turned off for, per cycle
-
-        :returns: the blinking pattern
-        """
-        self.apply_pattern(LEDPattern.blink(onTime, offTime))
-
-    def breathe(self, period):
-        """
-        Creates a pattern that brightens and dims this one over time. Brightness
-        follows a sinusoidal pattern.
-
-        :param period: how fast the breathing pattern should complete a single cycle
-
-        :returns: the breathing pattern
-        """
-        self.apply_pattern(LEDPattern.breathe(period))
-
-    def scrollAtAbsoluteSpeed(
-        self,
-        velocity: wpimath.units.meters_per_second,
-        ledSpacing: wpimath.units.meters,
-    ):
-        """
-        Creates a pattern that plays this one scrolling up an LED strip. A negative
-        velocity makes the pattern play in reverse.
-
-        Note that this pattern will scroll *faster* if applied to a less
-        dense LED strip (such as 30 LEDs per meter), or *slower* if applied to
-        a denser LED strip (such as 120 or 144 LEDs per meter).
-
-        :param velocity:   how fast the pattern should move along a physical LED strip
-        :param ledSpacing: the distance between adjacent LEDs on the physical LED
-                           strip
-
-        :returns: the scrolling pattern
-        """
-        self.apply_pattern(LEDPattern.scrollAtAbsoluteSpeed(velocity, ledSpacing))
-
-    def scrollAtRelativeSpeed(self, velocity: wpimath.units.hertz):
-        """
-        Creates a pattern that plays this one scrolling up the buffer. The velocity
-        controls how fast the pattern returns back to its original position, and is
-        in terms of the length of the LED strip; scrolling across a segment that is
-        10 LEDs long will travel twice as fast as on a segment that's only 5 LEDs
-        long (assuming equal LED density on both segments).
-        """
-        
-        self.apply_pattern(LEDPattern.scrollAtRelativeSpeed(velocity))
-
-    def set_solid_color(self, r,g,b):
+    def set_solid_color(self, color: Tuple[int, int, int]):
         """Sets the entire LED strip to a solid color."""
-        
+        r, g, b = color
         for i in range(self.length):
             self.buffer[i].setRGB(r, g, b)
         self.led.setData(self.buffer)

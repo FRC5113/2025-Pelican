@@ -12,6 +12,7 @@ class Odometry:
     robot_to_camera: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive
+    estimated_field: Field2d
 
     def setup(self):
         self.camera_pose_estimator = PhotonPoseEstimator(
@@ -20,7 +21,7 @@ class Odometry:
             self.camera,
             self.robot_to_camera,
         )
-        self.estimated_field = Field2d()
+        
         SmartDashboard.putData("Estimated Field", self.estimated_field)
 
     def execute(self):

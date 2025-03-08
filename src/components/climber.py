@@ -4,16 +4,18 @@ from phoenix6.signals import NeutralModeValue
 from wpilib import DutyCycleEncoder
 from wpimath import units
 from magicbot import feedback, will_reset_to
+from enum import Enum
 
 from lemonlib.util import Alert, AlertType
 
-
+class ClimberAngle(Enum):
+    MIN = 0.0
+    MAX = 50.0 #for the love of god change this
 class Climber:
 
     motor: TalonFX
     encoder: DutyCycleEncoder
-    min_position: units.turns
-    max_position: units.turns
+
 
     motor_speed = will_reset_to(0)
 
@@ -30,12 +32,21 @@ class Climber:
     INFORMATIONAL METHODS
     """
 
+    
+    def get_position(self) -> units.degrees:
+        return self.encoder.get()
+
+    
     @feedback
-    def get_position(self) -> units.turns:
-        angle = self.encoder.get()
-        if angle > 0.5:
-            angle -= 1.0
+    def get_angle(self) -> units.degrees:
+        angle = self.get_position() * 360
+        if angle > 180:
+            angle -= 360
         return angle
+    
+    @feedback
+    def fully_climbed(self) -> bool:
+        return self.get_angle() >= ClimberAngle.MAX.value
 
     """
     CONTROL METHODS
@@ -49,9 +60,6 @@ class Climber:
     """
 
     def execute(self):
-        # assumes a positive voltage creates an increase in angle
-        # if (
-        #     self.get_position() < self.min_position and self.motor_speed < 0
-        # ):  # or (self.get_position() > self.max_position and self.motor_speed > 0):
-        #     self.motor_speed = 0
+        if (self.get_angle() < ClimberAngle.MIN.value) or (self.get_angle() > ClimberAngle.MAX.value):
+            self.motor_speed = 0
         self.motor.set(self.motor_speed)

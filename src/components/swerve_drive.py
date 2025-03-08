@@ -19,6 +19,7 @@ from magicbot import will_reset_to
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
 from lemonlib.preference import SmartProfile
+from choreo.trajectory import SwerveSample
 
 
 class SwerveDrive(Sendable):
@@ -188,6 +189,21 @@ class SwerveDrive(Sendable):
     def set_pigeon_offset(self, offset: units.degrees):
         """set angle added to reading from pigeon"""
         self.pigeon_offset = Rotation2d.fromDegrees(offset)
+
+    def follow_trajectory(self, sample: SwerveSample):
+
+        pose = self.get_estimated_pose()
+
+        return ChassisSpeeds(
+            sample.vx + self.x_controller.calculate(pose.X(), sample.x),
+            sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
+            sample.omega,
+        )
+    
+    def set_pose(self, pose: Pose2d):
+        self.pose_estimator.resetPose(Pose2d())
+        self.pose_estimator.resetPose(pose)
+
 
     """
     TELEMETRY METHODS

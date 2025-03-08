@@ -2,6 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
+from wpilib import Field2d
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -222,10 +223,6 @@ class MyRobot(magicbot.MagicRobot):
         self.climber_motor = TalonFX(51)
         self.climber_encoder = DutyCycleEncoder(2)
 
-        # physical constants
-        self.climber_min_position = -0.28  # placeholder
-        self.climber_max_position = 0.0  # placeholder
-
         """
         ODOMETRY
         """
@@ -249,7 +246,6 @@ class MyRobot(magicbot.MagicRobot):
         # self.secondary = XboxController(1)
 
         self.leds = LEDController(0, 150)  # have to check amount of leds
-        self.leds.set_solid_color(255,255,255)
 
         self.pigeon = Pigeon2(30)
 
@@ -267,6 +263,8 @@ class MyRobot(magicbot.MagicRobot):
                 "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.WARNING
             )
 
+        self.estimated_field = Field2d()
+
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes
         if RobotBase.isSimulation():
@@ -283,16 +281,6 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
-
-            if self.primary.getSquareButton():
-                self.leds.set_solid_color(255,0,0)
-            if self.primary.getTriangleButton():
-                self.leds.set_solid_color(0,255,0)
-            if self.primary.getCircleButton():
-                self.leds.set_solid_color(0,0,255)
-            if self.primary.getCrossButton():
-                self.leds.set_solid_color(255,255,255)
-
 
             """
             SWERVE
