@@ -39,6 +39,8 @@ class coral(AutoBase):
                 "coral>station",
             ]
         )
+    def request_intake(self):
+        return super().request_intake()
     
 
 
