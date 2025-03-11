@@ -21,7 +21,7 @@ import magicbot
 from magicbot import feedback
 
 from lemonlib.control import LemonInput
-from lemonlib.util import curve, AlertManager, AlertType, LEDController,SnapX,SnapY
+from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.preference import SmartPreference, SmartProfile
 
 from components.odometry import Odometry
@@ -32,12 +32,15 @@ from components.claw import Claw, ClawAngle
 from components.climber import Climber
 from components.arm_control import ArmControl
 from components.drive_control import DriveControl
+from components.leds import LEDStrip
+from components.error import Errors
 
 
 class MyRobot(magicbot.MagicRobot):
     arm_control: ArmControl
     drive_control: DriveControl
     odometry: Odometry
+    led_strip: LEDStrip
 
     swerve_drive: SwerveDrive
     front_left: SwerveWheel
@@ -47,6 +50,7 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
+    error: Errors
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -229,12 +233,12 @@ class MyRobot(magicbot.MagicRobot):
 
         self.camera = PhotonCamera("USB_Camera")
         self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
-        self.field_layout = AprilTagFieldLayout(
-            str(Path(__file__).parent.resolve() / "test_reef.json")
-        )
-        # self.field_layout = AprilTagFieldLayout.loadField(
-        #     AprilTagField.k2025ReefscapeAndyMark
+        # self.field_layout = AprilTagFieldLayout(
+        #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
+        self.field_layout = AprilTagFieldLayout.loadField(
+            AprilTagField.k2025ReefscapeAndyMark
+        )
 
         """
         MISCELLANEOUS
@@ -278,7 +282,6 @@ class MyRobot(magicbot.MagicRobot):
         self.y_filter = SlewRateLimiter(self.slew_rate)
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
-
     def teleopPeriodic(self):
         with self.consumeExceptions():
 
@@ -289,12 +292,8 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getR1Button():
                 # SAMMI: Replace -54.0 with 126.0 to flip orientiation
                 self.swerve_drive.set_pigeon_offset(-54.0)
-                self.getLefty = SnapY(
-                    self.primary.getLeftX(), self.primary.getLeftY()
-                )
-                self.getLeftX = SnapX(
-                    self.primary.getLeftX(), self.primary.getLeftY()
-                )
+                self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
+                self.getLeftX = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
             else:
                 self.swerve_drive.set_pigeon_offset(180.0)
                 self.getLefty = self.primary.getLeftY()

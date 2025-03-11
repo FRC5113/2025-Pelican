@@ -1,7 +1,7 @@
 from enum import Enum
 from logging import Logger
 from typing import List, Dict
-from wpilib import SmartDashboard, Timer, AddressableLED, LEDPattern,Color
+from wpilib import SmartDashboard, Timer, AddressableLED, LEDPattern, Color
 import wpimath.units
 from wpiutil import Sendable, SendableBuilder
 from ntcore import NetworkTableInstance, PubSubOptions
@@ -354,12 +354,14 @@ def cubic_curve(
 ) -> Callable[[float], float]:
     return curve(lambda x: scalar * x**3, offset, deadband, max_mag, absolute_offset)
 
-def SnapX( x, y) -> float:
+
+def SnapX(x, y) -> float:
     if abs(x) > abs(y):
         return x
     return 0.0
 
-def SnapY( x, y) -> float:
+
+def SnapY(x, y) -> float:
     if abs(y) > abs(x):
         return y
     return 0.0
@@ -473,10 +475,9 @@ class MagicSysIdRoutine:
         self.mechanism.drive(self.outputVolts)
         self.mechanism.log(self.log)
         self.record_state(self.state)
-    
 
 
-class LEDController():
+class LEDController:
     def __init__(self, pwm_port: int, length: int):
         """
         Initializes the LED controller.
@@ -499,7 +500,6 @@ class LEDController():
 
     def _write_data(self, index: int, color: Color):
         self.buffer[index].setRGB(color.red, color.green, color.blue)
-
 
     def set_solid_color(self, color: Tuple[int, int, int]):
         """Sets the entire LED strip to a solid color."""

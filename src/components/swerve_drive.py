@@ -10,7 +10,7 @@ from wpimath.kinematics import (
     ChassisSpeeds,
     SwerveDrive4Kinematics,
     SwerveModulePosition,
-    SwerveModuleState
+    SwerveModuleState,
 )
 from wpiutil import Sendable, SendableBuilder
 from phoenix6.hardware import Pigeon2
@@ -157,8 +157,10 @@ class SwerveDrive(Sendable):
 
     def get_estimated_pose(self) -> Pose2d:
         return self.pose_estimator.getEstimatedPosition()
+
     def get_velocity(self) -> ChassisSpeeds:
         return self.kinematics.toChassisSpeeds(self.get_module_states())
+
     def get_module_states(
         self,
     ) -> tuple[
@@ -213,11 +215,10 @@ class SwerveDrive(Sendable):
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
             sample.omega,
         )
-    
+
     def set_pose(self, pose: Pose2d):
         self.pose_estimator.resetPose(Pose2d())
         self.pose_estimator.resetPose(pose)
-
 
     """
     TELEMETRY METHODS

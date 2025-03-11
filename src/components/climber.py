@@ -8,16 +8,19 @@ from enum import Enum
 
 from lemonlib.util import Alert, AlertType
 
+
 class ClimberAngle(Enum):
     MIN = 0.0
-    MAX = 50.0 #for the love of god change this
+    MAX = 50.0  # for the love of god change this
+
+
 class Climber:
 
     motor: TalonFX
     encoder: DutyCycleEncoder
 
-
     motor_speed = will_reset_to(0)
+    error = will_reset_to(False)
 
     """
     INITIALIZATION METHODS
@@ -32,21 +35,22 @@ class Climber:
     INFORMATIONAL METHODS
     """
 
-    
     def get_position(self) -> units.degrees:
         return self.encoder.get()
 
-    
     @feedback
     def get_angle(self) -> units.degrees:
         angle = self.get_position() * 360
         if angle > 180:
             angle -= 360
         return angle
-    
+
     @feedback
     def fully_climbed(self) -> bool:
         return self.get_angle() >= ClimberAngle.MAX.value
+
+    def error_detected(self) -> bool:
+        return self.error
 
     """
     CONTROL METHODS
@@ -60,6 +64,9 @@ class Climber:
     """
 
     def execute(self):
-        if (self.get_angle() < ClimberAngle.MIN.value) or (self.get_angle() > ClimberAngle.MAX.value):
+        if (self.get_angle() < ClimberAngle.MIN.value) or (
+            self.get_angle() > ClimberAngle.MAX.value
+        ):
             self.motor_speed = 0
+            self.error = True
         self.motor.set(self.motor_speed)

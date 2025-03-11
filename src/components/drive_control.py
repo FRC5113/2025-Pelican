@@ -44,7 +44,7 @@ class DriveControl(StateMachine):
     def request_remove_algae(
         self, elevatorheight, clawangle, period: units.seconds = 0.02
     ):
-        
+
         self.period = period
         self.remove_algae_var = True
         self.elevatorheight = elevatorheight
@@ -81,7 +81,6 @@ class DriveControl(StateMachine):
             self.next_state("going_to_pose")
         if DriverStation.isAutonomousEnabled():
             self.next_state("run_auton_routine")
-        
 
     @state
     def remove_algae_placement(self):
@@ -89,7 +88,7 @@ class DriveControl(StateMachine):
         if self.arm_control.at_setpoint():
             self.next_state("remove_algae")
 
-    @timed_state(duration=2,next_state="free")
+    @timed_state(duration=2, next_state="free")
     def remove_algae(self):
         self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
 

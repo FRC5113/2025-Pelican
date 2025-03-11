@@ -2,10 +2,10 @@ import math
 
 import choreo
 import wpilib
-from wpilib import Field2d,RobotBase
+from wpilib import Field2d, RobotBase, SmartDashboard
 from typing import List
-from choreo.trajectory import SwerveSample,SwerveTrajectory
-from magicbot import AutonomousStateMachine, state, timed_state,will_reset_to
+from choreo.trajectory import SwerveSample, SwerveTrajectory
+from magicbot import AutonomousStateMachine, state, timed_state, will_reset_to
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
@@ -27,7 +27,7 @@ class AutoBase(AutonomousStateMachine):
     claw: Claw
     estimated_field: Field2d
 
-    DISTANCE_TOLERANCE = 0.7  # metres
+    DISTANCE_TOLERANCE = 0.1  # metres
     ANGLE_TOLERANCE = math.radians(3)
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
@@ -40,6 +40,7 @@ class AutoBase(AutonomousStateMachine):
         self.trajectories: dict[str, SwerveTrajectory] = {}
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
+        SmartDashboard.putNumber("Distance", 0)
 
         # Load trajectories (skip non-trajectory steps)
         for item in self.sequence:
@@ -56,13 +57,28 @@ class AutoBase(AutonomousStateMachine):
         starting_pose = self.get_starting_pose()
         if RobotBase.isSimulation() and starting_pose is not None:
             self.swerve_drive.set_pose(starting_pose)
-        
+
         super().on_enable()
+
+    def _get_full_path_poses(self) -> list[Pose2d]:
+        """Get a list of poses for the full path for display."""
+        return [
+            sample.get_pose()
+            for trajectory in self.trajectories.values()
+            for sample in trajectory.get_samples()
+        ]
+
+    def display_trajectory(self) -> None:
+        self.odometry.getObjects_setPoses("Trajectory", self._get_full_path_poses())
+
     def is_red(self) -> bool:
         return wpilib.DriverStation.getAlliance() != wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
-        first_traj = next((self.trajectories[t] for t in self.sequence if t in self.trajectories), None)
+        first_traj = next(
+            (self.trajectories[t] for t in self.sequence if t in self.trajectories),
+            None,
+        )
         return first_traj.get_initial_pose(self.is_red) if first_traj else None
 
     @state(first=True)
@@ -104,10 +120,9 @@ class AutoBase(AutonomousStateMachine):
         if sample:
             speeds = self.swerve_drive.follow_trajectory(sample)
             self.drive_control.drive_auto(speeds.vx, speeds.vy, speeds.omega)
-            print(distance)
+            SmartDashboard.putNumber("Distance", distance)
             if distance < self.DISTANCE_TOLERANCE:
                 self.next_state("next_step")
-                
 
     # ---------- STATES FOR INTAKING AND LIFTING ---------- #
 

@@ -103,14 +103,6 @@ class ArmControl(StateMachine):
             if self.claw.at_setpoint() and self.claw_setpoint >= ClawAngle.SAFE_START:
                 self.next_state("standby")
 
-            # TEMP FIX FOR L4 PLZ FOR THE LOVE OF GOD CHANGE
-            # elif self.elevator_setpoint == ElevatorHeight.L4:
-            #     if (
-            #         applyDeadband(self.claw.get_angle(), 2.0) == self.claw_setpoint
-            #         and self.claw_setpoint >= ClawAngle.SAFE_START
-            #     ):
-            #         self.next_state("standby")
-
             else:
                 self.next_state("positioning_claw")
 

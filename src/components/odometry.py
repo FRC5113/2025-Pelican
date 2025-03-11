@@ -21,8 +21,11 @@ class Odometry:
             self.camera,
             self.robot_to_camera,
         )
-        
+
         SmartDashboard.putData("Estimated Field", self.estimated_field)
+
+    def getObjects_setPoses(self, key: str, poses: list[Pose2d]):
+        self.estimated_field.getObject(key).setPoses(poses)
 
     def execute(self):
         # may need to tweak timestamp to match system time

@@ -35,6 +35,7 @@ class Claw:
     left_wheel_voltage = will_reset_to(0)
     right_wheel_voltage = will_reset_to(0)
     hinge_voltage = will_reset_to(0)
+    error = will_reset_to(False)
     hinge_manual_control = False
 
     """
@@ -103,6 +104,9 @@ class Claw:
     def at_setpoint(self) -> bool:
         return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
 
+    def error_detected(self) -> bool:
+        return self.error
+
     """
     CONTROL METHODS
     """
@@ -146,6 +150,7 @@ class Claw:
             self.hinge_alert.set_text(
                 f"Claw hinge has rotated too far! Current angle: {self.get_angle()}"
             )
+            self.error = True
         else:
             self.hinge_alert.disable()
         if self.get_angle() > self.max_angle and self.hinge_voltage < 0:

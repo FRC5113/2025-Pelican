@@ -1,5 +1,5 @@
 {
- "name":"coral>station",
+ "name":"coraltostation",
  "version":1,
  "snapshot":{
   "waypoints":[
@@ -18,7 +18,7 @@
     {"x":{"exp":"5.8 m", "val":5.8}, "y":{"exp":"4.19 m", "val":4.19}, "heading":{"exp":"-3.14 rad", "val":-3.14}, "intervals":25, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"5.396146774291992 m", "val":5.396146774291992}, "y":{"exp":"2.656174421310425 m", "val":2.656174421310425}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":20, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"2.612588882446289 m", "val":2.612588882446289}, "y":{"exp":"1.4773930311203003 m", "val":1.4773930311203003}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":24, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"1.0486611127853394 m", "val":1.0486611127853394}, "y":{"exp":"0.9755355715751648 m", "val":0.9755355715751648}, "heading":{"exp":"-2.1975391084967106 rad", "val":-2.19753910849671}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"Station.x", "val":1.0}, "y":{"exp":"Station.y", "val":1.0}, "heading":{"exp":"Station.heading", "val":-2.2}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
