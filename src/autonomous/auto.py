@@ -24,7 +24,7 @@ class Only_L4(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "1CoralL4",  # Run trajectory 1
+                "Start-4R",  # Run trajectory 1
                 "state:level_four",  # Run intake state
             ]
         )
@@ -36,9 +36,9 @@ class l4_station(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "1CoralL4",  # Run trajectory 1
+                "Start-4R",  # Run trajectory 1
                 "state:level_four",  # Run intake state
-                "coraltostation",  # Run intake state
+                "4R-Station",  # Run intake state
             ]
         )
 
@@ -49,11 +49,11 @@ class l4_station_l4(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "1CoralL4",
+                "Start-4R",
                 "state:level_four",
-                "coraltostation",
+                "4R-Station",
                 "state:intaking_coral",
-                "StationtoL4",
+                "Station-6L",
                 "state:level_four",
             ]
         )
