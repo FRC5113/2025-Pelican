@@ -8,7 +8,7 @@ from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state, timed_state
 
-from lemonlib.preference import SmartProfile
+from lemonlib.smart.preference import SmartProfile
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
