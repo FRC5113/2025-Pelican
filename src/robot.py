@@ -2,7 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d
+from wpilib import Field2d,SmartDashboard
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -34,11 +34,18 @@ from components.arm_control import ArmControl
 from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.error import Errors
+from components.sysid_drive import SysIdDrive
+
+from lemonlib.util import MagicSysIdRoutine
+
+
+
 
 
 class MyRobot(magicbot.MagicRobot):
-    arm_control: ArmControl
+    sysid_drive: SysIdDrive
     drive_control: DriveControl
+    arm_control: ArmControl
     odometry: Odometry
     led_strip: LEDStrip
 
@@ -249,7 +256,7 @@ class MyRobot(magicbot.MagicRobot):
         # self.primary = PS5Controller(0)
         # self.secondary = XboxController(1)
 
-        self.leds = LEDController(0, 150)  # have to check amount of leds
+        self.leds = LEDController(0, 46)  #real amount is 72
 
         self.pigeon = Pigeon2(30)
 
@@ -268,6 +275,7 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.estimated_field = Field2d()
+        self.sysid_con = LemonInput(2)
 
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes
@@ -277,6 +285,7 @@ class MyRobot(magicbot.MagicRobot):
         else:
             self.primary = LemonInput(type="PS5")
             self.secondary = LemonInput(type="Xbox")
+        
 
         self.x_filter = SlewRateLimiter(self.slew_rate)
         self.y_filter = SlewRateLimiter(self.slew_rate)
@@ -284,6 +293,7 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
+            SmartDashboard.putData("sysidcon",self.sysid_con)
 
             """
             SWERVE
@@ -383,6 +393,20 @@ class MyRobot(magicbot.MagicRobot):
                 self.climber.set_speed(1)
             if self.primary.getCrossButton():
                 self.climber.set_speed(-1)
+
+
+            """
+            SYS-ID
+            """
+            if self.sysid_con.getAButton():
+                self.sysid_drive.quasistatic_forward()
+            if self.sysid_con.getBButton():
+                self.sysid_drive.quasistatic_reverse()
+            if self.sysid_con.getXButton():
+                self.sysid_drive.dynamic_forward()
+            if self.sysid_con.getYButton():
+                self.sysid_drive.dynamic_reverse()
+
 
     @feedback
     def get_voltage(self) -> units.volts:

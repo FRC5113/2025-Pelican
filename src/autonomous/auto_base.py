@@ -91,6 +91,7 @@ class AutoBase(AutonomousStateMachine):
 
         step = self.sequence[self.current_step]
         if step.startswith("state:"):
+            
             self.next_state(step.split("state:")[1])  # Go to the specified state
         else:
             self.current_trajectory = self.trajectories.get(step)
@@ -128,6 +129,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_coral(self) -> None:
+        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(-1)
@@ -136,6 +138,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_one(self) -> None:
+        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -144,6 +147,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_two(self) -> None:
+        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -152,6 +156,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_three(self) -> None:
+        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -160,8 +165,9 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_four(self) -> None:
+        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
-        if not self.claw.get_intake_limit():
+        if self.claw.get_intake_limit():
             self.next_state("next_step")

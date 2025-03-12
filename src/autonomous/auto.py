@@ -57,3 +57,8 @@ class l4_station_l4(AutoBase):
                 "state:level_four",
             ]
         )
+
+class test_l4(AutoBase):
+    MODE_NAME = "test"
+    def __init__(self):
+        super().__init__(["state:level_four"])

@@ -14,7 +14,7 @@ class LEDStrip:
     error: Errors
 
     def setup(self):
-        self.leds.set_rainbow()
+        self.leds.set_rainbow(100)
         self.coral_detected = (0, 0, 255)
         self.aligned_branch = (0, 255, 0)
         self.fully_climbed = (0, 255, 0)
@@ -24,16 +24,16 @@ class LEDStrip:
         self.error_bool = self.error.get_all_errors()
 
     def execute(self):
-        if self.error:
-            self.timer.start()
+        # if self.error:
+        #     self.timer.start()
 
-            if int(self.timer.get()) % 2 == 0:
-                self.leds.set_solid_color(self.error1)
-            else:
-                self.leds.set_solid_color(self.error2)
-        elif self.climber.fully_climbed():
+        #     if int(self.timer.get()) % 2 == 0:
+        #         self.leds.set_solid_color(self.error1)
+        #     else:
+        #         self.leds.set_solid_color(self.error2)
+        if self.climber.fully_climbed():
             self.leds.set_solid_color(self.fully_climbed)
         elif self.claw.get_intake_limit():
             self.leds.set_solid_color(self.coral_detected)
         else:
-            self.leds.set_rainbow()
+            self.leds.set_rainbow(100)
