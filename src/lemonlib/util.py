@@ -1,7 +1,14 @@
 from enum import Enum
 from logging import Logger
 from typing import List, Dict
-from wpilib import SmartDashboard, Timer, AddressableLED, LEDPattern, Color
+from wpilib import (
+    SmartDashboard,
+    Timer,
+    AddressableLED,
+    LEDPattern,
+    Color,
+    RobotController,
+)
 import wpimath.units
 from wpiutil import Sendable, SendableBuilder
 from ntcore import NetworkTableInstance, PubSubOptions
@@ -522,7 +529,7 @@ class LEDController:
             self.buffer[i].setRGB(r, g, b)
         self.led.setData(self.buffer)
 
-    def set_rainbow(self, offset: int = 0):
+    def static_rainbow(self, offset: int = 0):
         """Custom preset that Creates a rainbow effect across the LED strip.
 
         The offset parameter (in degrees) can be used to animate the rainbow.
@@ -535,12 +542,42 @@ class LEDController:
             self.buffer[i].setRGB(int(r * 255), int(g * 255), int(b * 255))
         self.led.setData(self.buffer)
 
-    def move_across(self, color: Tuple[int, int, int], size: int = 1):
-        """Custom preset that moves leds accross the led strip"""
-        r, g, b = color
+    def scolling_rainbow(self):
+        """Custom preset that Creates a rainbow effect across the LED strip.
+
+        The offset parameter (in degrees) can be used to animate the rainbow.
+        """
+
         for i in range(self.length):
-            self.buffer[i].setRGB(r, g, b)
-            self.buffer[i - size].setRGB(0, 0, 0)
+            # Normalize index to [0,1] and add the offset (converted from degrees)
+            hue = ((i / self.length) + (RobotController.getTime() / 360.0)) % 1.0
+            # Convert HSV to RGB; using full saturation and 50% brightness
+            r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 0.5)
+            self.buffer[i].setRGB(int(r * 255), int(g * 255), int(b * 255))
+        self.led.setData(self.buffer)
+
+    def move_across(
+        self, color: Tuple[int, int, int], size: int = 1, hertz: wpimath.units.hertz = 1
+    ):
+        """Moves a block of LEDs across the strip using RobotController.getTime() for timing."""
+        r, g, b = color
+
+        # Get the current time
+        current_time = RobotController.getTime() / 1000000.0
+
+        # Compute the current position with slower movement
+
+        position = int(current_time * hertz) % self.length
+
+        # Clear buffer first
+        for j in range(self.length):
+            self.buffer[j].setRGB(0, 0, 0)
+
+        # Light up the section
+        for j in range(size):
+            index = (position - j) % self.length
+            self.buffer[index].setRGB(r, g, b)
+
         self.led.setData(self.buffer)
 
     def clear(self):

@@ -22,6 +22,5 @@ class SysIdDrive(MagicSysIdRoutine):
             ),
         )
 
-    def drive_sysid(self,voltage: units.volts) -> None:
-        self.swerve_drive.drive(voltage,0,0,False,self.period)
-
+    def drive_sysid(self, voltage: units.volts) -> None:
+        self.drive_control.drive_manual(voltage, 0, 0, False)

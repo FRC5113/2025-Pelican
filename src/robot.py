@@ -2,7 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d,SmartDashboard
+from wpilib import Field2d, SmartDashboard
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -23,6 +23,7 @@ from magicbot import feedback
 from lemonlib.control import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.preference import SmartPreference, SmartProfile
+from lemonlib.vision import LemonCamera
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
@@ -35,11 +36,6 @@ from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.error import Errors
 from components.sysid_drive import SysIdDrive
-
-from lemonlib.util import MagicSysIdRoutine
-
-
-
 
 
 class MyRobot(magicbot.MagicRobot):
@@ -238,8 +234,10 @@ class MyRobot(magicbot.MagicRobot):
         ODOMETRY
         """
 
-        self.camera = PhotonCamera("USB_Camera")
-        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        self.camera = LemonCamera(
+            "USB_Camera", Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        )
+        self.robot_to_camera = self.camera.get_transform()
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
@@ -256,7 +254,7 @@ class MyRobot(magicbot.MagicRobot):
         # self.primary = PS5Controller(0)
         # self.secondary = XboxController(1)
 
-        self.leds = LEDController(0, 46)  #real amount is 72
+        self.leds = LEDController(0, 72)  # broken amount is 46
 
         self.pigeon = Pigeon2(30)
 
@@ -275,7 +273,6 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.estimated_field = Field2d()
-        self.sysid_con = LemonInput(2)
 
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes
@@ -285,7 +282,6 @@ class MyRobot(magicbot.MagicRobot):
         else:
             self.primary = LemonInput(type="PS5")
             self.secondary = LemonInput(type="Xbox")
-        
 
         self.x_filter = SlewRateLimiter(self.slew_rate)
         self.y_filter = SlewRateLimiter(self.slew_rate)
@@ -293,7 +289,6 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
-            SmartDashboard.putData("sysidcon",self.sysid_con)
 
             """
             SWERVE
@@ -329,10 +324,8 @@ class MyRobot(magicbot.MagicRobot):
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
-            if self.primary.getPOV() == 90:
-                self.drive_control.request_pose(
-                    Pose2d(Translation2d(-0.35, -0.18), Rotation2d())
-                )
+            # if self.primary.getPOV() == 90:
+            #     self.drive_control.request_pose(self.camera.get_pose(id=self.camera.get_best_id()).X(),self.camera.get_pose(id=self.camera.get_best_id()).Y(),self.camera.get_pose(id=self.camera.get_best_id()).rotation())
             if self.primary.getPOV() == 270:
                 self.drive_control.request_pose(
                     Pose2d(Translation2d(-0.35, 0.19), Rotation2d())
@@ -350,6 +343,7 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
 
+        with self.consumeExceptions():
             """
             ARM
             """
@@ -385,6 +379,7 @@ class MyRobot(magicbot.MagicRobot):
             # if self.secondary.getRightBumper():
             #     self.claw.set_hinge_voltage(1)
 
+        with self.consumeExceptions():
             """
             CLIMBER
             """
@@ -394,19 +389,22 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getCrossButton():
                 self.climber.set_speed(-1)
 
+    def testInit(self):
+        self.sysid_con = LemonInput(2)
 
-            """
-            SYS-ID
-            """
-            if self.sysid_con.getAButton():
-                self.sysid_drive.quasistatic_forward()
-            if self.sysid_con.getBButton():
-                self.sysid_drive.quasistatic_reverse()
-            if self.sysid_con.getXButton():
-                self.sysid_drive.dynamic_forward()
-            if self.sysid_con.getYButton():
-                self.sysid_drive.dynamic_reverse()
-
+    def testPeriodic(self):
+        self.drive_control.engage()
+        """
+        SYS-ID
+        """
+        if self.sysid_con.getAButton():
+            self.sysid_drive.quasistatic_forward()
+        if self.sysid_con.getBButton():
+            self.sysid_drive.quasistatic_reverse()
+        if self.sysid_con.getXButton():
+            self.sysid_drive.dynamic_forward()
+        if self.sysid_con.getYButton():
+            self.sysid_drive.dynamic_reverse()
 
     @feedback
     def get_voltage(self) -> units.volts:

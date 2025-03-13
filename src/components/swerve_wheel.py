@@ -86,10 +86,10 @@ class SwerveWheel:
             * (self.wheel_radius * 2 * math.pi),
             Rotation2d(self.cancoder.get_absolute_position().value * math.tau),
         )
-    
+
     def getVoltage(self) -> units.volts:
         return self.speed_motor.get_motor_voltage().value
-    
+
     def getVelocity(self):
         return self.speed_motor.get_velocity().value
 
