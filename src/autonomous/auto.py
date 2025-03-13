@@ -4,56 +4,104 @@ from components.drive_control import DriveControl
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 
 
-class passline(AutonomousStateMachine):
-    MODE_NAME = "Passline"
-    drive_control: DriveControl
+"""
+Trajectories:
+- 2L-TopStation
+- TopStation-2R
+- Reg-Start-2L
+- BottomStation-6R
+- Center-Start-4R
+- 4R-BottomStation
+- BottomStation-6L
+"""
 
-    @timed_state(duration=2, next_state="stop", first=True)
-    def passline(self):
-        self.drive_control.drive_auto(1, 0, 0)
-
-    @state
-    def stop(self):
-        self.drive_control.drive_auto(0, 0, 0)
-        self.done()
-
-
-class Only_L4(AutoBase):
-    MODE_NAME = "Only L4"
-
-    def __init__(self):
-        super().__init__(
-            [
-                "Start-4R",  # Run trajectory 1
-                "state:level_four",  # Run intake state
-            ]
-        )
+"""
+States:
+- level_four
+- level_three
+- level_two
+- level_one
+- intaking_coral
+"""
 
 
-class l4_station(AutoBase):
-    MODE_NAME = "L4 Station"
+class Center_4R(AutoBase):
+    MODE_NAME = "Bottom>L4"
 
     def __init__(self):
         super().__init__(
             [
-                "Start-4R",  # Run trajectory 1
-                "state:level_four",  # Run intake state
-                "4R-Station",  # Run intake state
-            ]
-        )
-
-
-class l4_station_l4(AutoBase):
-    MODE_NAME = "L4 Station L4"
-
-    def __init__(self):
-        super().__init__(
-            [
-                "Start-4R",
+                "Center-Start-4R",
                 "state:level_four",
-                "4R-Station",
+            ]
+        )
+
+
+class Center_4R_Station(AutoBase):
+    MODE_NAME = "Bottom>L4>Station"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Center-Start-4R",
+                "state:level_four",
+                "4R-BottomStation",
+            ]
+        )
+
+
+class Center_4R__6L(AutoBase):
+    MODE_NAME = "Bottom>L4>Station>6L"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Center-Start-4R",
+                "state:level_four",
+                "4R-BottomStation",
                 "state:intaking_coral",
-                "Station-6L",
+                "BottomStation-6L",
+                "state:level_four",
+            ]
+        )
+
+
+class Top_2L(AutoBase):
+    MODE_NAME = "Top>L4"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Reg-Start-2L",
+                "state:level_four",
+            ]
+        )
+
+
+class Top_2L_Station(AutoBase):
+    MODE_NAME = "Top>L4>Station"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Reg-Start-2L",
+                "state:level_four",
+                "2L-TopStation",
+            ]
+        )
+
+
+class Top_2L__2R(AutoBase):
+    MODE_NAME = "Top>L4>Station>2R"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Reg-Start-2L",
+                "state:level_four",
+                "2L-TopStation",
+                "state:intaking_coral",
+                "TopStation-2R",
                 "state:level_four",
             ]
         )

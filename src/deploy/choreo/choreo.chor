@@ -5,7 +5,7 @@
  "variables":{
   "expressions":{},
   "poses":{
-   "Station":{
+   "BottomStation":{
     "x":{
      "exp":"1 m",
      "val":1.0
@@ -18,70 +18,280 @@
      "exp":"-2.2 rad",
      "val":-2.2
     }
+   },
+   "TopStation":{
+    "x":{
+     "exp":"1 m",
+     "val":1.0
+    },
+    "y":{
+     "exp":"7 m",
+     "val":7.0
+    },
+    "heading":{
+     "exp":"2.2 rad",
+     "val":2.2
+    }
+   },
+   "centerstart":{
+    "x":{
+     "exp":"7.7 m",
+     "val":7.7
+    },
+    "y":{
+     "exp":"4.19 m",
+     "val":4.19
+    },
+    "heading":{
+     "exp":"-3.14 rad",
+     "val":-3.14
+    }
+   },
+   "coral1L":{
+    "x":{
+     "exp":"3.2 m",
+     "val":3.2
+    },
+    "y":{
+     "exp":"4.2 m",
+     "val":4.2
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "coral1R":{
+    "x":{
+     "exp":"3.2 m",
+     "val":3.2
+    },
+    "y":{
+     "exp":"3.855 m",
+     "val":3.855
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "coral2L":{
+    "x":{
+     "exp":"3.995 m",
+     "val":3.995
+    },
+    "y":{
+     "exp":"5.23 m",
+     "val":5.23
+    },
+    "heading":{
+     "exp":"-1.0472 rad",
+     "val":-1.0472
+    }
+   },
+   "coral2R":{
+    "x":{
+     "exp":"3.73 m",
+     "val":3.73
+    },
+    "y":{
+     "exp":"5.05 m",
+     "val":5.05
+    },
+    "heading":{
+     "exp":"-1.0472 rad",
+     "val":-1.0472
+    }
+   },
+   "coral3L":{
+    "x":{
+     "exp":"5.28 m",
+     "val":5.28
+    },
+    "y":{
+     "exp":"5.07 m",
+     "val":5.07
+    },
+    "heading":{
+     "exp":"-2.0944 rad",
+     "val":-2.0944
+    }
+   },
+   "coral3R":{
+    "x":{
+     "exp":"5 m",
+     "val":5.0
+    },
+    "y":{
+     "exp":"5.23 m",
+     "val":5.23
+    },
+    "heading":{
+     "exp":"-2.0944 rad",
+     "val":-2.0944
+    }
+   },
+   "coral4L":{
+    "x":{
+     "exp":"5.8 m",
+     "val":5.8
+    },
+    "y":{
+     "exp":"3.86 m",
+     "val":3.86
+    },
+    "heading":{
+     "exp":"-3.14 rad",
+     "val":-3.14
+    }
+   },
+   "coral4R":{
+    "x":{
+     "exp":"5.8 m",
+     "val":5.8
+    },
+    "y":{
+     "exp":"4.19 m",
+     "val":4.19
+    },
+    "heading":{
+     "exp":"-3.14 rad",
+     "val":-3.14
+    }
+   },
+   "coral5L":{
+    "x":{
+     "exp":"5 m",
+     "val":5.0
+    },
+    "y":{
+     "exp":"2.83 m",
+     "val":2.83
+    },
+    "heading":{
+     "exp":"2.0944 rad",
+     "val":2.0944
+    }
+   },
+   "coral5R":{
+    "x":{
+     "exp":"5.3 m",
+     "val":5.3
+    },
+    "y":{
+     "exp":"3 m",
+     "val":3.0
+    },
+    "heading":{
+     "exp":"2.0944 rad",
+     "val":2.0944
+    }
+   },
+   "coral6L":{
+    "x":{
+     "exp":"3.7 m",
+     "val":3.7
+    },
+    "y":{
+     "exp":"3 m",
+     "val":3.0
+    },
+    "heading":{
+     "exp":"1.0472 rad",
+     "val":1.0472
+    }
+   },
+   "coral6R":{
+    "x":{
+     "exp":"4 m",
+     "val":4.0
+    },
+    "y":{
+     "exp":"2.83 m",
+     "val":2.83
+    },
+    "heading":{
+     "exp":"1.0472 rad",
+     "val":1.0472
+    }
+   },
+   "regstart":{
+    "x":{
+     "exp":"7.7 m",
+     "val":7.7
+    },
+    "y":{
+     "exp":"5 m",
+     "val":5.0
+    },
+    "heading":{
+     "exp":"-3.14 rad",
+     "val":-3.14
+    }
    }
   }
  },
  "config":{
   "frontLeft":{
    "x":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"15 in",
+    "val":0.381
    },
    "y":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"15 in",
+    "val":0.381
    }
   },
   "backLeft":{
    "x":{
-    "exp":"-11 in",
-    "val":-0.2794
+    "exp":"-15 in",
+    "val":-0.381
    },
    "y":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"15 in",
+    "val":0.381
    }
   },
   "mass":{
-   "exp":"93 lbs",
-   "val":42.18409041
+   "exp":"120 lbs",
+   "val":54.4310844
   },
   "inertia":{
    "exp":"6 kg m ^ 2",
    "val":6.0
   },
   "gearing":{
-   "exp":"6.5",
-   "val":6.5
+   "exp":"6.75",
+   "val":6.75
   },
   "radius":{
    "exp":"2 in",
    "val":0.0508
   },
   "vmax":{
-   "exp":"6000 RPM",
-   "val":628.3185307179587
+   "exp":"6380 RPM",
+   "val":668.1120376634293
   },
   "tmax":{
-   "exp":"1.2 N * m",
-   "val":1.2
+   "exp":"1.69 N * m",
+   "val":1.69
   },
   "cof":{
-   "exp":"1.5",
-   "val":1.5
+   "exp":"1.542",
+   "val":1.542
   },
   "bumper":{
    "front":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    },
    "side":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    },
    "back":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    }
   },
   "differentialTrackWidth":{

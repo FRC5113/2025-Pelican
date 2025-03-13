@@ -3,12 +3,13 @@ from wpimath.geometry import Transform3d, Pose2d
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 from robotpy_apriltag import AprilTagFieldLayout
+from lemonlib.vision import LemonCamera
 
 from components.swerve_drive import SwerveDrive
 
 
 class Odometry:
-    camera: PhotonCamera
+    camera: LemonCamera
     robot_to_camera: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive

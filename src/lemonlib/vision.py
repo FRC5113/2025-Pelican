@@ -44,6 +44,7 @@ class LemonCamera(PhotonCamera):
                     # flatten to 2d space
                     .toPose2d()
                 )
+        print(self.tag_poses)
 
     def has_targets(self) -> bool:
         return len(self.tag_ambiguities) > 0
@@ -57,7 +58,8 @@ class LemonCamera(PhotonCamera):
     def get_best_id(self) -> int | None:
         if self.has_targets():
             return min(self.tag_ambiguities, key=self.tag_ambiguities.get)
-        return None
+        else:
+            return None
 
     def get_ambiguity(self, id: int | None = None) -> float | None:
         """Return ambiguity of tag with given id. If id is not

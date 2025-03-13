@@ -21,6 +21,7 @@ from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
 from lemonlib.smart import SmartProfile
 from choreo.trajectory import SwerveSample
+from wpilib.sysid import SysIdRoutineLog
 
 
 class SwerveDrive(Sendable):
@@ -237,6 +238,37 @@ class SwerveDrive(Sendable):
         swerve_measurements += self.rear_left.getMeasuredState()
         swerve_measurements += self.rear_right.getMeasuredState()
         SmartDashboard.putNumberArray("Swerve Measurements", swerve_measurements)
+
+    """
+    sys-id
+    """
+
+    # Tell SysId how to record a frame of data for each motor on the mechanism being
+    # characterized.
+    def log(self, sys_id_routine: SysIdRoutineLog) -> None:
+        sys_id_routine.motor("drive-front-left").voltage(
+            self.front_left.getVoltage()
+        ).position(self.front_left.getPosition().distance).velocity(
+            self.front_left.getVelocity()
+        )
+
+        sys_id_routine.motor("drive-front-right").voltage(
+            self.front_right.getVoltage()
+        ).position(self.front_right.getPosition().distance).velocity(
+            self.front_right.getVelocity()
+        )
+
+        sys_id_routine.motor("drive-rear-left").voltage(
+            self.rear_left.getVoltage()
+        ).position(self.rear_left.getPosition().distance).velocity(
+            self.rear_left.getVelocity()
+        )
+
+        sys_id_routine.motor("drive-rear-right").voltage(
+            self.rear_right.getVoltage()
+        ).position(self.rear_right.getPosition().distance).velocity(
+            self.rear_right.getVelocity()
+        )
 
     """
     EXECUTE
