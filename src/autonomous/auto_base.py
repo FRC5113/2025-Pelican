@@ -55,7 +55,7 @@ class AutoBase(AutonomousStateMachine):
     def on_enable(self) -> None:
         self.current_step = -1
         starting_pose = self.get_starting_pose()
-        if RobotBase.isSimulation():
+        if RobotBase.isSimulation() and starting_pose is not None:
             self.swerve_drive.set_pose(starting_pose)
 
         super().on_enable()
@@ -91,7 +91,7 @@ class AutoBase(AutonomousStateMachine):
 
         step = self.sequence[self.current_step]
         if step.startswith("state:"):
-
+            
             self.next_state(step.split("state:")[1])  # Go to the specified state
         else:
             self.current_trajectory = self.trajectories.get(step)

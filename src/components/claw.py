@@ -10,7 +10,7 @@ from lemonlib.smart import SmartPreference
 
 
 class ClawAngle(float, Enum):
-    STOWED = 29.0  # for
+    STOWED = 0.0  # for
     STATION = 22.0
     TROUGH = 100.0
     BRANCH = 115.0

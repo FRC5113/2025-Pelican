@@ -24,7 +24,7 @@ from magicbot import feedback
 from lemonlib import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.smart import SmartPreference, SmartProfile
-from lemonlib.vision import LemonCamera
+
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
@@ -235,10 +235,10 @@ class MyRobot(magicbot.MagicRobot):
         ODOMETRY
         """
 
-        self.camera = LemonCamera(
-            "USB_Camera", Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        self.camera = PhotonCamera(
+            "USB_Camera"
         )
-        self.robot_to_camera = self.camera.get_transform()
+        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
@@ -283,6 +283,7 @@ class MyRobot(magicbot.MagicRobot):
         else:
             self.primary = LemonInput(type="PS5")
             self.secondary = LemonInput(type="Xbox")
+        self.sysid_con = LemonInput(2)
 
         self.x_filter = SlewRateLimiter(self.slew_rate)
         self.y_filter = SlewRateLimiter(self.slew_rate)
@@ -390,22 +391,19 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getCrossButton():
                 self.climber.set_speed(-1)
 
-    def testInit(self):
-        self.sysid_con = LemonInput(2)
+            """
+            SYS-ID
+            """
+            if self.sysid_con.getAButton():
+                self.sysid_drive.quasistatic_forward()
+            if self.sysid_con.getBButton():
+                self.sysid_drive.quasistatic_reverse()
+            if self.sysid_con.getXButton():
+                self.sysid_drive.dynamic_forward()
+            if self.sysid_con.getYButton():
+                self.sysid_drive.dynamic_reverse()
 
-    def testPeriodic(self):
-        self.drive_control.engage()
-        """
-        SYS-ID
-        """
-        if self.sysid_con.getAButton():
-            self.sysid_drive.quasistatic_forward()
-        if self.sysid_con.getBButton():
-            self.sysid_drive.quasistatic_reverse()
-        if self.sysid_con.getXButton():
-            self.sysid_drive.dynamic_forward()
-        if self.sysid_con.getYButton():
-            self.sysid_drive.dynamic_reverse()
+
 
     @feedback
     def get_voltage(self) -> units.volts:
