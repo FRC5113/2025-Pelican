@@ -1,6 +1,6 @@
 from robotpy_apriltag import AprilTagFieldLayout
 from wpimath.geometry import Pose2d, Transform3d
-
+from ..vision import LemonCamera
 
 class LemonCameraSim(LemonCamera):
     """Simulated version of a LemonCamera. This class functions exactly

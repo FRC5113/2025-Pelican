@@ -1,6 +1,6 @@
 import wpilib.drive
 from wpilib.drive import DifferentialDrive
-from lemonlib.smart.preference import SmartPreference
+from lemonlib.smart._preference import SmartPreference
 from wpiutil import Sendable
 
 class SwagDrive(Sendable):

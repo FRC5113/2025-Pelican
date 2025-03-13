@@ -1,6 +1,6 @@
 from wpilib.interfaces import GenericHID
 from wpilib.simulation import GenericHIDSim
-from ..lemoninput import LemonInput
+from ..control import LemonInput
 
 
 class LemonInputSim(GenericHIDSim):

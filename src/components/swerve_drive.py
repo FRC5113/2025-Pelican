@@ -19,7 +19,7 @@ from components.swerve_wheel import SwerveWheel
 from magicbot import will_reset_to
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
-from lemonlib.smart.preference import SmartProfile
+from lemonlib.smart import SmartProfile
 from choreo.trajectory import SwerveSample
 
 

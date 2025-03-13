@@ -23,7 +23,7 @@ from magicbot import feedback
 
 from lemonlib import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
-from lemonlib.smart.preference import SmartPreference, SmartProfile
+from lemonlib.smart import SmartPreference, SmartProfile
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
