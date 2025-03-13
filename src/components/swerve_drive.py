@@ -211,11 +211,12 @@ class SwerveDrive(Sendable):
 
         pose = self.get_estimated_pose()
 
-        return ChassisSpeeds(
+        speeds = ChassisSpeeds(
             sample.vx + self.x_controller.calculate(pose.X(), sample.x),
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
             sample.omega,
         )
+        self.drive(speeds.vx, speeds.vy, speeds.omega, True, self.period)
 
     def set_pose(self, pose: Pose2d):
         self.pose_estimator.resetPose(Pose2d())

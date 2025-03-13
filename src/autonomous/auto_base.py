@@ -37,7 +37,7 @@ class AutoBase(AutonomousStateMachine):
 
         self.sequence = sequence  # List of trajectories and states
         self.current_step = -1
-        self.trajectories: dict[str, SwerveTrajectory] = {}
+        self.trajectories: list[SwerveTrajectory] = []
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
@@ -46,7 +46,7 @@ class AutoBase(AutonomousStateMachine):
         for item in self.sequence:
             if not item.startswith("state:"):  # Only load actual trajectories
                 try:
-                    self.trajectories[item] = choreo.load_swerve_trajectory(item)
+                    self.trajectories.append(choreo.load_swerve_trajectory(item))
                     if self.starting_pose is None:
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
@@ -55,6 +55,7 @@ class AutoBase(AutonomousStateMachine):
     def on_enable(self) -> None:
         self.current_step = -1
         starting_pose = self.get_starting_pose()
+        print(starting_pose)
         if RobotBase.isSimulation() and starting_pose is not None:
             self.swerve_drive.set_pose(starting_pose)
 
@@ -64,22 +65,19 @@ class AutoBase(AutonomousStateMachine):
         """Get a list of poses for the full path for display."""
         return [
             sample.get_pose()
-            for trajectory in self.trajectories.values()
+            for trajectory in self.trajectories
             for sample in trajectory.get_samples()
         ]
 
     def display_trajectory(self) -> None:
-        self.odometry.getObjects_setPoses("Trajectory", self._get_full_path_poses())
+        self.estimated_field.getObject("Trajectory").setPoses(self._get_full_path_poses())
 
     def is_red(self) -> bool:
-        return wpilib.DriverStation.getAlliance() != wpilib.DriverStation.Alliance.kRed
+        return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
+
 
     def get_starting_pose(self) -> Pose2d | None:
-        first_traj = next(
-            (self.trajectories[t] for t in self.sequence if t in self.trajectories),
-            None,
-        )
-        return first_traj.get_initial_pose(self.is_red) if first_traj else None
+        return self.trajectories[0].get_initial_pose(self.is_red())
 
     @state(first=True)
     def next_step(self):
@@ -94,7 +92,7 @@ class AutoBase(AutonomousStateMachine):
             
             self.next_state(step.split("state:")[1])  # Go to the specified state
         else:
-            self.current_trajectory = self.trajectories.get(step)
+            self.current_trajectory = self.trajectories[self.current_step]
             if self.current_trajectory:
                 self.next_state("tracking_trajectory")
             else:
@@ -108,7 +106,7 @@ class AutoBase(AutonomousStateMachine):
             return
 
         current_pose = self.swerve_drive.get_estimated_pose()
-        final_pose = self.current_trajectory.get_final_pose(self.is_red)
+        final_pose = self.current_trajectory.get_final_pose(self.is_red())
         distance = current_pose.translation().distance(final_pose.translation())
 
         if (
@@ -117,10 +115,10 @@ class AutoBase(AutonomousStateMachine):
         ):
             self.next_state("next_step")
 
-        sample = self.current_trajectory.sample_at(state_tm, self.is_red)
+        sample = self.current_trajectory.sample_at(state_tm, self.is_red())
         if sample:
-            speeds = self.swerve_drive.follow_trajectory(sample)
-            self.drive_control.drive_auto(speeds.vx, speeds.vy, speeds.omega)
+            self.swerve_drive.follow_trajectory(sample)
+            
             SmartDashboard.putNumber("Distance", distance)
             if distance < self.DISTANCE_TOLERANCE:
                 self.next_state("next_step")

@@ -5,6 +5,7 @@ from wpilib import SmartDashboard, DriverStation, Timer
 from wpimath import units
 from wpimath.controller import HolonomicDriveController
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
+from choreo.trajectory import SwerveSample
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state, timed_state
 
@@ -56,14 +57,12 @@ class DriveControl(StateMachine):
 
     def drive_auto(
         self,
-        translationX: units.meters_per_second,
-        translationY: units.meters_per_second,
-        rotationX: units.radians_per_second,
+        sample: SwerveSample
     ):
         self.engage()
-        self.translationX = translationX
-        self.translationY = translationY
-        self.rotationX = rotationX
+        self.translationX = sample.vx
+        self.translationY = sample.vy
+        self.rotationX = sample.omega
         self.field_relative = True
 
     @state(first=True)

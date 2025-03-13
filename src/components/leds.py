@@ -16,7 +16,7 @@ class LEDStrip:
     period: units.seconds = 0.02
 
     def setup(self):
-        self.leds.scolling_rainbow()
+        self.leds.set_gradient((255, 0, 0), (255, 255, 0))
         self.coral_detected = (0, 0, 255)
         self.aligned_branch = (0, 255, 0)
         self.fully_climbed = (0, 255, 0)
@@ -35,4 +35,4 @@ class LEDStrip:
         elif self.claw.get_intake_limit():
             self.leds.set_solid_color(self.coral_detected)
         else:
-            self.leds.scolling_rainbow()
+            self.leds.set_gradient((255, 0, 0), (255, 255, 0))
