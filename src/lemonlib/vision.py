@@ -80,5 +80,7 @@ class LemonCamera(PhotonCamera):
                 return self.tag_poses[id]
             return self.tag_poses[id].relativeTo(Pose2d().relativeTo(robot_pose))
         return None
+    def get_transform(self) -> Transform3d:
+        return self.camera_to_bot
 
 
