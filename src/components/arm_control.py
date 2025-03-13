@@ -6,7 +6,7 @@ from magicbot.state_machine import state
 from components.claw import Claw, ClawAngle
 from components.elevator import Elevator, ElevatorHeight
 from lemonlib.util import Alert, AlertType
-from lemonlib.preference import SmartPreference
+from lemonlib.smart import SmartPreference
 
 
 class ArmControl(StateMachine):

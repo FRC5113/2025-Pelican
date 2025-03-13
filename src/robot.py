@@ -13,6 +13,7 @@ from wpilib import (
     DriverStation,
     RobotBase,
 )
+
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Transform3d, Pose2d, Translation2d, Rotation2d, Rotation3d
@@ -20,9 +21,9 @@ from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
 
-from lemonlib.control import LemonInput
+from lemonlib import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
-from lemonlib.preference import SmartPreference, SmartProfile
+from lemonlib.smart import SmartPreference, SmartProfile
 from lemonlib.vision import LemonCamera
 
 from components.odometry import Odometry

@@ -11,7 +11,7 @@ from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
 
 
 from magicbot import will_reset_to
-from lemonlib.preference import SmartPreference, SmartProfile
+from lemonlib.smart import SmartPreference, SmartProfile
 
 
 class SwerveWheel:

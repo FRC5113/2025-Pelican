@@ -2,11 +2,11 @@ from enum import Enum
 from wpimath import applyDeadband
 from wpimath import units
 from rev import SparkMax, SparkBaseConfig, SparkAbsoluteEncoder, SparkLimitSwitch
-from lemonlib.preference import SmartProfile
+from lemonlib.smart import SmartProfile
 from magicbot import feedback, will_reset_to
 
 from lemonlib.util import Alert, AlertType, LEDController
-from lemonlib.preference import SmartPreference
+from lemonlib.smart import SmartPreference
 
 
 class ClawAngle(float, Enum):

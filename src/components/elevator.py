@@ -4,7 +4,7 @@ from enum import Enum
 from wpimath import units
 from magicbot import feedback, will_reset_to
 from wpilib import DigitalInput
-from lemonlib.preference import SmartProfile
+from lemonlib.smart._preference import SmartProfile
 from rev import SparkMax, SparkBaseConfig, SparkRelativeEncoder
 
 from lemonlib.util import Alert, AlertType
