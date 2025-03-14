@@ -53,10 +53,7 @@ class DriveControl(StateMachine):
         self.go_to_pose = True
         self.desired_pose = pose
 
-    def drive_auto(
-        self,
-        sample: SwerveSample
-    ):
+    def drive_auto(self, sample: SwerveSample):
         self.engage()
         self.translationX = sample.vx
         self.translationY = sample.vy
@@ -89,7 +86,6 @@ class DriveControl(StateMachine):
     def remove_algae(self):
         self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
         self.swerve_drive.drive(-2, 0, 0, True, self.period)
-        
 
     @state
     def going_to_pose(self):

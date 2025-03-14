@@ -102,7 +102,6 @@ class PhysicsEngine:
             robot.camera, robot.field_layout, fov=100.0, fps=20.0
         )
 
-
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)

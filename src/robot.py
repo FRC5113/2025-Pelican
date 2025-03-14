@@ -236,10 +236,8 @@ class MyRobot(magicbot.MagicRobot):
         ODOMETRY
         """
         self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
-        self.camera = LemonCamera(
-            "USB_Camera",self.robot_to_camera
-        )
-        
+        self.camera = LemonCamera("USB_Camera", self.robot_to_camera)
+
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
@@ -328,7 +326,13 @@ class MyRobot(magicbot.MagicRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
             if self.primary.getPOV() == 90:
-                self.drive_control.request_pose(Pose2d(self.camera.get_pose().X, self.camera.get_pose().Y(), Rotation2d()))
+                self.drive_control.request_pose(
+                    Pose2d(
+                        self.camera.get_pose().X,
+                        self.camera.get_pose().Y(),
+                        Rotation2d(),
+                    )
+                )
             if self.primary.getPOV() == 270:
                 self.drive_control.request_pose(
                     Pose2d(Translation2d(-0.35, 0.19), Rotation2d())
@@ -403,8 +407,6 @@ class MyRobot(magicbot.MagicRobot):
                 self.sysid_drive.dynamic_forward()
             if self.sysid_con.getYButton():
                 self.sysid_drive.dynamic_reverse()
-
-
 
     @feedback
     def get_voltage(self) -> units.volts:

@@ -7,8 +7,6 @@ from ntcore import NetworkTableInstance, PubSubOptions
 import json
 
 
-
-
 class AlertType(Enum):
     """
     Enum representing the severity level of an alert.

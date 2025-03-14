@@ -403,5 +403,3 @@ class LemonInput(GenericHID, Sendable):
         )
         builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
         builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)
-
-

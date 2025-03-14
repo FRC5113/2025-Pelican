@@ -1,9 +1,10 @@
 from robotpy_apriltag import AprilTagFieldLayout
-from wpimath.geometry import Pose2d, Transform3d,Rotation2d
+from wpimath.geometry import Pose2d, Transform3d, Rotation2d
 from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
 from photonlibpy.simulation.simCameraProperties import SimCameraProperties
 from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from ..vision import LemonCamera
+
 
 class LemonCameraSim(PhotonCameraSim):
     """Simulated version of a LemonCamera. This class functions exactly
@@ -43,13 +44,10 @@ class LemonCameraSim(PhotonCameraSim):
         self.camera_props.setFPS(fps)
         self.camera_props.setAvgLatency(avg_latency)
         self.camera_props.setLatencyStdDev(latency_std_dev)
-        PhotonCameraSim.__init__(self, self.camera, self.camera_props,self.field_layout)
-        self.vision_sim.addCamera(
-            self, self.camera.get_transform()
-            )
+        PhotonCameraSim.__init__(
+            self, self.camera, self.camera_props, self.field_layout
+        )
+        self.vision_sim.addCamera(self, self.camera.get_transform())
 
-    def get
-
-    def update(self,pose: Pose2d) -> None:
+    def update(self, pose: Pose2d) -> None:
         self.vision_sim.update(pose)
-

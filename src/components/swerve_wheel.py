@@ -88,10 +88,18 @@ class SwerveWheel:
         )
 
     def getVoltage(self) -> units.volts:
-        return self.speed_motor.get_motor_voltage().value/ self.drive_gear_ratio * (self.wheel_radius * 2 * math.pi)
+        return (
+            self.speed_motor.get_motor_voltage().value
+            / self.drive_gear_ratio
+            * (self.wheel_radius * 2 * math.pi)
+        )
 
     def getVelocity(self):
-        return self.speed_motor.get_velocity().value / self.drive_gear_ratio * (self.wheel_radius * 2 * math.pi)
+        return (
+            self.speed_motor.get_velocity().value
+            / self.drive_gear_ratio
+            * (self.wheel_radius * 2 * math.pi)
+        )
 
     """
     CONTROL METHODS

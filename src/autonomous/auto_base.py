@@ -70,11 +70,12 @@ class AutoBase(AutonomousStateMachine):
         ]
 
     def display_trajectory(self) -> None:
-        self.estimated_field.getObject("Trajectory").setPoses(self._get_full_path_poses())
+        self.estimated_field.getObject("Trajectory").setPoses(
+            self._get_full_path_poses()
+        )
 
     def is_red(self) -> bool:
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
-
 
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(self.is_red())
@@ -89,7 +90,7 @@ class AutoBase(AutonomousStateMachine):
 
         step = self.sequence[self.current_step]
         if step.startswith("state:"):
-            
+
             self.next_state(step.split("state:")[1])  # Go to the specified state
         else:
             self.current_trajectory = self.trajectories[self.current_step]
@@ -118,7 +119,7 @@ class AutoBase(AutonomousStateMachine):
         sample = self.current_trajectory.sample_at(state_tm, self.is_red())
         if sample:
             self.swerve_drive.follow_trajectory(sample)
-            
+
             SmartDashboard.putNumber("Distance", distance)
             if distance < self.DISTANCE_TOLERANCE:
                 self.next_state("next_step")

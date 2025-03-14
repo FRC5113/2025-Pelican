@@ -3,6 +3,7 @@ from wpilib.drive import DifferentialDrive
 from lemonlib.smart._preference import SmartPreference
 from wpiutil import Sendable
 
+
 class SwagDrive(Sendable):
     maxspeed = SmartPreference(0.8)
     defspeed = SmartPreference(0.5)

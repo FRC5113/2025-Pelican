@@ -1,5 +1,6 @@
 from wpilib import Preferences
 
+
 class SmartPreference(object):
     """Wrapper for wpilib Preferences that improves it in a few ways:
     1. Previous values from NetworkTables are remembered if connection

@@ -1,4 +1,4 @@
-from wpilib import AddressableLED, LEDPattern, Color,RobotController
+from wpilib import AddressableLED, LEDPattern, Color, RobotController
 import colorsys
 from typing import Tuple
 import wpimath.units
@@ -70,7 +70,10 @@ class LEDController:
 
         for i in range(self.length):
             # Normalize index to [0,1] and add the offset (converted from degrees)
-            hue = ((i / self.length) + (((RobotController.getTime() / 100000) * speed) / 360.0)) % 1.0
+            hue = (
+                (i / self.length)
+                + (((RobotController.getTime() / 100000) * speed) / 360.0)
+            ) % 1.0
             # Convert HSV to RGB; using full saturation and 50% brightness
             r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 0.5)
             self.buffer[i].setRGB(int(r * 255), int(g * 255), int(b * 255))
