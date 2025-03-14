@@ -1,8 +1,11 @@
 from robotpy_apriltag import AprilTagFieldLayout
-from wpimath.geometry import Pose2d, Transform3d
+from wpimath.geometry import Pose2d, Transform3d,Rotation2d
+from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
+from photonlibpy.simulation.simCameraProperties import SimCameraProperties
+from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from ..vision import LemonCamera
 
-class LemonCameraSim(LemonCamera):
+class LemonCameraSim(PhotonCameraSim):
     """Simulated version of a LemonCamera. This class functions exactly
     the same in code except for the following:
     1. Must be initialized with an `AprilTagFieldLayout` and an FOV
@@ -15,47 +18,38 @@ class LemonCameraSim(LemonCamera):
 
     def __init__(
         self,
+        camera: LemonCamera,
         field_layout: AprilTagFieldLayout,
-        fov: float,
-        camera_to_bot: Transform3d,
+        fov: float = 100.0,
+        fps: int = 20.0,
+        avg_latency: float = 0.035,
+        latency_std_dev: float = 0.005,
     ):
         """Args:
         field_layout (AprilTagFieldLayout): layout of the tags on the field, such as
             `AprilTagField.k2024Crescendo`
         fov (float): horizontal range of vision (degrees)
         """
-        LemonCamera.__init__(self, "Sim", camera_to_bot)
         self.field_layout = field_layout
-        self.fov = fov
-        self.robot_pose = None
-        self.tag_poses = {}
-        self.tag_ambiguities = {}
-        self.latency = 0
-        self.camera_to_bot = camera_to_bot
+        self.fov = Rotation2d.fromDegrees(fov)
+        self.camera = camera
 
-    def set_robot_pose(self, pose: Pose2d):
-        self.robot_pose = pose
+        # Vision Simulation
+        self.vision_sim = VisionSystemSim("vision_sim")
+        self.vision_sim.addAprilTags(self.field_layout)
+        self.vision_sim.resetRobotPose
+        self.camera_props = SimCameraProperties()
+        self.camera_props.setCalibrationFromFOV(640, 480, self.fov)
+        self.camera_props.setFPS(fps)
+        self.camera_props.setAvgLatency(avg_latency)
+        self.camera_props.setLatencyStdDev(latency_std_dev)
+        PhotonCameraSim.__init__(self, self.camera, self.camera_props,self.field_layout)
+        self.vision_sim.addCamera(
+            self, self.camera.get_transform()
+            )
 
-    def update(self):
-        if self.robot_pose is None:
-            return
-        self.tag_poses = {}
-        self.tag_ambiguities = {}
-        self.latency = 0.02
-        for tag in self.field_layout.getTags():
-            tag_pose = tag.pose.toPose2d()
-            relative_pose = tag_pose.relativeTo(
-                self.robot_pose.transformBy(self.camera_to_bot)
-            )
-            dist = relative_pose.translation().norm()
-            # calculate estimated tag ambiguity based on distance and angle
-            ambiguity = (
-                -dist * dist / (tag_pose.rotation() - self.robot_pose.rotation()).cos()
-            )
-            # check that robot can "see" tag
-            if (
-                abs(relative_pose.translation().angle().degrees()) < self.fov / 2
-                and ambiguity > 0
-            ):
-                self.tag_ambiguities[tag.ID] = ambiguity
-                self.tag_poses[tag.ID] = relative_pose
+    def get
+
+    def update(self,pose: Pose2d) -> None:
+        self.vision_sim.update(pose)
+

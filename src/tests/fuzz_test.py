@@ -9,7 +9,8 @@ import pytest
 import wpilib.simulation
 from wpilib.simulation import DriverStationSim
 
-from lemonlib.control import LemonInput, LemonInputSim
+from lemonlib.control import LemonInput
+from lemonlib.simulation import LemonInputSim
 
 if typing.TYPE_CHECKING:
     from pyfrc.test_support.controller import TestController

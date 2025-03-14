@@ -24,6 +24,7 @@ from magicbot import feedback
 from lemonlib import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.smart import SmartPreference, SmartProfile
+from lemonlib import LemonCamera
 
 
 from components.odometry import Odometry
@@ -234,16 +235,16 @@ class MyRobot(magicbot.MagicRobot):
         """
         ODOMETRY
         """
-
-        self.camera = PhotonCamera(
-            "USB_Camera"
-        )
         self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        self.camera = LemonCamera(
+            "USB_Camera",self.robot_to_camera
+        )
+        
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
         # )
         self.field_layout = AprilTagFieldLayout.loadField(
-            AprilTagField.k2025ReefscapeAndyMark
+            AprilTagField.k2025ReefscapeWelded
         )
 
         """
@@ -326,8 +327,8 @@ class MyRobot(magicbot.MagicRobot):
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
-            # if self.primary.getPOV() == 90:
-            #     self.drive_control.request_pose(self.camera.get_pose(id=self.camera.get_best_id()).X(),self.camera.get_pose(id=self.camera.get_best_id()).Y(),self.camera.get_pose(id=self.camera.get_best_id()).rotation())
+            if self.primary.getPOV() == 90:
+                self.drive_control.request_pose(Pose2d(self.camera.get_pose().X, self.camera.get_pose().Y(), Rotation2d()))
             if self.primary.getPOV() == 270:
                 self.drive_control.request_pose(
                     Pose2d(Translation2d(-0.35, 0.19), Rotation2d())
@@ -335,11 +336,11 @@ class MyRobot(magicbot.MagicRobot):
 
             if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(
-                    ElevatorHeight.L1, ClawAngle.TROUGH, self.period
+                    ElevatorHeight.L1, ClawAngle.TROUGH
                 )
             if self.primary.getPOV() == 180:
                 self.drive_control.request_remove_algae(
-                    ElevatorHeight.L2, ClawAngle.TROUGH, self.period
+                    ElevatorHeight.L2, ClawAngle.TROUGH
                 )
 
             if self.primary.getSquareButton():
