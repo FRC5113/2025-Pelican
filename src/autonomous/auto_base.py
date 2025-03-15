@@ -172,9 +172,9 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
-            self.arm_control.set_wheel_voltage(1)
+            self.arm_control.set_wheel_voltage(-10)
 
-    @state
-    def spit(self) -> None:
-        self.arm_control.engage()
-        self.arm_control.set_wheel_voltage(1.0)
+
+
+
+
