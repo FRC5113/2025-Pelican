@@ -8,7 +8,6 @@ from robotpy_apriltag import AprilTagFieldLayout
 from components.swerve_drive import SwerveDrive
 
 
-
 class Odometry:
     camera: PhotonCamera
     robot_to_camera: Transform3d

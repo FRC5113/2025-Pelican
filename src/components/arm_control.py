@@ -114,7 +114,6 @@ class ArmControl(StateMachine):
             self.drive_scalar = 1.0
         else:
             self.drive_scalar = 0.25
-        print(self.wheel_voltage)
         self.claw.set_wheel_voltage(
             self.wheel_voltage,
             self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,

@@ -44,7 +44,6 @@ class LemonCamera(PhotonCamera):
                     # flatten to 2d space
                     .toPose2d()
                 )
-        print(self.tag_poses)
 
     def has_targets(self) -> bool:
         return len(self.tag_ambiguities) > 0

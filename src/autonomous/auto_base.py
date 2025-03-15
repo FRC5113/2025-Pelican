@@ -16,7 +16,7 @@ from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
 from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
-from components.elevator import ElevatorHeight,Elevator
+from components.elevator import ElevatorHeight, Elevator
 from lemonlib.util import AlertManager
 
 
@@ -57,7 +57,6 @@ class AutoBase(AutonomousStateMachine):
     def on_enable(self) -> None:
         self.current_step = -1
         starting_pose = self.get_starting_pose()
-        print(starting_pose)
         if RobotBase.isSimulation() and starting_pose is not None:
             self.swerve_drive.set_pose(starting_pose)
 
@@ -127,7 +126,6 @@ class AutoBase(AutonomousStateMachine):
             if distance < self.DISTANCE_TOLERANCE:
                 self.next_state("next_step")
 
-    
     """
     STATES
     """
@@ -168,15 +166,14 @@ class AutoBase(AutonomousStateMachine):
         if not self.claw.get_intake_limit():
             self.next_state("next_step")
 
-    @timed_state(duration=2,next_state="next_step")
+    @timed_state(duration=2, next_state="next_step")
     def level_four(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
             self.arm_control.set_wheel_voltage(1)
-        
-        
+
     @state
     def spit(self) -> None:
         self.arm_control.engage()

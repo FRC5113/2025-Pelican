@@ -79,7 +79,6 @@ def fuzz_gamepad(gamepad: LemonInputSim) -> None:
     for button in range(10):
         gamepad.setRawButton(button, rand_bool())
     randpov = rand_pov()
-    print(randpov)
     gamepad.setPOV(randpov)
 
 

@@ -131,7 +131,9 @@ class Claw:
 
     def execute(self):
 
-        if self.intake_limit.get() and (self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0):
+        if self.intake_limit.get() and (
+            self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0
+        ):
             self.left_wheel_voltage = 1
             self.right_wheel_voltage = 1
         # positive voltage (left) = intake

@@ -23,7 +23,7 @@ class LEDStrip:
     justin_bool = will_reset_to(False)
 
     def setup(self):
-        self.leds.set_solid_color((50,50,50))
+        self.leds.set_solid_color((50, 50, 50))
         self.coral_detected = (0, 0, 255)
         self.aligned_branch = (0, 255, 0)
         self.fully_climbed = (0, 255, 255)
@@ -31,7 +31,7 @@ class LEDStrip:
         self.warning_color = (255, 255, 0)
         self.error_bool = self.error.get_alert_error()
         self.warn_bool = self.error.get_alert_warn()
-    
+
     def justin_fun(self):
         self.justin_bool = True
 
@@ -48,5 +48,4 @@ class LEDStrip:
             if self.justin_bool:
                 self.leds.scolling_rainbow(6)
             else:
-                self.leds.set_solid_color((50,50,50))
-
+                self.leds.set_solid_color((50, 50, 50))

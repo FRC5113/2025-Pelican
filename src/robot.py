@@ -26,7 +26,6 @@ from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, 
 from lemonlib.smart import SmartPreference, SmartProfile
 
 
-
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
@@ -235,7 +234,9 @@ class MyRobot(magicbot.MagicRobot):
         """
         ODOMETRY
         """
-        self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
+        self.robot_to_camera = Transform3d(
+            -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
+        )
         self.camera = PhotonCamera("USB_Camera")
 
         # self.field_layout = AprilTagFieldLayout(
@@ -326,7 +327,6 @@ class MyRobot(magicbot.MagicRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
 
-
             if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L1, ClawAngle.TROUGH
@@ -406,7 +406,7 @@ class MyRobot(magicbot.MagicRobot):
         #         self.sysid_drive.dynamic_reverse()
 
     def disabledInit(self):
-        self.leds.set_solid_color((50,50,50))
+        self.leds.set_solid_color((50, 50, 50))
 
     @feedback
     def get_voltage(self) -> units.volts:

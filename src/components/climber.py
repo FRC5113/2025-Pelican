@@ -11,7 +11,7 @@ from lemonlib.util import Alert, AlertType
 
 class ClimberAngle(Enum):
     MIN = -95.0
-    MAX = 0.0  
+    MAX = 0.0
     STOWED = -85.0
     DEPLOYED = -25.0
 
@@ -46,7 +46,7 @@ class Climber:
         if angle > 180:
             angle -= 360
         return angle
-    
+
     @feedback
     def get_falcon_encoder(self) -> units.turns:
         return self.motor.get_position().value
@@ -54,10 +54,10 @@ class Climber:
     @feedback
     def fully_climbed(self) -> bool:
         return self.get_angle() >= ClimberAngle.MAX.value
-    
+
     def fully_out(self) -> bool:
         return self.get_angle() <= ClimberAngle.MIN.value
-    
+
     def deployed(self) -> bool:
         return self.get_falcon_encoder() <= -425
 

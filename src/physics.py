@@ -14,7 +14,6 @@ from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
 
 
-
 class FalconSim:
     def __init__(self, motor: TalonFX, moi: float, gearing: float):
         self.gearbox = DCMotor.falcon500(1)
@@ -100,13 +99,13 @@ class PhysicsEngine:
         # Vision Simulation
         self.vision_sim = VisionSystemSim("vision_sim")
         self.vision_sim.addAprilTags(robot.field_layout)
-     
+
         self.camera_props = SimCameraProperties()
         self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
         self.camera_props.setFPS(20)
         self.camera_props.setAvgLatency(0.035)
         self.camera_props.setLatencyStdDev(0.005)
-        
+
         self.camera_sim = PhotonCameraSim(
             robot.camera, self.camera_props, robot.field_layout
         )
