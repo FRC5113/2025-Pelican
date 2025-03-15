@@ -13,7 +13,6 @@ from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
 
-from lemonlib.simulation import LemonCameraSim
 
 
 class FalconSim:
@@ -98,9 +97,24 @@ class PhysicsEngine:
         # Put Mechanism to SmartDashboard
         SmartDashboard.putData("Elevator Sim", self.mech2d)
 
-        self.camera_sim = LemonCameraSim(
-            robot.camera, robot.field_layout, fov=100.0, fps=20.0
+        # Vision Simulation
+        self.vision_sim = VisionSystemSim("vision_sim")
+        self.vision_sim.addAprilTags(robot.field_layout)
+     
+        self.camera_props = SimCameraProperties()
+        self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
+        self.camera_props.setFPS(20)
+        self.camera_props.setAvgLatency(0.035)
+        self.camera_props.setLatencyStdDev(0.005)
+        
+        self.camera_sim = PhotonCameraSim(
+            robot.camera, self.camera_props, robot.field_layout
         )
+        self.vision_sim.addCamera(self.camera_sim, robot.robot_to_camera)
+
+        # self.camera_sim = LemonCameraSim(
+        #     robot.camera, robot.field_layout, fov=100.0, fps=20.0
+        # )
 
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
@@ -150,4 +164,4 @@ class PhysicsEngine:
             self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())
 
             # Simulate Vision
-            self.camera_sim.update(pose)
+            self.vision_sim.update(pose)

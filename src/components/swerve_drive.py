@@ -216,7 +216,7 @@ class SwerveDrive(Sendable):
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
             sample.omega,
         )
-        self.drive(speeds.vx, speeds.vy, speeds.omega, True, self.period)
+        self.drive(-speeds.vx, -speeds.vy, -speeds.omega, True, self.period)
 
     def set_pose(self, pose: Pose2d):
         self.pose_estimator.resetPose(Pose2d())

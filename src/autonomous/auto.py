@@ -22,6 +22,7 @@ States:
 - level_two
 - level_one
 - intaking_coral
+- spit
 """
 
 
@@ -33,6 +34,7 @@ class Center_4R(AutoBase):
             [
                 "Center-Start-4R",
                 "state:level_four",
+                "state:spit",
             ]
         )
 
@@ -45,6 +47,7 @@ class Center_4R_Station(AutoBase):
             [
                 "Center-Start-4R",
                 "state:level_four",
+                "state:spit",
                 "4R-BottomStation",
             ]
         )
@@ -58,10 +61,12 @@ class Center_4R__6L(AutoBase):
             [
                 "Center-Start-4R",
                 "state:level_four",
+                "state:spit",
                 "4R-BottomStation",
                 "state:intaking_coral",
                 "BottomStation-6L",
                 "state:level_four",
+                "state:spit",
             ]
         )
 
@@ -74,6 +79,7 @@ class Top_2L(AutoBase):
             [
                 "Reg-Start-2L",
                 "state:level_four",
+                "state:spit",
             ]
         )
 
@@ -86,6 +92,7 @@ class Top_2L_Station(AutoBase):
             [
                 "Reg-Start-2L",
                 "state:level_four",
+                "state:spit",
                 "2L-TopStation",
             ]
         )
@@ -99,9 +106,11 @@ class Top_2L__2R(AutoBase):
             [
                 "Reg-Start-2L",
                 "state:level_four",
+                "state:spit",
                 "2L-TopStation",
                 "state:intaking_coral",
                 "TopStation-2R",
                 "state:level_four",
+                "state:spit",
             ]
         )

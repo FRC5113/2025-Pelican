@@ -24,7 +24,7 @@ from magicbot import feedback
 from lemonlib import LemonInput
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.smart import SmartPreference, SmartProfile
-from lemonlib import LemonCamera
+
 
 
 from components.odometry import Odometry
@@ -236,7 +236,7 @@ class MyRobot(magicbot.MagicRobot):
         ODOMETRY
         """
         self.robot_to_camera = Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, math.pi))
-        self.camera = LemonCamera("USB_Camera", self.robot_to_camera)
+        self.camera = PhotonCamera("USB_Camera")
 
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
@@ -325,18 +325,7 @@ class MyRobot(magicbot.MagicRobot):
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
-            if self.primary.getPOV() == 90:
-                self.drive_control.request_pose(
-                    Pose2d(
-                        self.camera.get_pose().X,
-                        self.camera.get_pose().Y(),
-                        Rotation2d(),
-                    )
-                )
-            if self.primary.getPOV() == 270:
-                self.drive_control.request_pose(
-                    Pose2d(Translation2d(-0.35, 0.19), Rotation2d())
-                )
+
 
             if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(
@@ -372,11 +361,11 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getStartButton():
                 self.arm_control.set(ElevatorHeight.STATION, ClawAngle.STATION)
 
-            if self.secondary.getLeftTriggerAxis() > 0.9:
+            if self.secondary.getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
                     6.0 * applyDeadband(self.secondary.getLeftTriggerAxis(), 0.1)
                 )
-            if self.secondary.getRightTriggerAxis() > 0.9:
+            if self.secondary.getRightTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
                     6.0 * applyDeadband(-self.secondary.getRightTriggerAxis(), 0.1)
                 )
@@ -396,17 +385,28 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getCrossButton():
                 self.climber.set_speed(-1)
 
+        with self.consumeExceptions():
             """
-            SYS-ID
+            MISC
             """
-            if self.sysid_con.getAButton():
-                self.sysid_drive.quasistatic_forward()
-            if self.sysid_con.getBButton():
-                self.sysid_drive.quasistatic_reverse()
-            if self.sysid_con.getXButton():
-                self.sysid_drive.dynamic_forward()
-            if self.sysid_con.getYButton():
-                self.sysid_drive.dynamic_reverse()
+            if self.secondary.getPOV() == 90:
+                self.led_strip.justin_fun()
+
+        # with self.consumeExceptions():
+        #     """
+        #     SYS-ID
+        #     """
+        #     if self.sysid_con.getAButton():
+        #         self.sysid_drive.quasistatic_forward()
+        #     if self.sysid_con.getBButton():
+        #         self.sysid_drive.quasistatic_reverse()
+        #     if self.sysid_con.getXButton():
+        #         self.sysid_drive.dynamic_forward()
+        #     if self.sysid_con.getYButton():
+        #         self.sysid_drive.dynamic_reverse()
+
+    def disabledInit(self):
+        self.leds.set_solid_color((50,50,50))
 
     @feedback
     def get_voltage(self) -> units.volts:

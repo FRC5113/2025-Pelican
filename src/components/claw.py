@@ -11,7 +11,7 @@ from lemonlib.smart import SmartPreference
 
 class ClawAngle(float, Enum):
     STOWED = 0.0  # for
-    STATION = 22.0
+    STATION = 31.0
     TROUGH = 100.0
     BRANCH = 115.0
     SAFE_START = 45.0  # has to be adusted just an estimate
@@ -131,11 +131,9 @@ class Claw:
 
     def execute(self):
 
-        if self.intake_limit.get() and (
-            self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0
-        ):
-            self.left_wheel_voltage = 0
-            self.right_wheel_voltage = 0
+        if self.intake_limit.get() and (self.left_wheel_voltage > 0 and self.right_wheel_voltage > 0):
+            self.left_wheel_voltage = 1
+            self.right_wheel_voltage = 1
         # positive voltage (left) = intake
         self.left_motor.setVoltage(self.left_wheel_voltage)
         self.right_motor.setVoltage(-self.right_wheel_voltage)

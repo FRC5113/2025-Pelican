@@ -9,13 +9,14 @@ from magicbot import AutonomousStateMachine, state, timed_state, will_reset_to
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
+from magicbot import feedback
 
 from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
 from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
-from components.elevator import ElevatorHeight
+from components.elevator import ElevatorHeight,Elevator
 from lemonlib.util import AlertManager
 
 
@@ -26,8 +27,9 @@ class AutoBase(AutonomousStateMachine):
     odometry: Odometry
     claw: Claw
     estimated_field: Field2d
+    elevator: Elevator
 
-    DISTANCE_TOLERANCE = 0.1  # metres
+    DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
@@ -74,6 +76,7 @@ class AutoBase(AutonomousStateMachine):
             self._get_full_path_poses()
         )
 
+    @feedback
     def is_red(self) -> bool:
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
@@ -124,7 +127,10 @@ class AutoBase(AutonomousStateMachine):
             if distance < self.DISTANCE_TOLERANCE:
                 self.next_state("next_step")
 
-    # ---------- STATES FOR INTAKING AND LIFTING ---------- #
+    
+    """
+    STATES
+    """
 
     @state
     def intaking_coral(self) -> None:
@@ -162,11 +168,16 @@ class AutoBase(AutonomousStateMachine):
         if not self.claw.get_intake_limit():
             self.next_state("next_step")
 
-    @state
+    @timed_state(duration=2,next_state="next_step")
     def level_four(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
+            self.arm_control.engage()
             self.arm_control.set_wheel_voltage(1)
-        if self.claw.get_intake_limit():
-            self.next_state("next_step")
+        
+        
+    @state
+    def spit(self) -> None:
+        self.arm_control.engage()
+        self.arm_control.set_wheel_voltage(1.0)

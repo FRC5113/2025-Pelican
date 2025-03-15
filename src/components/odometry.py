@@ -6,11 +6,11 @@ from robotpy_apriltag import AprilTagFieldLayout
 
 
 from components.swerve_drive import SwerveDrive
-from lemonlib import LemonCamera
+
 
 
 class Odometry:
-    camera: LemonCamera
+    camera: PhotonCamera
     robot_to_camera: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive
