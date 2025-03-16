@@ -34,7 +34,7 @@ class Center_4R(AutoBase):
             [
                 "Center-Start-4R",
                 "state:level_four",
-                "state:spit",
+                
             ]
         )
 

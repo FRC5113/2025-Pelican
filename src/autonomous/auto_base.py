@@ -40,22 +40,6 @@ class AutoBase(AutonomousStateMachine):
     estimated_field: Field2d
     elevator: Elevator
 
-    drive_control_state_log: StringLogEntry
-    arm_control_state_log: StringLogEntry
-    claw_state_log: StringLogEntry
-    elevator_state_log: StringLogEntry
-    elevator_height_log: DoubleLogEntry
-    claw_angle_log: DoubleLogEntry
-    claw_intake_limit_log: BooleanLogEntry
-
-    auto_state_log: StringLogEntry
-    auto_step_log: IntegerLogEntry
-    auto_trajectory_log: StringLogEntry
-    auto_pose_log: StringLogEntry
-    auto_distance_log: DoubleLogEntry
-    auto_target_log: StringLogEntry
-
-    alliance_log: StringLogEntry
 
     DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -72,7 +56,30 @@ class AutoBase(AutonomousStateMachine):
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
 
-        self.alliance_log.append(wpilib.DriverStation.getAlliance())
+        DataLogManager.start()
+        # Set up custom log entries
+        log = DataLogManager.getLog()
+        self.drive_control_state_log = StringLogEntry(log, "/drive_control/state")
+        
+        self.arm_control_state_log = StringLogEntry(log, "/arm_control/state")
+
+        self.elevator_state_log = StringLogEntry(log, "/elevator/state")
+        self.elevator_height_log = DoubleLogEntry(log, "/elevator/height")
+        
+        self.claw_state_log = StringLogEntry(log, "/claw/state")
+        self.claw_intake_limit_log = BooleanLogEntry(log, "/claw/intake_limit")
+        self.claw_angle_log = DoubleLogEntry(log, "/claw/angle")
+        
+        self.auto_state_log = StringLogEntry(log, "/auto/state")
+        self.auto_step_log = IntegerLogEntry(log, "/auto/step")
+        self.auto_trajectory_log = StringLogEntry(log, "/auto/trajectory")
+        self.auto_pose_log = StringLogEntry(log, "/auto/pose")
+        self.auto_target_log = StringLogEntry(log, "/auto/target")
+        self.auto_distance_log = DoubleLogEntry(log, "/auto/distance")
+
+        self.alliance_log = StringLogEntry(log, "/alliance")
+
+        
 
         # Load trajectories (skip non-trajectory steps)
         for item in self.sequence:
@@ -107,6 +114,9 @@ class AutoBase(AutonomousStateMachine):
 
     @feedback
     def is_red(self) -> bool:
+        if not (wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed or wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kBlue):
+            return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
+        self.alliance_log.append(wpilib.DriverStation.getAlliance().name)
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
@@ -126,8 +136,8 @@ class AutoBase(AutonomousStateMachine):
 
         step = self.sequence[self.current_step]
 
-        self.auto_state_log(step)
-        self.auto_step_log(self.current_step)
+        self.auto_state_log.append(step)
+        self.auto_step_log.append(self.current_step)
 
         if step.startswith("state:"):
 
@@ -150,10 +160,10 @@ class AutoBase(AutonomousStateMachine):
         final_pose = self.current_trajectory.get_final_pose(self.is_red())
         distance = current_pose.translation().distance(final_pose.translation())
 
-        self.auto_trajectory_log(self.current_trajectory.name)
-        self.auto_target_log(f"X: {final_pose.translation().x()}, Y: {final_pose.translation().y()}, Rot: {final_pose.rotation().degrees()}")
-        self.auto_pose_log(current_pose)
-        self.auto_distance_log(distance)
+        self.auto_trajectory_log.append(self.current_trajectory.name)
+        self.auto_target_log.append(f"X: {final_pose.translation().X()}, Y: {final_pose.translation().Y()}, Rot: {final_pose.rotation().degrees()}")
+        self.auto_pose_log.append(f"{current_pose}")
+        self.auto_distance_log.append(distance)
 
         if (
             distance < self.DISTANCE_TOLERANCE
@@ -178,8 +188,8 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
 
-        self.elevator_height_log(self.elevator.get_height())
-        self.claw_angle_log(self.claw.get_angle())
+        self.elevator_height_log.append(self.elevator.get_height())
+        self.claw_angle_log.append(self.claw.get_angle())
 
         if self.arm_control.at_setpoint():
 
@@ -192,8 +202,8 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
 
-        self.elevator_height_log(self.elevator.get_height())
-        self.claw_angle_log(self.claw.get_angle())
+        self.elevator_height_log.append(self.elevator.get_height())
+        self.claw_angle_log.append(self.claw.get_angle())
 
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -205,8 +215,8 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
 
-        self.elevator_height_log(self.elevator.get_height())
-        self.claw_angle_log(self.claw.get_angle())
+        self.elevator_height_log.append(self.elevator.get_height())
+        self.claw_angle_log.append(self.claw.get_angle())
 
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -218,8 +228,8 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
 
-        self.elevator_height_log(self.elevator.get_height())
-        self.claw_angle_log(self.claw.get_angle())
+        self.elevator_height_log.append(self.elevator.get_height())
+        self.claw_angle_log.append(self.claw.get_angle())
 
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
@@ -231,8 +241,8 @@ class AutoBase(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
 
-        self.elevator_height_log(self.elevator.get_height())
-        self.claw_angle_log(self.claw.get_angle())
+        self.elevator_height_log.append(self.elevator.get_height())
+        self.claw_angle_log.append(self.claw.get_angle())
 
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
