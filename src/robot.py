@@ -2,7 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d, SmartDashboard
+from wpilib import Field2d, SmartDashboard,DataLogManager
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -13,6 +13,14 @@ from wpilib import (
     DriverStation,
     RobotBase,
 )
+
+from wpiutil.log import (
+     DataLog,
+     BooleanLogEntry,
+     DoubleLogEntry,
+     StringLogEntry,
+     IntegerLogEntry,
+ )
 
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
@@ -247,6 +255,36 @@ class MyRobot(magicbot.MagicRobot):
         )
 
         """
+        LOGS
+        """
+        # Starts recording to data log
+        DataLogManager.start()
+        # Set up custom log entries
+        log = DataLogManager.getLog()
+
+        self.drive_control_state_log = StringLogEntry(log, "/drive_control/state")
+        
+        self.arm_control_state_log = StringLogEntry(log, "/arm_control/state")
+
+        self.elevator_state_log = StringLogEntry(log, "/elevator/state")
+        self.elevator_height_log = DoubleLogEntry(log, "/elevator/height")
+        
+        self.claw_state_log = StringLogEntry(log, "/claw/state")
+        self.claw_intake_limit_log = BooleanLogEntry(log, "/claw/intake_limit")
+        self.claw_angle_log = DoubleLogEntry(log, "/claw/angle")
+        
+        self.auto_state_log = StringLogEntry(log, "/auto/state")
+        self.auto_step_log = IntegerLogEntry(log, "/auto/step")
+        self.auto_trajectory_log = StringLogEntry(log, "/auto/trajectory")
+        self.auto_pose_log = StringLogEntry(log, "/auto/pose")
+        self.auto_target_log = StringLogEntry(log, "/auto/target")
+        self.auto_distance_log = DoubleLogEntry(log, "/auto/distance")
+
+        self.alliance_log = StringLogEntry(log, "/alliance")
+
+
+
+        """
         MISCELLANEOUS
         """
 
@@ -274,6 +312,8 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.estimated_field = Field2d()
+
+    
 
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes

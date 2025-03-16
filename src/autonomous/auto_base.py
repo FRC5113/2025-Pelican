@@ -11,6 +11,9 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 from magicbot import feedback
 
+from wpiutil.log import DataLog
+from wpilib import DataLogManager
+
 from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
@@ -18,6 +21,14 @@ from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight, Elevator
 from lemonlib.util import AlertManager
+
+from wpiutil.log import (
+     DataLog,
+     BooleanLogEntry,
+     DoubleLogEntry,
+     StringLogEntry,
+     IntegerLogEntry,
+ )
 
 
 class AutoBase(AutonomousStateMachine):
@@ -28,6 +39,22 @@ class AutoBase(AutonomousStateMachine):
     claw: Claw
     estimated_field: Field2d
     elevator: Elevator
+
+    drive_control_state_log: StringLogEntry
+    arm_control_state_log: StringLogEntry
+    claw_state_log: StringLogEntry
+    elevator_state_log: StringLogEntry
+    elevator_height_log: DoubleLogEntry
+    claw_angle_log: DoubleLogEntry
+    claw_intake_limit_log: BooleanLogEntry
+
+    auto_state_log: StringLogEntry
+    auto_step_log: IntegerLogEntry
+    auto_trajectory_log: StringLogEntry
+    auto_pose_log: StringLogEntry
+    auto_distance_log: DoubleLogEntry
+
+    alliance_log: StringLogEntry
 
     DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -77,6 +104,7 @@ class AutoBase(AutonomousStateMachine):
 
     @feedback
     def is_red(self) -> bool:
+        self.alliance_log.append(wpilib.DriverStation.getAlliance().name)
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
@@ -85,12 +113,20 @@ class AutoBase(AutonomousStateMachine):
     @state(first=True)
     def next_step(self):
         """Moves to the next step in the sequence, determining if it's a trajectory or a state."""
+
+        self.auto_state_log.append("next_step")
+        self.auto_step_log.append(self.current_step)
+
         self.current_step += 1
         if self.current_step >= len(self.sequence):
             self.done()
             return
 
         step = self.sequence[self.current_step]
+
+        self.auto_state_log(step)
+        self.auto_step_log(self.current_step)
+
         if step.startswith("state:"):
 
             self.next_state(step.split("state:")[1])  # Go to the specified state
@@ -111,6 +147,10 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.swerve_drive.get_estimated_pose()
         final_pose = self.current_trajectory.get_final_pose(self.is_red())
         distance = current_pose.translation().distance(final_pose.translation())
+
+        self.auto_trajectory_log(self.current_trajectory.get_name())
+        self.auto_pose_log(current_pose)
+        self.auto_distance_log(distance)
 
         if (
             distance < self.DISTANCE_TOLERANCE
@@ -134,7 +174,12 @@ class AutoBase(AutonomousStateMachine):
     def intaking_coral(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
+
+        self.elevator_height_log(self.elevator.get_height())
+        self.claw_angle_log(self.claw.get_angle())
+
         if self.arm_control.at_setpoint():
+
             self.arm_control.set_wheel_voltage(-1)
         if self.claw.get_intake_limit():
             self.next_state("next_step")
@@ -143,6 +188,10 @@ class AutoBase(AutonomousStateMachine):
     def level_one(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
+
+        self.elevator_height_log(self.elevator.get_height())
+        self.claw_angle_log(self.claw.get_angle())
+
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
@@ -152,6 +201,10 @@ class AutoBase(AutonomousStateMachine):
     def level_two(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
+
+        self.elevator_height_log(self.elevator.get_height())
+        self.claw_angle_log(self.claw.get_angle())
+
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
@@ -161,6 +214,10 @@ class AutoBase(AutonomousStateMachine):
     def level_three(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
+
+        self.elevator_height_log(self.elevator.get_height())
+        self.claw_angle_log(self.claw.get_angle())
+
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(1)
         if not self.claw.get_intake_limit():
@@ -170,9 +227,14 @@ class AutoBase(AutonomousStateMachine):
     def level_four(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+
+        self.elevator_height_log(self.elevator.get_height())
+        self.claw_angle_log(self.claw.get_angle())
+
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
             self.arm_control.set_wheel_voltage(-10)
+
 
 
 
