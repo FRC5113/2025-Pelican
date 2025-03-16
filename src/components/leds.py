@@ -5,7 +5,7 @@ from components.climber import Climber
 from components.claw import Claw
 from components.error import Errors
 from wpimath import units
-from magicbot import will_reset_to
+from magicbot import will_reset_to, feedback
 
 from lemonlib import LemonInput
 from components import error
@@ -23,7 +23,7 @@ class LEDStrip:
     justin_bool = will_reset_to(False)
 
     def setup(self):
-        self.leds.set_solid_color((50, 50, 50))
+        self.leds.set_solid_color((10, 10, 10))
         self.coral_detected = (0, 0, 255)
         self.aligned_branch = (0, 255, 0)
         self.fully_climbed = (0, 255, 255)
@@ -34,6 +34,10 @@ class LEDStrip:
 
     def justin_fun(self):
         self.justin_bool = True
+
+    @feedback
+    def get_color(self):
+        return Color(self.leds.buffer[0].r,self.leds.buffer[0].g,self.leds.buffer[0].b).hexString()
 
     def execute(self):
         if self.error_bool:
@@ -48,4 +52,4 @@ class LEDStrip:
             if self.justin_bool:
                 self.leds.scolling_rainbow(6)
             else:
-                self.leds.set_solid_color((50, 50, 50))
+                self.leds.move_across((255,255,0),15,12)

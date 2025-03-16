@@ -20,6 +20,27 @@ from components.elevator import ElevatorHeight, Elevator
 from lemonlib.util import AlertManager
 
 
+from wpiutil.log import (
+
+
+     DataLog,
+
+
+     BooleanLogEntry,
+
+
+     DoubleLogEntry,
+
+
+     StringLogEntry,
+
+
+     IntegerLogEntry,
+
+
+ )
+
+
 class AutoBase(AutonomousStateMachine):
     swerve_drive: SwerveDrive
     drive_control: DriveControl
@@ -77,6 +98,7 @@ class AutoBase(AutonomousStateMachine):
 
     @feedback
     def is_red(self) -> bool:
+        # self.alliance_log.append(wpilib.DriverStation.getAlliance().name)
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:

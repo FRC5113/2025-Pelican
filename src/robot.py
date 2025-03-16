@@ -255,7 +255,7 @@ class MyRobot(magicbot.MagicRobot):
         # self.primary = PS5Controller(0)
         # self.secondary = XboxController(1)
 
-        self.leds = LEDController(0, 72)  # broken amount is 46
+        self.leds = LEDController(0, 112)  # broken amount is 46
 
         self.pigeon = Pigeon2(30)
 
@@ -306,6 +306,8 @@ class MyRobot(magicbot.MagicRobot):
                 self.getLefty = self.primary.getLeftY()
                 self.getLeftx = self.primary.getLeftX()
 
+            
+            rotate_mult = 0.75
             mult = 1
             if self.primary.getR2Axis() >= 0.8:
                 mult *= 0.5
@@ -322,7 +324,7 @@ class MyRobot(magicbot.MagicRobot):
                     -self.sammi_curve(self.getLeftx) * mult * self.top_speed
                 ),
                 self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX()) * self.top_omega
+                    -self.sammi_curve(self.primary.getRightX()) * rotate_mult * self.top_omega
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
@@ -360,15 +362,24 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
             if self.secondary.getStartButton():
                 self.arm_control.set(ElevatorHeight.STATION, ClawAngle.STATION)
+            if self.secondary.getBackButton():
+                self.arm_control.set(ElevatorHeight.INTAKE_CORAL_FRONT,ClawAngle.INTAKE_CORAL_INFRONT)
 
             if self.secondary.getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
-                    6.0 * applyDeadband(self.secondary.getLeftTriggerAxis(), 0.1)
+                    8.0 * applyDeadband(self.secondary.getLeftTriggerAxis(), 0.1)
                 )
             if self.secondary.getRightTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
                     6.0 * applyDeadband(-self.secondary.getRightTriggerAxis(), 0.1)
                 )
+
+            if self.secondary.getRightBumper():
+                self.arm_control.set_wheel_voltage(-1)
+
+            if self.secondary.getPOV() == 270:
+                # self.arm_control.elefail()
+                self.arm_control.next_state_now("elevator_failsafe")
 
             # if self.secondary.getLeftBumper():
             #     self.claw.set_hinge_voltage(-1)
@@ -381,15 +392,16 @@ class MyRobot(magicbot.MagicRobot):
             """
 
             if self.primary.getTriangleButton():
-                self.climber.set_speed(1)
-            if self.primary.getCrossButton():
                 self.climber.set_speed(-1)
+            if self.primary.getCrossButton():
+                self.climber.set_speed(1)
 
         with self.consumeExceptions():
             """
             MISC
             """
             if self.secondary.getPOV() == 90:
+                self.arm_control.next_state_now("positioning_claw")
                 self.led_strip.justin_fun()
 
         # with self.consumeExceptions():

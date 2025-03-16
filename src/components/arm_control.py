@@ -23,6 +23,8 @@ class ArmControl(StateMachine):
     wheel_voltage = will_reset_to(0)
     wheel_twist = SmartPreference(0.2)
 
+    elevator_fail = False
+
     """
     INITIALIZATION METHODS
     """
@@ -61,6 +63,9 @@ class ArmControl(StateMachine):
     def set_wheel_voltage(self, voltage: units.volts):
         self.wheel_voltage = voltage
 
+    def elefail(self):
+        self.elevator_fail = True
+
     """
     STATES
     """
@@ -76,8 +81,8 @@ class ArmControl(StateMachine):
 
     @state
     def positioning_claw(self):
-        if self.claw.get_setpoint() == ClawAngle.STOWED:
-            self.drive_scalar = 1.0
+        if self.claw_setpoint in [ClawAngle.STOWED, ClawAngle.STATION, ClawAngle.INTAKE_CORAL_INFRONT]:
+            self.drive_scalar = 0.8
         else:
             self.drive_scalar = 0.5
         if self.elevator_setpoint < 0.1 and self.elevator.get_height() < 0.1:
@@ -112,12 +117,20 @@ class ArmControl(StateMachine):
         self.claw.set_target_angle(self.claw_setpoint)
         if self.elevator_setpoint == ElevatorHeight.L1 and self.elevator.at_setpoint():
             self.drive_scalar = 1.0
+        elif self.elevator_setpoint in [ElevatorHeight.STATION, ElevatorHeight.INTAKE_CORAL_FRONT] and self.elevator.at_setpoint():
+            self.drive_scalar = 0.75
         else:
             self.drive_scalar = 0.25
-        self.claw.set_wheel_voltage(
-            self.wheel_voltage,
-            self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,
-        )
+        if self.elevator_setpoint == ElevatorHeight.L1 and self.claw_setpoint == ClawAngle.TROUGH:
+            self.claw.set_wheel_voltage(self.wheel_voltage * 0.7, self.wheel_twist)
+        else:
+            self.claw.set_wheel_voltage(self.wheel_voltage,1.0)
+
+
+        # self.claw.set_wheel_voltage(
+        #     self.wheel_voltage,
+        #     self.wheel_twist if self.claw_setpoint == ClawAngle.TROUGH else 1.0,
+        # )
         if self.claw.is_safe():
             if not self.elevator.at_setpoint() or not self.claw.at_setpoint():
                 self.next_state("positioning_arm")

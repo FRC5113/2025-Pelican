@@ -10,9 +10,9 @@ from lemonlib.util import Alert, AlertType
 
 
 class ClimberAngle(Enum):
-    MIN = -95.0
+    MIN = -85.0
     MAX = 0.0
-    STOWED = -85.0
+    STOWED = -80.0
     DEPLOYED = -25.0
 
 
@@ -59,7 +59,7 @@ class Climber:
         return self.get_angle() <= ClimberAngle.MIN.value
 
     def deployed(self) -> bool:
-        return self.get_falcon_encoder() <= -425
+        return self.get_falcon_encoder() <= -350
 
     def error_detected(self) -> bool:
         return self.error
@@ -81,6 +81,10 @@ class Climber:
         # ):
         #     self.motor_speed = 0
         #     self.error = True
+        if self.get_angle() < ClimberAngle.MIN.value and self.motor_speed > 0:
+            self.motor_speed = 0
+        if self.get_falcon_encoder() < -400.0 and self.motor_speed < 0:
+            self.motor_speed = 0
         if self.get_angle() <= ClimberAngle.STOWED.value:
             self.motor.set_position(0)
         self.motor.set(self.motor_speed)

@@ -60,6 +60,17 @@ class DriveControl(StateMachine):
         self.rotationX = sample.omega
         self.field_relative = True
 
+    def drive_auto_manual(self,
+        translationX: units.meters_per_second,
+        translationY: units.meters_per_second,
+        rotationX: units.radians_per_second,
+        field_relative: bool):
+
+        self.translationX = translationX
+        self.translationY = translationY
+        self.rotationX = rotationX
+        self.field_relative = field_relative
+
     @state(first=True)
     def free(self):
         self.swerve_drive.drive(
@@ -107,3 +118,5 @@ class DriveControl(StateMachine):
         )
         if DriverStation.isTeleop():
             self.next_state("free")
+
+            
