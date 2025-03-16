@@ -53,6 +53,7 @@ class AutoBase(AutonomousStateMachine):
     auto_trajectory_log: StringLogEntry
     auto_pose_log: StringLogEntry
     auto_distance_log: DoubleLogEntry
+    auto_target_log: StringLogEntry
 
     alliance_log: StringLogEntry
 
@@ -70,6 +71,8 @@ class AutoBase(AutonomousStateMachine):
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
+
+        self.alliance_log.append(wpilib.DriverStation.getAlliance())
 
         # Load trajectories (skip non-trajectory steps)
         for item in self.sequence:
@@ -104,7 +107,6 @@ class AutoBase(AutonomousStateMachine):
 
     @feedback
     def is_red(self) -> bool:
-        self.alliance_log.append(wpilib.DriverStation.getAlliance().name)
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
@@ -148,7 +150,8 @@ class AutoBase(AutonomousStateMachine):
         final_pose = self.current_trajectory.get_final_pose(self.is_red())
         distance = current_pose.translation().distance(final_pose.translation())
 
-        self.auto_trajectory_log(self.current_trajectory.get_name())
+        self.auto_trajectory_log(self.current_trajectory.name)
+        self.auto_target_log(f"X: {final_pose.translation().x()}, Y: {final_pose.translation().y()}, Rot: {final_pose.rotation().degrees()}")
         self.auto_pose_log(current_pose)
         self.auto_distance_log(distance)
 
