@@ -37,7 +37,9 @@ class LEDStrip:
 
     @feedback
     def get_color(self):
-        return Color(self.leds.buffer[0].r,self.leds.buffer[0].g,self.leds.buffer[0].b).hexString()
+        return Color(
+            self.leds.buffer[0].r, self.leds.buffer[0].g, self.leds.buffer[0].b
+        ).hexString()
 
     def execute(self):
         if self.error_bool:
@@ -52,4 +54,4 @@ class LEDStrip:
             if self.justin_bool:
                 self.leds.scolling_rainbow(6)
             else:
-                self.leds.move_across((255,255,0),15,12)
+                self.leds.move_across((255, 255, 0), 15, 12)

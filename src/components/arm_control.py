@@ -81,7 +81,11 @@ class ArmControl(StateMachine):
 
     @state
     def positioning_claw(self):
-        if self.claw_setpoint in [ClawAngle.STOWED, ClawAngle.STATION, ClawAngle.INTAKE_CORAL_INFRONT]:
+        if self.claw_setpoint in [
+            ClawAngle.STOWED,
+            ClawAngle.STATION,
+            ClawAngle.INTAKE_CORAL_INFRONT,
+        ]:
             self.drive_scalar = 0.8
         else:
             self.drive_scalar = 0.5
@@ -117,15 +121,21 @@ class ArmControl(StateMachine):
         self.claw.set_target_angle(self.claw_setpoint)
         if self.elevator_setpoint == ElevatorHeight.L1 and self.elevator.at_setpoint():
             self.drive_scalar = 1.0
-        elif self.elevator_setpoint in [ElevatorHeight.STATION, ElevatorHeight.INTAKE_CORAL_FRONT] and self.elevator.at_setpoint():
+        elif (
+            self.elevator_setpoint
+            in [ElevatorHeight.STATION, ElevatorHeight.INTAKE_CORAL_FRONT]
+            and self.elevator.at_setpoint()
+        ):
             self.drive_scalar = 0.75
         else:
             self.drive_scalar = 0.25
-        if self.elevator_setpoint == ElevatorHeight.L1 and self.claw_setpoint == ClawAngle.TROUGH:
+        if (
+            self.elevator_setpoint == ElevatorHeight.L1
+            and self.claw_setpoint == ClawAngle.TROUGH
+        ):
             self.claw.set_wheel_voltage(self.wheel_voltage * 0.7, self.wheel_twist)
         else:
-            self.claw.set_wheel_voltage(self.wheel_voltage,1.0)
-
+            self.claw.set_wheel_voltage(self.wheel_voltage, 1.0)
 
         # self.claw.set_wheel_voltage(
         #     self.wheel_voltage,

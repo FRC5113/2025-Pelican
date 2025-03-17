@@ -2,7 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d, SmartDashboard
+from wpilib import Field2d, SmartDashboard, DataLogManager
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -275,7 +275,12 @@ class MyRobot(magicbot.MagicRobot):
 
         self.estimated_field = Field2d()
 
+    def autonomousInit(self):
+        DataLogManager.start(filename="auto")
+
     def teleopInit(self):
+        DataLogManager.stop()
+        DataLogManager.start(filename="teleop")
         # initialize HIDs here in case they are changed after robot initializes
         if RobotBase.isSimulation():
             self.primary = LemonInput(0)
@@ -306,7 +311,6 @@ class MyRobot(magicbot.MagicRobot):
                 self.getLefty = self.primary.getLeftY()
                 self.getLeftx = self.primary.getLeftX()
 
-            
             rotate_mult = 0.75
             mult = 1
             if self.primary.getR2Axis() >= 0.8:
@@ -324,7 +328,9 @@ class MyRobot(magicbot.MagicRobot):
                     -self.sammi_curve(self.getLeftx) * mult * self.top_speed
                 ),
                 self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX()) * rotate_mult * self.top_omega
+                    -self.sammi_curve(self.primary.getRightX())
+                    * rotate_mult
+                    * self.top_omega
                 ),
                 not self.primary.getCreateButton(),  # temporary
             )
@@ -363,7 +369,9 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getStartButton():
                 self.arm_control.set(ElevatorHeight.STATION, ClawAngle.STATION)
             if self.secondary.getBackButton():
-                self.arm_control.set(ElevatorHeight.INTAKE_CORAL_FRONT,ClawAngle.INTAKE_CORAL_INFRONT)
+                self.arm_control.set(
+                    ElevatorHeight.INTAKE_CORAL_FRONT, ClawAngle.INTAKE_CORAL_INFRONT
+                )
 
             if self.secondary.getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(

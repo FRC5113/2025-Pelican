@@ -2,7 +2,7 @@ import math
 
 import choreo
 import wpilib
-from wpilib import Field2d, RobotBase, SmartDashboard
+from wpilib import Field2d, RobotBase, SmartDashboard, DataLogManager
 from typing import List
 from choreo.trajectory import SwerveSample, SwerveTrajectory
 from magicbot import AutonomousStateMachine, state, timed_state, will_reset_to
@@ -18,27 +18,6 @@ from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight, Elevator
 from lemonlib.util import AlertManager
-
-
-from wpiutil.log import (
-
-
-     DataLog,
-
-
-     BooleanLogEntry,
-
-
-     DoubleLogEntry,
-
-
-     StringLogEntry,
-
-
-     IntegerLogEntry,
-
-
- )
 
 
 class AutoBase(AutonomousStateMachine):
@@ -64,7 +43,6 @@ class AutoBase(AutonomousStateMachine):
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
-
         # Load trajectories (skip non-trajectory steps)
         for item in self.sequence:
             if not item.startswith("state:"):  # Only load actual trajectories
@@ -98,7 +76,6 @@ class AutoBase(AutonomousStateMachine):
 
     @feedback
     def is_red(self) -> bool:
-        # self.alliance_log.append(wpilib.DriverStation.getAlliance().name)
         return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
@@ -195,8 +172,3 @@ class AutoBase(AutonomousStateMachine):
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
             self.arm_control.set_wheel_voltage(-10)
-
-
-
-
-
