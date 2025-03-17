@@ -338,7 +338,10 @@ class MyRobot(magicbot.MagicRobot):
                     ElevatorHeight.L2, ClawAngle.TROUGH
                 )
             if self.primary.getPOV() == 270:
-                self.drive_control.request_pose(self.camera.get_best_pose().toPose2d())
+                if self.camera.get_best_tag() is not None:
+                    self.drive_control.request_pose(Pose2d(Translation2d(-0.2, -0.1),Rotation2d(0)).relativeTo(self.camera.get_best_pose(True)))
+                    #self.camera.get_best_pose(True)
+
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()

@@ -25,14 +25,29 @@ class LemonCamera(PhotonCamera):
 
     def get_best_tag(self) -> int:
         results = self.getAllUnreadResults()
-        if len(results) > 0:
+        if results:
             result = results[-1]
-            best_tag = result.getBestTarget().getFiducialId()
-
-            return best_tag
-
-    def get_tag_pose(self, ID: int):
+            best_target = result.getBestTarget()
+            if best_target is not None:
+                self._last_valid_tag = best_target.getFiducialId()
+                return self._last_valid_tag
+        return getattr(self, '_last_valid_tag', None)
+    
+    def get_tag_pose(self,ID: int):
         return self.april_tag_field.getTagPose(ID)
+    
+    def get_best_pose(self, twod: bool = True):
+        best_tag = self.get_best_tag()
+        if best_tag is None:
+            return None
+        tag_pose = self.april_tag_field.getTagPose(best_tag)
+        if tag_pose is None:
+            return None
+        if twod:
+            return tag_pose.toPose2d()
+        return tag_pose
 
-    def get_best_pose(self):
-        return self.april_tag_field.getTagPose(self.get_best_tag())
+
+            
+                
+
