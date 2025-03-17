@@ -17,7 +17,7 @@ from components.drive_control import DriveControl
 from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight, Elevator
-from lemonlib.util import AlertManager,is_red
+from lemonlib.util import AlertManager, is_red
 
 
 class AutoBase(AutonomousStateMachine):
@@ -75,7 +75,7 @@ class AutoBase(AutonomousStateMachine):
         )
 
     def get_starting_pose(self) -> Pose2d | None:
-        return self.trajectories[0].get_initial_pose(self.is_red())
+        return self.trajectories[0].get_initial_pose(is_red())
 
     @state(first=True)
     def next_step(self):
@@ -104,7 +104,7 @@ class AutoBase(AutonomousStateMachine):
             return
 
         current_pose = self.swerve_drive.get_estimated_pose()
-        final_pose = self.current_trajectory.get_final_pose(self.is_red())
+        final_pose = self.current_trajectory.get_final_pose(is_red())
         distance = current_pose.translation().distance(final_pose.translation())
 
         if (
@@ -113,7 +113,7 @@ class AutoBase(AutonomousStateMachine):
         ):
             self.next_state("next_step")
 
-        sample = self.current_trajectory.sample_at(state_tm, self.is_red())
+        sample = self.current_trajectory.sample_at(state_tm, is_red())
         if sample:
             self.swerve_drive.follow_trajectory(sample)
 

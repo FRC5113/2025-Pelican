@@ -11,13 +11,12 @@ from lemonlib.smart import SmartPreference
 
 class ClawAngle(float, Enum):
     STOWED = 0.0  # for
-    STATION = 31.0
+    STATION_CLOSE = 31.0
+    STATION_FAR = 44.0
     TROUGH = 100.0
     BRANCH = 115.0
-    SAFE_START = 60.0  # has to be adusted just an estimate
-    SAFE_END = 117.0  # has to be adusted just an estimate
-
-    INTAKE_CORAL_INFRONT = 44.2
+    SAFE_START = 60.0
+    SAFE_END = 119.0
 
 
 class Claw:
@@ -27,7 +26,6 @@ class Claw:
     right_motor: SparkMax
     claw_profile: SmartProfile
     gearing: float
-    max_angle: units.degrees  # maximum angle claw can rotate downwards
     hinge_tolerance: units.degrees
     hinge_encoder: SparkAbsoluteEncoder
     intake_limit: SparkLimitSwitch
@@ -37,7 +35,6 @@ class Claw:
     left_wheel_voltage = will_reset_to(0)
     right_wheel_voltage = will_reset_to(0)
     hinge_voltage = will_reset_to(0)
-    error = will_reset_to(False)
     hinge_manual_control = False
 
     """
@@ -106,9 +103,6 @@ class Claw:
     def at_setpoint(self) -> bool:
         return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
 
-    def error_detected(self) -> bool:
-        return self.error
-
     """
     CONTROL METHODS
     """
@@ -132,7 +126,7 @@ class Claw:
     """
 
     def execute(self):
-
+        # if coral detected in claw, wheels hold onto coral by spinning inwards
         if self.intake_limit.get() and (
             self.left_wheel_voltage >= 0 and self.right_wheel_voltage >= 0
         ):
@@ -147,15 +141,16 @@ class Claw:
             self.hinge_voltage = -self.controller.calculate(
                 self.get_angle(), self.target_angle
             )
-        if self.get_angle() - self.max_angle > 10 or self.get_angle() < -10:
+
+        if self.get_angle() - ClawAngle.SAFE_END.value > 10 or self.get_angle() < -10:
             self.hinge_alert.enable()
             self.hinge_alert.set_text(
                 f"Claw hinge has rotated too far! Current angle: {self.get_angle()}"
             )
-            self.error = True
         else:
             self.hinge_alert.disable()
-        if self.get_angle() > self.max_angle and self.hinge_voltage < 0:
+
+        if self.get_angle() > ClawAngle.SAFE_END.value and self.hinge_voltage < 0:
             self.hinge_voltage = 0
         if self.get_angle() < 0 and self.hinge_voltage > 0:
             self.hinge_voltage = 0

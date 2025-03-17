@@ -12,13 +12,12 @@ from lemonlib.util import Alert, AlertType
 
 class ElevatorHeight(float, Enum):
     # values likely inaccurate
-    STATION = 0.035
+    STATION_CLOSE = 0.035
+    STATION_FAR = 0.04
     L1 = 0.0
     L2 = 0.16
     L3 = 0.36
     L4 = 0.68
-
-    INTAKE_CORAL_FRONT = 0.04
 
 
 class Elevator:
@@ -55,7 +54,7 @@ class Elevator:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        self.limit_error_alert = Alert(
+        self.limit_alert = Alert(
             "At least one elevator limit switch is unplugged! Halting elevator.",
             AlertType.ERROR,
         )
@@ -84,8 +83,13 @@ class Elevator:
     def get_setpoint(self) -> units.meters:
         return self.target_height
 
+    @feedback
     def get_lower_switch(self) -> bool:
         return self.lower_switch.get()
+
+    @feedback
+    def get_upper_switch(self) -> bool:
+        return self.upper_switch.get()
 
     def at_setpoint(self) -> bool:
         return abs(self.target_height - self.get_height()) <= self.tolerance
@@ -128,10 +132,10 @@ class Elevator:
             )
 
         if self.error_detected():
-            self.limit_error_alert.enable()
+            self.limit_alert.enable()
             return
         else:
-            self.limit_error_alert.disable()
+            self.limit_alert.disable()
 
         # prevent motors from moving the elevator past the limits
         if self.lower_switch.get() and self.motor_voltage < 0:

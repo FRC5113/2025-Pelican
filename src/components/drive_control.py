@@ -19,10 +19,11 @@ from components.elevator import Elevator, ElevatorHeight
 
 
 class DriveControl(StateMachine):
+    arm_control: ArmControl
     odometry: Odometry
     swerve_drive: SwerveDrive
+
     pigeon: Pigeon2
-    arm_control: ArmControl
 
     remove_algae_var = will_reset_to(False)
     go_to_pose = will_reset_to(False)

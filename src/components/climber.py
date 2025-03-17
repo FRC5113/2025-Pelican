@@ -22,7 +22,6 @@ class Climber:
     encoder: DutyCycleEncoder
 
     motor_speed = will_reset_to(0)
-    error = will_reset_to(False)
 
     """
     INITIALIZATION METHODS
@@ -32,6 +31,7 @@ class Climber:
         self.motor_configs = TalonFXConfiguration()
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.motor.configurator.apply(self.motor_configs)
+        self.limit_alert = Alert("Climber has exceeded limits!", type=AlertType.ERROR)
 
     """
     INFORMATIONAL METHODS
@@ -51,18 +51,8 @@ class Climber:
     def get_falcon_encoder(self) -> units.turns:
         return self.motor.get_position().value
 
-    @feedback
-    def fully_climbed(self) -> bool:
-        return self.get_angle() >= ClimberAngle.MAX.value
-
-    def fully_out(self) -> bool:
-        return self.get_angle() <= ClimberAngle.MIN.value
-
-    def deployed(self) -> bool:
+    def is_deployed(self) -> bool:
         return self.get_falcon_encoder() <= -350
-
-    def error_detected(self) -> bool:
-        return self.error
 
     """
     CONTROL METHODS
@@ -76,11 +66,14 @@ class Climber:
     """
 
     def execute(self):
-        # if (self.get_angle() < ClimberAngle.MIN.value) or (
-        #     self.get_angle() > ClimberAngle.MAX.value
-        # ):
-        #     self.motor_speed = 0
-        #     self.error = True
+        if self.get_angle() < ClimberAngle.MIN.value - 10:
+            self.limit_alert.enable()
+            self.limit_alert.set_text(
+                f"Climber has exceeded limits! Current angle: {self.get_angle()}"
+            )
+        else:
+            self.limit_alert.disable()
+
         if self.get_angle() < ClimberAngle.MIN.value and self.motor_speed > 0:
             self.motor_speed = 0
         if self.get_falcon_encoder() < -400.0 and self.motor_speed < 0:

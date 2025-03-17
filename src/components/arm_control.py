@@ -83,8 +83,8 @@ class ArmControl(StateMachine):
     def positioning_claw(self):
         if self.claw_setpoint in [
             ClawAngle.STOWED,
-            ClawAngle.STATION,
-            ClawAngle.INTAKE_CORAL_INFRONT,
+            ClawAngle.STATION_CLOSE,
+            ClawAngle.STATION_FAR,
         ]:
             self.drive_scalar = 0.8
         else:
@@ -123,7 +123,7 @@ class ArmControl(StateMachine):
             self.drive_scalar = 1.0
         elif (
             self.elevator_setpoint
-            in [ElevatorHeight.STATION, ElevatorHeight.INTAKE_CORAL_FRONT]
+            in [ElevatorHeight.STATION_CLOSE, ElevatorHeight.STATION_FAR]
             and self.elevator.at_setpoint()
         ):
             self.drive_scalar = 0.75

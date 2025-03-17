@@ -35,7 +35,6 @@ from components.climber import Climber
 from components.arm_control import ArmControl
 from components.drive_control import DriveControl
 from components.leds import LEDStrip
-from components.error import Errors
 from components.sysid_drive import SysIdDrive
 
 
@@ -54,7 +53,6 @@ class MyRobot(magicbot.MagicRobot):
     elevator: Elevator
     claw: Claw
     climber: Climber
-    error: Errors
 
     low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
@@ -203,7 +201,6 @@ class MyRobot(magicbot.MagicRobot):
 
         # physical constants
         self.claw_gearing = 82.5
-        self.claw_max_angle: units.degrees = 119.2
 
         # profile (estimated)
         self.claw_profile = SmartProfile(
@@ -355,9 +352,6 @@ class MyRobot(magicbot.MagicRobot):
             self.arm_control.engage()
             if self.elevator.error_detected():
                 self.arm_control.next_state("elevator_failsafe")
-            # self.elevator.set_voltage(
-            #     -1.5 * applyDeadband(self.secondary.getRightY(), 0.1)
-            # )
             if self.secondary.getAButton():
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
             if self.secondary.getBButton():
@@ -367,11 +361,11 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getYButton():
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
             if self.secondary.getStartButton():
-                self.arm_control.set(ElevatorHeight.STATION, ClawAngle.STATION)
-            if self.secondary.getBackButton():
                 self.arm_control.set(
-                    ElevatorHeight.INTAKE_CORAL_FRONT, ClawAngle.INTAKE_CORAL_INFRONT
+                    ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE
                 )
+            if self.secondary.getBackButton():
+                self.arm_control.set(ElevatorHeight.STATION_FAR, ClawAngle.STATION_FAR)
 
             if self.secondary.getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
@@ -386,13 +380,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set_wheel_voltage(-1)
 
             if self.secondary.getPOV() == 270:
-                # self.arm_control.elefail()
                 self.arm_control.next_state_now("elevator_failsafe")
-
-            # if self.secondary.getLeftBumper():
-            #     self.claw.set_hinge_voltage(-1)
-            # if self.secondary.getRightBumper():
-            #     self.claw.set_hinge_voltage(1)
 
         with self.consumeExceptions():
             """
@@ -424,9 +412,6 @@ class MyRobot(magicbot.MagicRobot):
         #         self.sysid_drive.dynamic_forward()
         #     if self.sysid_con.getYButton():
         #         self.sysid_drive.dynamic_reverse()
-
-    def disabledInit(self):
-        self.leds.set_solid_color((50, 50, 50))
 
     @feedback
     def get_voltage(self) -> units.volts:
