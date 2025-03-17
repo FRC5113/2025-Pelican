@@ -8,7 +8,7 @@ from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
 from photonlibpy.simulation.simCameraProperties import SimCameraProperties
 from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
-from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
+from wpilib.simulation import DCMotorSim, ElevatorSim, DIOSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
@@ -79,13 +79,20 @@ class PhysicsEngine:
             0,
             [0.01, 0.0],
         )
-        self.encoder_sim = SparkRelativeEncoderSim(robot.elevator_left_motor)
+        self.elevator_left_encoder_sim = SparkRelativeEncoderSim(
+            robot.elevator_left_motor
+        )
+        self.elevator_right_encoder_sim = SparkRelativeEncoderSim(
+            robot.elevator_right_motor
+        )
         self.elevator_left_motor_sim = SparkMaxSim(
             robot.elevator_left_motor, DCMotor.NEO(1)
         )
         self.elevator_right_motor_sim = SparkMaxSim(
             robot.elevator_right_motor, DCMotor.NEO(1)
         )
+        self.elevator_lower_switch_sim = DIOSim(robot.elevator_lower_switch)
+        self.elevator_upper_switch_sim = DIOSim(robot.elevator_upper_switch)
 
         # Mechanism2d Visualization for Elevator
         self.mech2d = Mechanism2d(20, 50)
@@ -151,14 +158,32 @@ class PhysicsEngine:
 
             # Elevator Simulation Update
             # First, we set our "inputs" (voltages)
-            self.elevator_sim.setInput(
-                0, self.elevator_left_motor_sim.getAppliedOutput()
-            )
+            # Use getSetpoint(), NOT getAppliedOutput() (god knows why)
+            self.elevator_sim.setInput(0, self.elevator_left_motor_sim.getSetpoint())
             # Next, we update the elevator simulation
             self.elevator_sim.update(tm_diff)
 
             # Set our simulated encoder's readings and simulated battery voltage
-            self.encoder_sim.setPosition(self.elevator_sim.getPosition())
+            self.elevator_left_encoder_sim.setPosition(
+                self.elevator_sim.getPosition()
+                / self.robot.elevator_spool_radius
+                / math.tau
+                * self.robot.elevator_gearing
+            )
+            self.elevator_right_encoder_sim.setPosition(
+                -self.elevator_sim.getPosition()
+                / self.robot.elevator_spool_radius
+                / math.tau
+                * self.robot.elevator_gearing
+            )
+            if self.elevator_sim.getPosition() <= 0.0:
+                self.elevator_lower_switch_sim.setValue(True)
+            else:
+                self.elevator_lower_switch_sim.setValue(False)
+            if self.elevator_sim.getPosition() >= 0.7:
+                self.elevator_upper_switch_sim.setValue(True)
+            else:
+                self.elevator_upper_switch_sim.setValue(False)
 
             # Update the Elevator length based on the simulated elevator height
             self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())

@@ -21,7 +21,7 @@ from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
 
-from lemonlib import LemonInput,LemonCamera
+from lemonlib import LemonInput, LemonCamera
 from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
 from lemonlib.smart import SmartPreference, SmartProfile
 
@@ -234,7 +234,6 @@ class MyRobot(magicbot.MagicRobot):
         self.robot_to_camera = Transform3d(
             -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
         )
-        
 
         # self.field_layout = AprilTagFieldLayout(
         #     str(Path(__file__).parent.resolve() / "test_reef.json")
@@ -243,7 +242,7 @@ class MyRobot(magicbot.MagicRobot):
             AprilTagField.k2025ReefscapeWelded
         )
 
-        self.camera = LemonCamera("USB_Camera",self.robot_to_camera,self.field_layout)
+        self.camera = LemonCamera("USB_Camera", self.robot_to_camera, self.field_layout)
 
         """
         MISCELLANEOUS
@@ -274,10 +273,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.estimated_field = Field2d()
 
-   
-
     def teleopInit(self):
-        
+
         # initialize HIDs here in case they are changed after robot initializes
         if RobotBase.isSimulation():
             self.primary = LemonInput(0)
@@ -344,7 +341,7 @@ class MyRobot(magicbot.MagicRobot):
                 if self.camera.get_best_tag() is not None:
                     self.drive_control.request_pose(Pose2d(Translation2d(-0.2, -0.1),Rotation2d(0)).relativeTo(self.camera.get_best_pose(True)))
                     #self.camera.get_best_pose(True)
-            
+
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
