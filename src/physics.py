@@ -108,16 +108,7 @@ class PhysicsEngine:
         # )
 
                 # Simulated components
-        self.hinge_motor_sim = simulation.PWMSim(0)  # Adjust based on actual PWM port
-        self.hinge_encoder_sim = simulation.AnalogEncoderSim(0)  # Adjust if different
-        
-        # Arm model (Simple simulation)
-        self.arm_system = LinearSystemId.singleJointedArmSystem(0.5, 0.02)  # Example values
-        self.hinge_velocity = 0  # Track hinge velocity
-        
-        # Intake motor simulation
-        self.left_motor_sim = simulation.PWMSim(1)
-        self.right_motor_sim = simulation.PWMSim(2)
+
 
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
