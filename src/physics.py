@@ -12,6 +12,7 @@ from wpilib.simulation import DCMotorSim, ElevatorSim, EncoderSim, SimDeviceSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
+from lemonlib.simulation import LemonCameraSim
 
 
 class FalconSim:
@@ -97,19 +98,19 @@ class PhysicsEngine:
         SmartDashboard.putData("Elevator Sim", self.mech2d)
 
         # Vision Simulation
-        self.vision_sim = VisionSystemSim("vision_sim")
-        self.vision_sim.addAprilTags(robot.field_layout)
+        self.vision_sim = LemonCameraSim(robot.camera, robot.field_layout, fov=100.0, fps=20.0)
+        # self.vision_sim.addAprilTags(robot.field_layout)
 
-        self.camera_props = SimCameraProperties()
-        self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
-        self.camera_props.setFPS(20)
-        self.camera_props.setAvgLatency(0.035)
-        self.camera_props.setLatencyStdDev(0.005)
+        # self.camera_props = SimCameraProperties()
+        # self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
+        # self.camera_props.setFPS(20)
+        # self.camera_props.setAvgLatency(0.035)
+        # self.camera_props.setLatencyStdDev(0.005)
 
-        self.camera_sim = PhotonCameraSim(
-            robot.camera, self.camera_props, robot.field_layout
-        )
-        self.vision_sim.addCamera(self.camera_sim, robot.robot_to_camera)
+        # self.camera_sim = PhotonCameraSim(
+        #     robot.camera, self.camera_props, robot.field_layout
+        # )
+        # self.vision_sim.addCamera(self.camera_sim, robot.robot_to_camera)
 
         # self.camera_sim = LemonCameraSim(
         #     robot.camera, robot.field_layout, fov=100.0, fps=20.0
