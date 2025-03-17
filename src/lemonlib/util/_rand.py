@@ -1,9 +1,13 @@
 from typing import Callable
+from wpilib import DriverStation
 
 
 def clamp(value: float, min_value: float, max_value: float) -> float:
     """Restrict value between min_value and max_value."""
     return max(min(value, max_value), min_value)
+
+def is_red(self) -> bool:
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
 
 def curve(

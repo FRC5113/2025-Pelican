@@ -17,7 +17,7 @@ from components.drive_control import DriveControl
 from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight, Elevator
-from lemonlib.util import AlertManager
+from lemonlib.util import AlertManager,is_red
 
 
 class AutoBase(AutonomousStateMachine):
@@ -73,10 +73,6 @@ class AutoBase(AutonomousStateMachine):
         self.estimated_field.getObject("Trajectory").setPoses(
             self._get_full_path_poses()
         )
-
-    @feedback
-    def is_red(self) -> bool:
-        return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(self.is_red())
