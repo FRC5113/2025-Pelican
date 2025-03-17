@@ -1,4 +1,4 @@
-name: Trigger Sync to LemonLib
+name: ⏫ Copy Lemonlib to LemonLib Repo
 
 on:
   push:
@@ -6,12 +6,21 @@ on:
       - 'src/lemonlib/**'
 
 jobs:
-  trigger-sync:
+  copy-lemonlib:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger repository_dispatch
-        run: |
-          curl -X POST -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/repos/FRC5113/LemonLib/dispatches \
-          -d '{"event_type":"sync_event"}'
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Copy Lemonlib
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: "src/lemonlib/" # Folder to copy
+          destination_repo: "FRC5113/LemonLib" # Target repo
+          destination_folder: "lemonlib/" # Folder where to copy it
+          user_email: "rradtke1208@gmail.com"
+          user_name: "Ryanforce08"
+          commit_message: "AUTO: Copying lemonlib from 2025-Pelican to LemonLib"
+          git_server: "github.com"
