@@ -13,27 +13,11 @@ from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
 from lemonlib.simulation import LemonCameraSim
+from wpilib import simulation
+from lemonlib.simulation import FalconSim
 
 
-class FalconSim:
-    def __init__(self, motor: TalonFX, moi: float, gearing: float):
-        self.gearbox = DCMotor.falcon500(1)
-        self.plant = LinearSystemId.DCMotorSystem(self.gearbox, moi, gearing)
-        self.gearing = gearing
-        self.sim_state = motor.sim_state
-        self.sim_state.set_supply_voltage(12.0)
-        self.motor_sim = DCMotorSim(self.plant, self.gearbox)
 
-    def update(self, dt: float):
-        voltage = self.sim_state.motor_voltage
-        self.motor_sim.setInputVoltage(voltage)
-        self.motor_sim.update(dt)
-        self.sim_state.set_raw_rotor_position(
-            self.motor_sim.getAngularPositionRotations() * self.gearing
-        )
-        self.sim_state.set_rotor_velocity(
-            self.motor_sim.getAngularVelocityRPM() / 60 * self.gearing
-        )
 
 
 class PhysicsEngine:
@@ -123,6 +107,18 @@ class PhysicsEngine:
         #     robot.camera, robot.field_layout, fov=100.0, fps=20.0
         # )
 
+                # Simulated components
+        self.hinge_motor_sim = simulation.PWMSim(0)  # Adjust based on actual PWM port
+        self.hinge_encoder_sim = simulation.AnalogEncoderSim(0)  # Adjust if different
+        
+        # Arm model (Simple simulation)
+        self.arm_system = LinearSystemId.singleJointedArmSystem(0.5, 0.02)  # Example values
+        self.hinge_velocity = 0  # Track hinge velocity
+        
+        # Intake motor simulation
+        self.left_motor_sim = simulation.PWMSim(1)
+        self.right_motor_sim = simulation.PWMSim(2)
+
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)
@@ -186,7 +182,7 @@ class PhysicsEngine:
                 self.elevator_upper_switch_sim.setValue(False)
 
             # Update the Elevator length based on the simulated elevator height
-            self.elevator_mech2d.setLength(self.elevator_sim.getPositionInches())
+            self.elevator_mech2d.setLength(self.elevator_sim.getPosition() * 100)
 
             # Simulate Vision
             self.vision_sim.update(pose)

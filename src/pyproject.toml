@@ -28,5 +28,5 @@ robotpy_extras = [
 
 # Other pip packages to install
 requires = [
-    "photonlibpy==2025.1.1", "sleipnirgroup-choreolib"
+    "photonlibpy==2025.1.1", "sleipnirgroup-choreolib","phoenix6"
 ]
