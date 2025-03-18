@@ -16,7 +16,7 @@ from wpiutil import Sendable, SendableBuilder
 from phoenix6.hardware import Pigeon2
 
 from components.swerve_wheel import SwerveWheel
-from magicbot import will_reset_to
+from magicbot import will_reset_to, feedback
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
 from lemonlib.smart import SmartProfile
@@ -174,6 +174,15 @@ class SwerveDrive(Sendable):
             self.rear_left.getMeasuredState(),
             self.rear_right.getMeasuredState(),
         )
+    
+    @feedback
+    def get_distance_from_desired_pose(self) -> units.meters:
+        if not self.has_desired_pose:
+            return 0
+        print(self.desired_pose.translation())
+        return self.desired_pose.translation().distance(self.get_estimated_pose().translation())
+        
+
 
     """
     CONTROL METHODS
@@ -290,12 +299,12 @@ class SwerveDrive(Sendable):
             ),
         )
 
-        if self.has_desired_pose:
+        if self.has_desired_pose and self.get_distance_from_desired_pose() > 0.02:
             self.chassis_speeds = self.holonomic_controller.calculate(
                 self.get_estimated_pose(),
                 self.desired_pose,
                 0.0,
-                Rotation2d.fromDegrees(180),
+                self.desired_pose.rotation(),
             )
         else:
             if self.translationX == self.translationY == self.rotationX == 0:

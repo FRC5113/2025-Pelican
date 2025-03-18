@@ -2,6 +2,7 @@ from wpilib import Color
 from magicbot import will_reset_to, feedback
 
 from components.arm_control import ArmControl
+from components.swerve_drive import SwerveDrive
 from components.climber import Climber
 from components.claw import Claw
 
@@ -9,6 +10,7 @@ from lemonlib.util import LEDController, AlertManager, AlertType
 
 
 class LEDStrip:
+    swerve_drive: SwerveDrive
     climber: Climber
     claw: Claw
 
@@ -64,6 +66,8 @@ class LEDStrip:
             self.leds.set_solid_color(self.error_color)
         elif self.has_warnings_present():
             self.leds.set_solid_color(self.warning_color)
+        elif 0 < self.swerve_drive.get_distance_from_desired_pose() <= 0.03:
+            self.leds.set_solid_color(self.aligned_branch)
         elif self.climber.is_deployed():
             self.leds.set_solid_color(self.fully_climbed)
         elif self.claw.get_intake_limit():

@@ -16,7 +16,7 @@ from wpilib import (
 
 from wpimath import units, applyDeadband
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Transform3d, Pose2d, Translation2d, Rotation2d, Rotation3d
+from wpimath.geometry import Transform3d, Pose2d, Transform2d, Rotation2d, Rotation3d, Translation2d
 from photonlibpy.photonCamera import PhotonCamera
 import magicbot
 from magicbot import feedback
@@ -232,7 +232,8 @@ class MyRobot(magicbot.MagicRobot):
         ODOMETRY
         """
         self.robot_to_camera = Transform3d(
-            -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
+            0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, 3.14)
+            #-0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
         )
 
         # self.field_layout = AprilTagFieldLayout(
@@ -242,7 +243,7 @@ class MyRobot(magicbot.MagicRobot):
             AprilTagField.k2025ReefscapeWelded
         )
 
-        self.camera = LemonCamera("USB_Camera", self.robot_to_camera, self.field_layout)
+        self.camera = LemonCamera("Global_Shutter_Camera", self.robot_to_camera, self.field_layout)
 
         """
         MISCELLANEOUS
@@ -272,7 +273,7 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.estimated_field = Field2d()
-
+    
     def teleopInit(self):
 
         # initialize HIDs here in case they are changed after robot initializes
@@ -337,14 +338,56 @@ class MyRobot(magicbot.MagicRobot):
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L2, ClawAngle.TROUGH
                 )
-            if self.primary.getPOV() == 270:
-                if self.camera.get_best_tag() is not None:
-                    self.drive_control.request_pose(
-                        Pose2d(Translation2d(-0.2, -0.1), Rotation2d(0)).relativeTo(
-                            self.camera.get_best_pose(True)
+            if self.primary.getPOV() == 90:
+                if self.secondary.getXButton() or self.secondary.getBButton(): #L2&3
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.35, 0.19, Rotation2d())
+                            )
                         )
-                    )
-                    # self.camera.get_best_pose(True)
+                if self.secondary.getAButton(): #L1
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.35, 0.19, Rotation2d())
+                            )
+                        )
+                if self.secondary.getYButton(): #L4
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.3, 0.2, Rotation2d())
+                            )
+                        )
+
+
+                    
+            if self.primary.getPOV() == 270:
+                if self.secondary.getXButton() or self.secondary.getBButton(): #L2&3
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.35, -0.19, Rotation2d())
+                            )
+                        )
+                if self.secondary.getAButton(): #L1
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.35, 0.19, Rotation2d())
+                            )
+                        )
+                if self.secondary.getYButton(): #L4
+                    if self.camera.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera.get_best_pose(True).transformBy(
+                                Transform2d(0.3, -0.19, Rotation2d())
+                            )
+                        )
+            
+            
+
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
