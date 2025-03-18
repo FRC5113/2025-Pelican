@@ -36,11 +36,9 @@ class LEDStrip:
     """
 
     @feedback
-    def get_color(self) -> str:
-        """Returns color of first LED as a hex string"""
-        return Color(
-            self.leds.buffer[0].r, self.leds.buffer[0].g, self.leds.buffer[0].b
-        ).hexString()
+    def get_colors(self) -> list[str]:
+        """Returns LED colors in list of hex strings"""
+        return [Color(led.r, led.g, led.b).hexString() for led in self.leds.buffer]
 
     @feedback
     def has_warnings_present(self) -> bool:
@@ -64,7 +62,7 @@ class LEDStrip:
     def execute(self):
         if self.has_errors_present():
             self.leds.set_solid_color(self.error_color)
-        elif self.has_warnings_present:
+        elif self.has_warnings_present():
             self.leds.set_solid_color(self.warning_color)
         elif self.climber.is_deployed():
             self.leds.set_solid_color(self.fully_climbed)

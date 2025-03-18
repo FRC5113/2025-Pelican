@@ -7,17 +7,13 @@ from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
 from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
 from photonlibpy.simulation.simCameraProperties import SimCameraProperties
 from photonlibpy.simulation.visionSystemSim import VisionSystemSim
-from wpilib import DriverStation, Mechanism2d, SmartDashboard, RobotController, Encoder
-from wpilib.simulation import DCMotorSim, ElevatorSim, DIOSim
+from wpilib import DriverStation, Mechanism2d, SmartDashboard, Color8Bit
+from wpilib.simulation import SingleJointedArmSim, ElevatorSim, DIOSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
 from robot import MyRobot
 from lemonlib.simulation import LemonCameraSim
-from wpilib import simulation
 from lemonlib.simulation import FalconSim
-
-
-
 
 
 class PhysicsEngine:
@@ -61,7 +57,7 @@ class PhysicsEngine:
             robot.elevator_max_height,
             True,
             0,
-            [0.01, 0.0],
+            [0.0, 0.0],
         )
         self.elevator_left_encoder_sim = SparkRelativeEncoderSim(
             robot.elevator_left_motor
@@ -78,18 +74,37 @@ class PhysicsEngine:
         self.elevator_lower_switch_sim = DIOSim(robot.elevator_lower_switch)
         self.elevator_upper_switch_sim = DIOSim(robot.elevator_upper_switch)
 
-        # Mechanism2d Visualization for Elevator
-        self.mech2d = Mechanism2d(20, 50)
-        self.elevator_root = self.mech2d.getRoot("Elevator Root", 10, 0)
-        self.elevator_mech2d = self.elevator_root.appendLigament(
-            "Elevator", self.elevator_sim.getPositionInches(), 90
+        # Claw Simulation
+        self.claw_gearbox = DCMotor.NEO(1)
+        self.claw_sim = SingleJointedArmSim(
+            self.claw_gearbox,
+            robot.claw_gearing,
+            0.1,  # gross estimate
+            0.2,  # estimate
+            -0.52,
+            1.57,
+            True,
+            1.57,
+            [0, 0],
+        )
+        self.claw_encoder_sim = SparkAbsoluteEncoderSim(robot.claw_hinge_motor)
+        self.claw_motor_sim = SparkMaxSim(robot.claw_hinge_motor, self.claw_gearbox)
+
+        # Mechanism2d Visualization for Arm
+        self.arm_sim = Mechanism2d(20, 50)
+        self.arm_root = self.arm_sim.getRoot("Arm Root", 10, 0)
+        self.elevator_ligament = self.arm_root.appendLigament("Elevator", 5, 90)
+        self.claw_ligament = self.elevator_ligament.appendLigament(
+            "Claw", 5, 0, color=Color8Bit(0, 150, 0)
         )
 
         # Put Mechanism to SmartDashboard
-        SmartDashboard.putData("Elevator Sim", self.mech2d)
+        SmartDashboard.putData("Arm Sim", self.arm_sim)
 
         # Vision Simulation
-        self.vision_sim = LemonCameraSim(robot.camera, robot.field_layout, fov=100.0, fps=20.0)
+        self.vision_sim = LemonCameraSim(
+            robot.camera, robot.field_layout, fov=100.0, fps=20.0
+        )
         # self.vision_sim.addAprilTags(robot.field_layout)
 
         # self.camera_props = SimCameraProperties()
@@ -107,8 +122,7 @@ class PhysicsEngine:
         #     robot.camera, robot.field_layout, fov=100.0, fps=20.0
         # )
 
-                # Simulated components
-
+        # Simulated components
 
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
@@ -172,8 +186,15 @@ class PhysicsEngine:
             else:
                 self.elevator_upper_switch_sim.setValue(False)
 
+            self.claw_sim.setInput(0, self.claw_motor_sim.getSetpoint())
+            self.claw_sim.update(tm_diff)
+            self.claw_encoder_sim.setPosition(
+                0.25 - self.claw_sim.getAngleDegrees() / 360
+            )
+
             # Update the Elevator length based on the simulated elevator height
-            self.elevator_mech2d.setLength(self.elevator_sim.getPosition() * 100)
+            self.elevator_ligament.setLength(self.elevator_sim.getPositionInches() + 5)
+            self.claw_ligament.setAngle(self.claw_sim.getAngleDegrees() - 90)
 
             # Simulate Vision
             self.vision_sim.update(pose)

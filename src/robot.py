@@ -165,8 +165,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # physical constants
         self.elevator_carriage_mass = 15.0
-        self.elevator_min_height = 0.0254
-        self.elevator_max_height = 2.032
+        self.elevator_min_height = 0.0
+        self.elevator_max_height = 0.7
         self.elevator_gearing = 10.0
         self.elevator_spool_radius: units.meters = 0.0223
 
@@ -339,9 +339,12 @@ class MyRobot(magicbot.MagicRobot):
                 )
             if self.primary.getPOV() == 270:
                 if self.camera.get_best_tag() is not None:
-                    self.drive_control.request_pose(Pose2d(Translation2d(-0.2, -0.1),Rotation2d(0)).relativeTo(self.camera.get_best_pose(True)))
-                    #self.camera.get_best_pose(True)
-
+                    self.drive_control.request_pose(
+                        Pose2d(Translation2d(-0.2, -0.1), Rotation2d(0)).relativeTo(
+                            self.camera.get_best_pose(True)
+                        )
+                    )
+                    # self.camera.get_best_pose(True)
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
