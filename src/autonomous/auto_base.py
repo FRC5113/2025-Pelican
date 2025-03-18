@@ -57,7 +57,7 @@ class AutoBase(AutonomousStateMachine):
         self.current_step = -1
         starting_pose = self.get_starting_pose()
         if RobotBase.isSimulation() and starting_pose is not None:
-            self.swerve_drive.set_pose(starting_pose)
+            self.swerve_drive.set_starting_pose(starting_pose)
 
         super().on_enable()
 
@@ -128,7 +128,7 @@ class AutoBase(AutonomousStateMachine):
     @state
     def intaking_coral(self) -> None:
         self.arm_control.engage()
-        self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION)
+        self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION_CLOSE)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(-1)
         if self.claw.get_intake_limit():

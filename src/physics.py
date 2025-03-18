@@ -10,7 +10,7 @@ from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, Color8Bit
 from wpilib.simulation import SingleJointedArmSim, ElevatorSim, DIOSim
 from wpimath.system.plant import DCMotor, LinearSystemId
-from wpimath.geometry import Rotation2d, Transform3d, Rotation3d
+from wpimath.geometry import Pose2d, Transform2d, Rotation3d
 from robot import MyRobot
 from lemonlib.simulation import LemonCameraSim
 from lemonlib.simulation import FalconSim
@@ -21,6 +21,7 @@ class PhysicsEngine:
         # Swerve Drive Setup
         self.physics_controller = physics_controller
         self.robot = robot
+        self.pose = Pose2d()
         self.speed_sims = (
             FalconSim(robot.front_left_speed_motor, 0.01, 6.75),
             FalconSim(robot.front_right_speed_motor, 0.01, 6.75),
@@ -127,6 +128,17 @@ class PhysicsEngine:
     def update_sim(self, now, tm_diff):
         if DriverStation.isEnabled():
             unmanaged.feed_enable(100)
+
+            if self.robot.swerve_drive.starting_pose is not None:
+                self.physics_controller.move_robot(
+                    Transform2d(self.pose.translation(), self.pose.rotation()).inverse()
+                )
+                start = self.robot.swerve_drive.starting_pose
+                self.physics_controller.move_robot(
+                    Transform2d(start.translation(), start.rotation())
+                )
+                self.robot.swerve_drive.set_starting_pose(None)
+
             for i in range(4):
                 self.speed_sims[i].update(tm_diff)
                 self.direction_sims[i].update(tm_diff)
@@ -153,9 +165,9 @@ class PhysicsEngine:
             sim_speeds.omega_dps *= 0.4
             # Correct chassis speeds to match initial robot orientation
             sim_speeds.vx, sim_speeds.vy = sim_speeds.vy, -sim_speeds.vx
-            pose = self.physics_controller.drive(sim_speeds, tm_diff)
+            self.pose = self.physics_controller.drive(sim_speeds, tm_diff)
             # self.robot.camera.set_robot_pose(pose)
-            self.robot.pigeon.sim_state.set_raw_yaw(pose.rotation().degrees())
+            self.robot.pigeon.sim_state.set_raw_yaw(self.pose.rotation().degrees())
 
             # Elevator Simulation Update
             # First, we set our "inputs" (voltages)
@@ -197,4 +209,4 @@ class PhysicsEngine:
             self.claw_ligament.setAngle(self.claw_sim.getAngleDegrees() - 90)
 
             # Simulate Vision
-            self.vision_sim.update(pose)
+            self.vision_sim.update(self.pose)

@@ -86,6 +86,7 @@ class SwerveDrive(Sendable):
         self.period = 0.02
 
         self.desired_pose = Pose2d()
+        self.starting_pose = None  # only used in sim
 
         self.pigeon_offset = Rotation2d()
         self.pigeon_alert = Alert(
@@ -218,9 +219,11 @@ class SwerveDrive(Sendable):
         )
         self.drive(-speeds.vx, -speeds.vy, -speeds.omega, True, self.period)
 
-    def set_pose(self, pose: Pose2d):
-        self.pose_estimator.resetPose(Pose2d())
-        self.pose_estimator.resetPose(pose)
+    def set_starting_pose(self, pose: Pose2d):
+        """ONLY USE IN SIM!"""
+        self.starting_pose = pose
+        if pose is not None:
+            self.pose_estimator.resetPose(pose)
 
     """
     TELEMETRY METHODS
