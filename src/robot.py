@@ -355,21 +355,21 @@ class MyRobot(magicbot.MagicRobot):
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.35, 0.19, Rotation2d())
+                                Transform2d(0.35, 0.19, Rotation2d(math.pi))
                             )
                         )
                 if self.secondary.getAButton():  # L1
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.35, 0.19, Rotation2d())
+                                Transform2d(0.35, 0.19, Rotation2d(math.pi))
                             )
                         )
                 if self.secondary.getYButton():  # L4
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.3, 0.2, Rotation2d())
+                                Transform2d(0.3, 0.2, Rotation2d(math.pi))
                             )
                         )
 
@@ -378,21 +378,21 @@ class MyRobot(magicbot.MagicRobot):
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.35, -0.19, Rotation2d())
+                                Transform2d(0.35, -0.19, Rotation2d(math.pi))
                             )
                         )
                 if self.secondary.getAButton():  # L1
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.35, 0.19, Rotation2d())
+                                Transform2d(0.35, 0.19, Rotation2d(math.pi))
                             )
                         )
                 if self.secondary.getYButton():  # L4
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.3, -0.19, Rotation2d())
+                                Transform2d(0.3, -0.19, Rotation2d(math.pi))
                             )
                         )
 
