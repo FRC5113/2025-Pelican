@@ -74,8 +74,8 @@ class LEDStrip:
             self.leds.set_solid_color(self.coral_detected)
         elif self.justin_bool:
             self.leds.scolling_rainbow(6)
-        # elif DriverStation.getControlState()[1]:
-        #     self.leds.set_solid_color(self.auton_color)
+        elif DriverStation.isAutonomousEnabled():
+            self.leds.set_solid_color(self.auton_color)
 
         else:
             self.leds.move_across((255, 255, 0), 15, 12)

@@ -29,6 +29,7 @@ class DriveControl(StateMachine):
     go_to_pose = will_reset_to(False)
     desired_pose = Pose2d()
     period: units.seconds = 0.02
+    drive_auto_man = will_reset_to(False)
 
     def drive_manual(
         self,
@@ -73,6 +74,7 @@ class DriveControl(StateMachine):
         self.translationY = translationY
         self.rotationX = rotationX
         self.field_relative = field_relative
+        self.drive_auto_man = True
 
     @state(first=True)
     def free(self):
@@ -87,8 +89,8 @@ class DriveControl(StateMachine):
             self.next_state("remove_algae_placement")
         if self.go_to_pose:
             self.next_state("going_to_pose")
-        # if DriverStation.isAutonomousEnabled():
-        #     self.next_state("run_auton_routine")
+        if DriverStation.isAutonomousEnabled():
+            self.next_state("run_auton_routine")
 
     @state
     def remove_algae_placement(self):

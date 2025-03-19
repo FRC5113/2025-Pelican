@@ -44,6 +44,7 @@ class AutoBase(AutonomousStateMachine):
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
+        SmartDashboard.putString("Final Pose", "none")
         # Load trajectories (skip non-trajectory steps)
         for item in self.sequence:
             if not item.startswith("state:"):  # Only load actual trajectories
@@ -109,6 +110,7 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.swerve_drive.get_estimated_pose()
         final_pose = self.current_trajectory.get_final_pose(is_red())
         distance = current_pose.translation().distance(final_pose.translation())
+        SmartDashboard.putString("Final Pose", f"{final_pose}")
 
         if (
             distance < self.DISTANCE_TOLERANCE
@@ -118,6 +120,7 @@ class AutoBase(AutonomousStateMachine):
 
         sample = self.current_trajectory.sample_at(state_tm, is_red())
         if sample:
+            
             self.swerve_drive.follow_trajectory(sample)
 
             SmartDashboard.putNumber("Distance", distance)
@@ -171,3 +174,5 @@ class AutoBase(AutonomousStateMachine):
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
             self.arm_control.set_wheel_voltage(-10)
+    
+
