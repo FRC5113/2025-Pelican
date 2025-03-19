@@ -93,6 +93,7 @@ class SwerveDrive(Sendable):
             "Pigeon heading has been reset.", AlertType.INFO, timeout=3.0
         )
         self.pigeon.set_yaw(180)
+        # self.pigeon.reset()
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("SwerveDrive")
@@ -207,6 +208,7 @@ class SwerveDrive(Sendable):
 
     def reset_gyro(self) -> None:
         self.pigeon.set_yaw(180)
+        # self.pigeon.reset()
         self.pigeon_alert.enable()
 
     def add_vision_measurement(self, pose: Pose2d, timestamp: units.seconds):
@@ -228,7 +230,7 @@ class SwerveDrive(Sendable):
                 pose.rotation().radians(), sample.heading
             ),
         )
-        self.drive(-speeds.vx, -speeds.vy, speeds.omega, True, self.period)
+        self.drive(speeds.vx, speeds.vy, speeds.omega, True, self.period)
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""
