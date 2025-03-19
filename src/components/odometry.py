@@ -35,4 +35,6 @@ class Odometry:
             )
         self.estimated_field.setRobotPose(self.swerve_drive.get_estimated_pose())
         if self.swerve_drive.has_desired_pose:
-            self.estimated_field.getObject("desired").setPose(self.swerve_drive.desired_pose)
+            self.estimated_field.getObject("desired").setPose(
+                self.swerve_drive.desired_pose
+            )

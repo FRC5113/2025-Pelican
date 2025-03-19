@@ -92,6 +92,7 @@ class SwerveDrive(Sendable):
         self.pigeon_alert = Alert(
             "Pigeon heading has been reset.", AlertType.INFO, timeout=3.0
         )
+        self.pigeon.set_yaw(180)
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("SwerveDrive")
@@ -151,7 +152,6 @@ class SwerveDrive(Sendable):
         self.holonomic_controller = HolonomicDriveController(
             self.x_controller, self.y_controller, self.theta_controller
         )
-        self.pigeon.reset()
 
     """
     INFORMATIONAL METHODS
@@ -174,15 +174,14 @@ class SwerveDrive(Sendable):
             self.rear_left.getMeasuredState(),
             self.rear_right.getMeasuredState(),
         )
-    
+
     @feedback
     def get_distance_from_desired_pose(self) -> units.meters:
         if not self.has_desired_pose:
             return 0
-        print(self.desired_pose.translation())
-        return self.desired_pose.translation().distance(self.get_estimated_pose().translation())
-        
-
+        return self.desired_pose.translation().distance(
+            self.get_estimated_pose().translation()
+        )
 
     """
     CONTROL METHODS
@@ -207,7 +206,7 @@ class SwerveDrive(Sendable):
         self.has_desired_pose = True
 
     def reset_gyro(self) -> None:
-        self.pigeon.reset()
+        self.pigeon.set_yaw(180)
         self.pigeon_alert.enable()
 
     def add_vision_measurement(self, pose: Pose2d, timestamp: units.seconds):
@@ -224,9 +223,12 @@ class SwerveDrive(Sendable):
         speeds = ChassisSpeeds(
             sample.vx + self.x_controller.calculate(pose.X(), sample.x),
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
-            sample.omega,
+            sample.omega
+            + self.theta_controller.calculate(
+                pose.rotation().radians(), sample.heading
+            ),
         )
-        self.drive(-speeds.vx, -speeds.vy, -speeds.omega, True, self.period)
+        self.drive(-speeds.vx, -speeds.vy, speeds.omega, True, self.period)
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""

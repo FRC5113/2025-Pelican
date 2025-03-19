@@ -45,7 +45,6 @@ class PhysicsEngine:
             encoder.sim_state.add_position(0.25)
 
         self.robot.pigeon.sim_state.set_supply_voltage(5.0)
-        self.robot.pigeon.sim_state.add_yaw(180.0)
 
         # Elevator Simulation
         self.elevator_gearbox = DCMotor.NEO(2)

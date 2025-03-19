@@ -39,6 +39,7 @@ class AutoBase(AutonomousStateMachine):
 
         self.sequence = sequence  # List of trajectories and states
         self.current_step = -1
+        self.trajectory_index = -1
         self.trajectories: list[SwerveTrajectory] = []
         self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
@@ -55,6 +56,7 @@ class AutoBase(AutonomousStateMachine):
 
     def on_enable(self) -> None:
         self.current_step = -1
+        self.trajectory_index = -1
         starting_pose = self.get_starting_pose()
         if RobotBase.isSimulation() and starting_pose is not None:
             self.swerve_drive.set_starting_pose(starting_pose)
@@ -90,7 +92,8 @@ class AutoBase(AutonomousStateMachine):
 
             self.next_state(step.split("state:")[1])  # Go to the specified state
         else:
-            self.current_trajectory = self.trajectories[self.current_step]
+            self.trajectory_index += 1
+            self.current_trajectory = self.trajectories[self.trajectory_index]
             if self.current_trajectory:
                 self.next_state("tracking_trajectory")
             else:
