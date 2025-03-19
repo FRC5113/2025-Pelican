@@ -120,7 +120,7 @@ class AutoBase(AutonomousStateMachine):
 
         sample = self.current_trajectory.sample_at(state_tm, is_red())
         if sample:
-            
+
             self.swerve_drive.follow_trajectory(sample)
 
             SmartDashboard.putNumber("Distance", distance)
@@ -174,5 +174,3 @@ class AutoBase(AutonomousStateMachine):
         if self.arm_control.at_setpoint():
             self.arm_control.engage()
             self.arm_control.set_wheel_voltage(-10)
-    
-

@@ -158,7 +158,7 @@ class blue_l4(AutonomousStateMachine):
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.drive_control.engage()
         self.drive_control.request_pose(
-            self.camera.get_tag_pose(21,True).transformBy(
+            self.camera.get_tag_pose(21, True).transformBy(
                 Transform2d(0.3, 0.2, Rotation2d())
             )
         )

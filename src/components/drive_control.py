@@ -98,7 +98,7 @@ class DriveControl(StateMachine):
         if self.arm_control.at_setpoint():
             self.next_state("remove_algae")
 
-    @timed_state(duration=0.5, next_state="free", must_finish=True)
+    @timed_state(duration=1, next_state="free", must_finish=True)
     def remove_algae(self):
         self.arm_control.set(self.elevatorheight, ClawAngle.STOWED)
         self.swerve_drive.drive(-2, 0, 0, True, self.period)
