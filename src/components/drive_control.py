@@ -87,8 +87,8 @@ class DriveControl(StateMachine):
             self.next_state("remove_algae_placement")
         if self.go_to_pose:
             self.next_state("going_to_pose")
-        if DriverStation.isAutonomousEnabled():
-            self.next_state("run_auton_routine")
+        # if DriverStation.isAutonomousEnabled():
+        #     self.next_state("run_auton_routine")
 
     @state
     def remove_algae_placement(self):

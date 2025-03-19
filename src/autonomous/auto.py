@@ -6,8 +6,8 @@ from wpilib import DriverStation
 from lemonlib import LemonCamera
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
-from components.elevator import ElevatorHeight
-from components.claw import ClawAngle
+from components.elevator import ElevatorHeight, Elevator
+from components.claw import ClawAngle, Claw
 
 
 """
@@ -136,29 +136,48 @@ class blue_l4(AutonomousStateMachine):
     camera: LemonCamera
     swerve_drive: SwerveDrive
     arm_control: ArmControl
+    claw: Claw
+    elevator: Elevator
 
-    @timed_state(duration=1, first=True, must_finish=True, next_state="align")
+    @timed_state(duration=1, first=True, must_finish=True, next_state="raise_arm")
     def drive(self):
+        self.arm_control.engage()
         self.drive_control.engage()
-        self.drive_control.drive_auto_manual(-1, 0, 0, True)
+        self.drive_control.drive_auto_manual(1, 0, 0, True)
+
+    @state
+    def raise_arm(self, state_tm):
+        self.arm_control.engage()
+        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+        if self.arm_control.current_state == "standby" and state_tm > 1.0:
+            self.next_state("align")
 
     @state
     def align(self):
+        self.arm_control.engage()
+        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.drive_control.engage()
         self.drive_control.request_pose(
-            self.camera.get_tag_pose(21).transformBy(
-                Transform2d(0.31, -0.21, Rotation2d(-0.1))
+            self.camera.get_tag_pose(21,True).transformBy(
+                Transform2d(0.3, 0.2, Rotation2d())
             )
         )
-        if self.swerve_drive.get_distance_from_desired_pose() < 0.03:
+        self.swerve_drive.has_desired_pose = True
+        # print(self.swerve_drive.has_desired_pose)
+        if 0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.03:
             self.next_state("score")
 
-    @timed_state(duration=2, next_state="finish")
+    @timed_state(duration=1, next_state="back_up")
     def score(self):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        if self.arm_control.at_setpoint():
-            self.arm_control.set_wheel_voltage(-8)
+        self.arm_control.set_wheel_voltage(-8)
+
+    @timed_state(duration=1, next_state="finish")
+    def back_up(self):
+        self.arm_control.engage()
+        self.drive_control.engage()
+        self.drive_control.drive_auto_manual(-1, 0, 0, True)
 
     @state
     def finish(self):
