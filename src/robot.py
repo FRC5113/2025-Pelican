@@ -242,7 +242,7 @@ class MyRobot(magicbot.MagicRobot):
             0.0,
             0.0,
             0.0,
-            Rotation3d(0.0,0.0,math.pi),
+            Rotation3d(0.0, 0.0, math.pi),
             # -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
         )
 

@@ -1,7 +1,7 @@
 from autonomous.auto_base import AutoBase
 from magicbot import timed_state, state, AutonomousStateMachine
 from components.drive_control import DriveControl
-from wpimath.geometry import Pose2d, Translation2d, Rotation2d,Transform2d
+from wpimath.geometry import Pose2d, Translation2d, Rotation2d, Transform2d
 from wpilib import DriverStation
 from lemonlib import LemonCamera
 from components.swerve_drive import SwerveDrive
@@ -128,6 +128,7 @@ class passline(AutonomousStateMachine):
     def finish(self):
         self.done()
 
+
 class blue_l4(AutonomousStateMachine):
     MODE_NAME = "blue l4"
 
@@ -136,7 +137,7 @@ class blue_l4(AutonomousStateMachine):
     swerve_drive: SwerveDrive
     arm_control: ArmControl
 
-    @timed_state(duration=1, first=True, must_finish=True,next_state="align")
+    @timed_state(duration=1, first=True, must_finish=True, next_state="align")
     def drive(self):
         self.drive_control.engage()
         self.drive_control.drive_auto_manual(-1, 0, 0, True)
@@ -151,15 +152,14 @@ class blue_l4(AutonomousStateMachine):
         )
         if self.swerve_drive.get_distance_from_desired_pose() < 0.03:
             self.next_state("score")
-    
+
     @timed_state(duration=2, next_state="finish")
     def score(self):
         self.arm_control.engage()
-        self.arm_control.set(ElevatorHeight.L4,ClawAngle.BRANCH)
+        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_setpoint():
             self.arm_control.set_wheel_voltage(-8)
-    
+
     @state
     def finish(self):
         self.done()
-

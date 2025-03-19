@@ -1,6 +1,6 @@
 from wpilib import Color
 from magicbot import will_reset_to, feedback
-
+from wpilib import DriverStation
 from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.climber import Climber
@@ -13,7 +13,6 @@ class LEDStrip:
     swerve_drive: SwerveDrive
     climber: Climber
     claw: Claw
-
     leds: LEDController
 
     justin_bool = will_reset_to(False)
@@ -29,6 +28,7 @@ class LEDStrip:
         self.fully_climbed = (255, 0, 255)
         self.error_color = (255, 0, 0)
         self.warning_color = (255, 255, 0)
+        self.auton_color = (255, 187, 0)
 
     def on_disable(self):
         self.leds.set_solid_color((10, 10, 10))
@@ -74,5 +74,8 @@ class LEDStrip:
             self.leds.set_solid_color(self.coral_detected)
         elif self.justin_bool:
             self.leds.scolling_rainbow(6)
+        elif DriverStation.getControlState()[1]:
+            self.leds.set_solid_color(self.auton_color)
+
         else:
             self.leds.move_across((255, 255, 0), 15, 12)
