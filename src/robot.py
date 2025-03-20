@@ -242,7 +242,7 @@ class MyRobot(magicbot.MagicRobot):
             0.0,
             0.0,
             0.0,
-            Rotation3d(0.0, 0.0, math.pi),
+            Rotation3d(0.0, 0.0, 0.0),
             # -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
         )
 
@@ -312,7 +312,7 @@ class MyRobot(magicbot.MagicRobot):
                 # SAMMI: Replace -54.0 with 126.0 to flip orientiation
                 self.swerve_drive.set_pigeon_offset(126.0)
                 self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
-                self.getLeftX = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
+                self.getLeftx = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
             else:
                 self.swerve_drive.set_pigeon_offset(0.0)
                 self.getLefty = self.primary.getLeftY()
@@ -342,11 +342,11 @@ class MyRobot(magicbot.MagicRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
 
-            if self.primary.getPOV() == 0:
+            if self.primary.getPOV() == 180:
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L1, ClawAngle.TROUGH
                 )
-            if self.primary.getPOV() == 180:
+            if self.primary.getPOV() == 0:
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L2, ClawAngle.TROUGH
                 )

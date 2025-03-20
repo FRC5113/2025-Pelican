@@ -100,8 +100,11 @@ class Claw:
     def is_safe(self) -> bool:
         return ClawAngle.SAFE_START <= self.get_angle() <= ClawAngle.SAFE_END
 
+    def at_point(self, angle: units.degrees) -> bool:
+        return abs(angle - self.get_angle()) <= self.hinge_tolerance
+
     def at_setpoint(self) -> bool:
-        return abs(self.target_angle - self.get_angle()) <= self.hinge_tolerance
+        return self.at_point(self.target_angle)
 
     """
     CONTROL METHODS

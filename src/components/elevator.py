@@ -91,8 +91,11 @@ class Elevator:
     def get_upper_switch(self) -> bool:
         return self.upper_switch.get()
 
+    def at_height(self, height: units.meters) -> bool:
+        return abs(height - self.get_height()) <= self.tolerance
+
     def at_setpoint(self) -> bool:
-        return abs(self.target_height - self.get_height()) <= self.tolerance
+        return self.at_height(self.target_height)
 
     def error_detected(self) -> bool:
         self.lower_switch.get() and self.upper_switch.get()

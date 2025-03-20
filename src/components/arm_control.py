@@ -49,6 +49,9 @@ class ArmControl(StateMachine):
     def get_drive_scalar(self) -> float:
         return self.drive_scalar
 
+    def at_point(self, height: units.meters, angle: units.degrees):
+        return self.elevator.at_height(height) and self.claw.at_point(angle)
+
     def at_setpoint(self) -> bool:
         return self.elevator.at_setpoint() and self.claw.at_setpoint()
 

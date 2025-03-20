@@ -149,7 +149,7 @@ class blue_l4(AutonomousStateMachine):
     def raise_arm(self, state_tm):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        if self.arm_control.current_state == "standby" and state_tm > 1.0:
+        if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
             self.next_state("align")
 
     @state

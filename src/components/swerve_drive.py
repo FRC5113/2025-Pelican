@@ -230,7 +230,7 @@ class SwerveDrive(Sendable):
                 pose.rotation().radians(), sample.heading
             ),
         )
-        self.drive(-speeds.vx, -speeds.vy, speeds.omega, True, self.period)
+        self.drive(speeds.vx, speeds.vy, speeds.omega, True, self.period)
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""
