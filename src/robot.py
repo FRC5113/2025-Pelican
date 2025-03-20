@@ -242,7 +242,7 @@ class MyRobot(magicbot.MagicRobot):
             0.0,
             0.0,
             0.0,
-            Rotation3d(0.0, 0.0, 0.0),
+            Rotation3d(0.0, 0.0, math.pi),
             # -0.2286, 0.0, 0.2667, Rotation3d(0.0, 0.0, math.pi)
         )
 
@@ -311,6 +311,10 @@ class MyRobot(magicbot.MagicRobot):
             if self.primary.getR1Button():
                 # SAMMI: Replace -54.0 with 126.0 to flip orientiation
                 self.swerve_drive.set_pigeon_offset(126.0)
+                self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
+                self.getLeftx = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
+            elif self.primary.getL1Button():
+                self.swerve_drive.set_pigeon_offset(-126.0)
                 self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
                 self.getLeftx = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
             else:

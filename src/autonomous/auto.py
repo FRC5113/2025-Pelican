@@ -145,33 +145,34 @@ class blue_l4(AutonomousStateMachine):
         self.drive_control.engage()
         self.drive_control.drive_auto_manual(1, 0, 0, True)
 
-    @state
-    def raise_arm(self, state_tm):
+    @timed_state(duration=1.0, next_state="align")
+    def raise_arm(self):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
-            self.next_state("align")
+        # if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
+        #     self.next_state("align")
 
     @state
     def align(self):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.drive_control.engage()
-        self.drive_control.request_pose(
-            self.camera.get_tag_pose(21, True).transformBy(
-                Transform2d(0.3, 0.2, Rotation2d())
+        if self.camera.has_target():
+            self.drive_control.request_pose(
+                self.camera.get_tag_pose(21, True).transformBy(
+                    Transform2d(0.3, 0.2, Rotation2d())
+                )
             )
-        )
         self.swerve_drive.has_desired_pose = True
         # print(self.swerve_drive.has_desired_pose)
-        if 0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.03:
+        if 0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.02 and self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
             self.next_state("score")
 
     @timed_state(duration=1, next_state="back_up")
     def score(self):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        self.arm_control.set_wheel_voltage(-8)
+        self.arm_control.set_wheel_voltage(-3)
 
     @timed_state(duration=1, next_state="finish")
     def back_up(self):

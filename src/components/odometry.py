@@ -4,12 +4,13 @@ from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 from robotpy_apriltag import AprilTagFieldLayout
 
+from lemonlib.vision import LemonCamera
 
 from components.swerve_drive import SwerveDrive
 
 
 class Odometry:
-    camera: PhotonCamera
+    camera: LemonCamera
     robot_to_camera: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive
@@ -27,6 +28,7 @@ class Odometry:
 
     def execute(self):
         # may need to tweak timestamp to match system time
+        self.camera.update()
         camera_estimator_result = self.camera_pose_estimator.update()
         if camera_estimator_result is not None:
             self.swerve_drive.add_vision_measurement(
