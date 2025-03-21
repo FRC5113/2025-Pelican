@@ -77,6 +77,20 @@ class DriveControl(StateMachine):
         self.drive_auto_man = True
 
     @state(first=True)
+    def initialise(self):
+        self.translationX = 0
+        self.translationY = 0
+        self.rotationX = 0
+        self.field_relative = False
+        if self.remove_algae_var:
+            self.next_state("remove_algae_placement")
+        if self.go_to_pose:
+            self.next_state("going_to_pose")
+        if DriverStation.isAutonomousEnabled():
+            self.next_state("run_auton_routine")
+        self.next_state("free")
+
+    @state
     def free(self):
         self.swerve_drive.drive(
             self.translationX,
@@ -89,8 +103,6 @@ class DriveControl(StateMachine):
             self.next_state("remove_algae_placement")
         if self.go_to_pose:
             self.next_state("going_to_pose")
-        if DriverStation.isAutonomousEnabled():
-            self.next_state("run_auton_routine")
 
     @state
     def remove_algae_placement(self):

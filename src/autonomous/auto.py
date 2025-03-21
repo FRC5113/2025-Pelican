@@ -4,10 +4,12 @@ from components.drive_control import DriveControl
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d, Transform2d
 from wpilib import DriverStation
 from lemonlib import LemonCamera
+from lemonlib.util import is_red
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
 from components.elevator import ElevatorHeight, Elevator
 from components.claw import ClawAngle, Claw
+import math
 
 
 """
@@ -130,7 +132,7 @@ class passline(AutonomousStateMachine):
 
 
 class blue_l4(AutonomousStateMachine):
-    MODE_NAME = "blue l4"
+    MODE_NAME = "hardcode l4"
 
     drive_control: DriveControl
     camera: LemonCamera
@@ -139,11 +141,14 @@ class blue_l4(AutonomousStateMachine):
     claw: Claw
     elevator: Elevator
 
-    @timed_state(duration=1, first=True, must_finish=True, next_state="raise_arm")
+    @timed_state(first=True, duration=1, must_finish=True, next_state="raise_arm")
     def drive(self):
         self.arm_control.engage()
         self.drive_control.engage()
-        self.drive_control.drive_auto_manual(1, 0, 0, True)
+        if is_red():
+            self.drive_control.drive_auto_manual(-1, 0, 0, True)
+        else:
+            self.drive_control.drive_auto_manual(1, 0, 0, True)
 
     @timed_state(duration=1.0, next_state="align")
     def raise_arm(self):
@@ -158,14 +163,26 @@ class blue_l4(AutonomousStateMachine):
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.drive_control.engage()
         if self.camera.has_target():
-            self.drive_control.request_pose(
-                self.camera.get_tag_pose(21, True).transformBy(
-                    Transform2d(0.3, 0.2, Rotation2d())
+            if is_red():
+                print(self.camera.get_tag_pose(10, True))
+                self.drive_control.request_pose(
+                    self.camera.get_tag_pose(10, True).transformBy(
+                        Transform2d(0.3, 0.2, Rotation2d())
+                    )
                 )
-            )
+            else:
+                print(self.camera.get_tag_pose(21, True))
+                self.drive_control.request_pose(
+                    self.camera.get_tag_pose(21, True).transformBy(
+                        Transform2d(0.3, 0.2, Rotation2d())
+                    )
+                )
         self.swerve_drive.has_desired_pose = True
         # print(self.swerve_drive.has_desired_pose)
-        if 0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.02 and self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
+        if (
+            0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.02
+            and self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH)
+        ):
             self.next_state("score")
 
     @timed_state(duration=1, next_state="back_up")
@@ -174,11 +191,19 @@ class blue_l4(AutonomousStateMachine):
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.arm_control.set_wheel_voltage(-3)
 
-    @timed_state(duration=1, next_state="finish")
+    @timed_state(duration=1, next_state="rotate")
     def back_up(self):
         self.arm_control.engage()
         self.drive_control.engage()
-        self.drive_control.drive_auto_manual(-1, 0, 0, True)
+        if is_red():
+            self.drive_control.drive_auto_manual(1, 0, 0, True)
+        else:
+            self.drive_control.drive_auto_manual(-1, 0, 0, True)
+
+    @timed_state(duration=1, next_state="finish")
+    def rotate(self):
+        self.drive_control.engage()
+        self.drive_control.drive_auto_manual(0, 0, math.pi, True)
 
     @state
     def finish(self):
