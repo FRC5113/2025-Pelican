@@ -300,6 +300,8 @@ class MyRobot(magicbot.MagicRobot):
         self.y_filter = SlewRateLimiter(self.slew_rate)
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
+        self.algae_button_released = False
+
     def teleopPeriodic(self):
         with self.consumeExceptions():
 
@@ -346,12 +348,24 @@ class MyRobot(magicbot.MagicRobot):
             )
 
             if self.primary.getPOV() == 180:
+                self.algae_button_released = False
                 self.drive_control.request_remove_algae(
-                    ElevatorHeight.L1, ClawAngle.TROUGH
+                    ElevatorHeight.L1, True
+                )
+            elif not self.algae_button_released:
+                self.algae_button_released = True
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L1, False
                 )
             if self.primary.getPOV() == 0:
+                self.algae_button_released = False
                 self.drive_control.request_remove_algae(
-                    ElevatorHeight.L2, ClawAngle.TROUGH
+                    ElevatorHeight.L2, True
+                )
+            elif not self.algae_button_released:
+                self.algae_button_released = True
+                self.drive_control.request_remove_algae(
+                    ElevatorHeight.L2, False
                 )
             if self.primary.getPOV() == 90:
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
