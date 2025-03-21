@@ -23,5 +23,5 @@ jobs:
       - name: Test src directory
         run: |
           cd src
-          robotpy coverage test
+          robotpy test
 
