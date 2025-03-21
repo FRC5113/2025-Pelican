@@ -145,10 +145,7 @@ class blue_l4(AutonomousStateMachine):
     def drive(self):
         self.arm_control.engage()
         self.drive_control.engage()
-        if is_red():
-            self.drive_control.drive_auto_manual(-1, 0, 0, True)
-        else:
-            self.drive_control.drive_auto_manual(1, 0, 0, True)
+        self.drive_control.drive_auto_manual(1, 0, 0, True)
 
     @timed_state(duration=1.0, next_state="align")
     def raise_arm(self):
@@ -167,7 +164,7 @@ class blue_l4(AutonomousStateMachine):
                 print(self.camera.get_tag_pose(10, True))
                 self.drive_control.request_pose(
                     self.camera.get_tag_pose(10, True).transformBy(
-                        Transform2d(0.3, 0.2, Rotation2d())
+                        Transform2d(0.4, 0.2, Rotation2d())
                     )
                 )
             else:
@@ -189,21 +186,14 @@ class blue_l4(AutonomousStateMachine):
     def score(self):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        self.arm_control.set_wheel_voltage(-3)
+        self.arm_control.set_wheel_voltage(-8)
 
-    @timed_state(duration=1, next_state="rotate")
+    @timed_state(duration=1, next_state="finish")
     def back_up(self):
         self.arm_control.engage()
         self.drive_control.engage()
-        if is_red():
-            self.drive_control.drive_auto_manual(1, 0, 0, True)
-        else:
-            self.drive_control.drive_auto_manual(-1, 0, 0, True)
+        self.drive_control.drive_auto_manual(-1, 0, 0, True)
 
-    @timed_state(duration=1, next_state="finish")
-    def rotate(self):
-        self.drive_control.engage()
-        self.drive_control.drive_auto_manual(0, 0, math.pi, True)
 
     @state
     def finish(self):

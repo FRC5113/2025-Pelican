@@ -30,6 +30,9 @@ class DriveControl(StateMachine):
     desired_pose = Pose2d()
     period: units.seconds = 0.02
     drive_auto_man = will_reset_to(False)
+    translationX = will_reset_to(0)
+    translationY = will_reset_to(0)
+    rotationX = will_reset_to(0)
 
     def drive_manual(
         self,

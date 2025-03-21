@@ -27,7 +27,7 @@ class AutoBase(AutonomousStateMachine):
     odometry: Odometry
     claw: Claw
     estimated_field: Field2d
-    elevator: Elevator
+    elevator: Elevator 
 
     DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)

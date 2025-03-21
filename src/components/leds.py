@@ -28,7 +28,7 @@ class LEDStrip:
         self.fully_climbed = (255, 0, 255)
         self.error_color = (255, 0, 0)
         self.warning_color = (255, 255, 0)
-        self.auton_color = (255, 187, 0)
+        self.auton_color = (255, 50, 0)
 
     def on_disable(self):
         self.leds.set_solid_color((10, 10, 10))
@@ -75,7 +75,7 @@ class LEDStrip:
         elif self.justin_bool:
             self.leds.scolling_rainbow(6)
         elif DriverStation.isAutonomousEnabled():
-            self.leds.set_solid_color(self.auton_color)
+            self.leds.move_across(self.auton_color, 20, 50)
 
         else:
-            self.leds.move_across((255, 255, 0), 15, 12)
+            self.leds.move_across((255, 255, 0), 20, 50)

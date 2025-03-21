@@ -358,7 +358,7 @@ class MyRobot(magicbot.MagicRobot):
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.5786, 0.19, Rotation2d())
+                                Transform2d(0.5786, 0.2, Rotation2d())
                             )
                         )
                 if self.secondary.getAButton():  # L1
