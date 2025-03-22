@@ -133,8 +133,8 @@ class Claw:
         if self.intake_limit.get() and (
             self.left_wheel_voltage >= 0 and self.right_wheel_voltage >= 0
         ):
-            self.left_wheel_voltage = 3
-            self.right_wheel_voltage = 3
+            self.left_wheel_voltage = 2
+            self.right_wheel_voltage = 2
         # positive voltage (left) = intake
         self.left_motor.setVoltage(self.left_wheel_voltage)
         self.right_motor.setVoltage(-self.right_wheel_voltage)

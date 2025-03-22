@@ -2,7 +2,7 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d, SmartDashboard, DataLogManager
+from wpilib import Field2d, SmartDashboard, DataLogManager,CameraServer
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -284,6 +284,10 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.estimated_field = Field2d()
+        # CameraServer().launch()
+    def autonomousInit(self):
+        if DriverStation.isFMSAttached():
+            DataLogManager.start()
 
     def teleopInit(self):
 
@@ -300,7 +304,12 @@ class MyRobot(magicbot.MagicRobot):
         self.y_filter = SlewRateLimiter(self.slew_rate)
         self.theta_filter = SlewRateLimiter(self.slew_rate)
 
-        self.algae_button_released = False
+        self.upper_algae_button_released = True
+        self.lower_algae_button_released = True
+    
+    def disabledPeriodic(self):
+        self.leds.move_across((5, 5, 0), 20, 20)
+        
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
@@ -348,22 +357,22 @@ class MyRobot(magicbot.MagicRobot):
             )
 
             if self.primary.getPOV() == 180:
-                self.algae_button_released = False
+                self.lower_algae_button_released = False
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L1, True
                 )
-            elif not self.algae_button_released:
-                self.algae_button_released = True
+            elif not self.lower_algae_button_released:
+                self.lower_algae_button_released = True
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L1, False
                 )
             if self.primary.getPOV() == 0:
-                self.algae_button_released = False
+                self.upper_algae_button_released = False
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L2, True
                 )
-            elif not self.algae_button_released:
-                self.algae_button_released = True
+            elif not self.upper_algae_button_released:
+                self.upper_algae_button_released = True
                 self.drive_control.request_remove_algae(
                     ElevatorHeight.L2, False
                 )
@@ -372,21 +381,21 @@ class MyRobot(magicbot.MagicRobot):
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.5786, 0.2, Rotation2d())
+                                Transform2d(0.55, 0.21, Rotation2d())
                             )
                         )
                 if self.secondary.getAButton():  # L1
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.6286, 0.19, Rotation2d())
+                                Transform2d(0.6, 0.21, Rotation2d())
                             )
                         )
                 if self.secondary.getYButton():  # L4
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.5286, 0.2, Rotation2d())
+                                Transform2d(0.52, 0.2, Rotation2d())
                             )
                         )
 
@@ -395,21 +404,21 @@ class MyRobot(magicbot.MagicRobot):
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.5786, -0.21, Rotation2d(-0.1))
+                                Transform2d(0.565, -0.21, Rotation2d(-0.1))
                             )
                         )
                 if self.secondary.getAButton():  # L1
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.6286, -0.19, Rotation2d(-0.1))
+                                Transform2d(0.6, -0.19, Rotation2d(-0.1))
                             )
                         )
                 if self.secondary.getYButton():  # L4
                     if self.camera.get_best_tag() is not None:
                         self.drive_control.request_pose(
                             self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.5386, -0.21, Rotation2d(-0.1))
+                                Transform2d(0.52, -0.19, Rotation2d(-0.1))
                             )
                         )
 

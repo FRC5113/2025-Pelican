@@ -1,1 +1,2241 @@
-{"version":1.0,"grid_size":128,"tabs":[{"name":"arm","grid_layout":{"layouts":[{"title":"elevator_profile","x":512.0,"y":0.0,"width":256.0,"height":512.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kG","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kG","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kMaxA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kMaxV","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kS","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kS","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_profile/kV","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"elevator_controller","x":768.0,"y":0.0,"width":256.0,"height":512.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"Error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_controller/Error","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Measurement","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_controller/Measurement","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Output","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_controller/Output","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Reference","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/elevator_controller/Reference","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"claw_profile","x":1024.0,"y":0.0,"width":256.0,"height":768.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kG","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kG","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kMaxA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kMaxV","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kS","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kS","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_profile/kV","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"claw_controller","x":1280.0,"y":0.0,"width":256.0,"height":384.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"Error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_controller/Error","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Measurement","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_controller/Measurement","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Output","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_controller/Output","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Reference","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/claw_controller/Reference","period":0.06,"data_type":"double","show_submit_button":false}}]}],"containers":[{"title":"height","x":512.0,"y":512.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/elevator/height","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"angle","x":384.0,"y":128.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/claw/angle","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"current_state","x":384.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/arm_control/state/current_state","period":0.06,"data_type":"string","show_submit_button":false}},{"title":"Alerts","x":1280.0,"y":384.0,"width":256.0,"height":384.0,"type":"Alerts","properties":{"topic":"/SmartDashboard/Alerts","period":0.06}},{"title":"wheel_twist","x":384.0,"y":256.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/Preferences/wheel_twist","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"slew_rate","x":384.0,"y":384.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/Preferences/slew_rate","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Swerve Drive","x":0.0,"y":0.0,"width":384.0,"height":384.0,"type":"SwerveDrive","properties":{"topic":"/SmartDashboard/Swerve Drive","period":0.06,"show_robot_rotation":true,"rotation_unit":"Degrees"}},{"title":"intake_limit","x":128.0,"y":384.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/claw/intake_limit","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}}]}},{"name":"swerve","grid_layout":{"layouts":[{"title":"11_speed_controller","x":1280.0,"y":0.0,"width":256.0,"height":384.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"Error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/11_speed_controller/Error","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Measurement","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/11_speed_controller/Measurement","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Output","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/11_speed_controller/Output","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Reference","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/11_speed_controller/Reference","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"12_direction_controller","x":1024.0,"y":0.0,"width":256.0,"height":384.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"Error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/12_direction_controller/Error","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"Output","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/12_direction_controller/Output","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"direction_profile","x":512.0,"y":0.0,"width":256.0,"height":768.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kMaxA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxInput","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kMaxInput","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kMaxV","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMinInput","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kMinInput","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kS","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kS","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/direction_profile/kV","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"speed_profile","x":768.0,"y":0.0,"width":256.0,"height":768.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kS","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kS","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/speed_profile/kV","period":0.06,"data_type":"double","show_submit_button":false}}]}],"containers":[{"title":"Swerve Drive","x":0.0,"y":128.0,"width":512.0,"height":512.0,"type":"SwerveDrive","properties":{"topic":"/SmartDashboard/Swerve Drive","period":0.06,"show_robot_rotation":true,"rotation_unit":"Degrees"}},{"title":"Measurement","x":1024.0,"y":384.0,"width":256.0,"height":256.0,"type":"Radial Gauge","properties":{"topic":"/SmartDashboard/12_direction_controller/Measurement","period":0.06,"data_type":"double","start_angle":-180.0,"end_angle":180.0,"min_value":-3.14,"max_value":3.14,"number_of_labels":8,"wrap_value":false,"show_pointer":true,"show_ticks":true}},{"title":"Reference","x":1280.0,"y":384.0,"width":256.0,"height":256.0,"type":"Radial Gauge","properties":{"topic":"/SmartDashboard/12_direction_controller/Reference","period":0.06,"data_type":"double","start_angle":-180.0,"end_angle":180.0,"min_value":-3.14,"max_value":3.14,"number_of_labels":8,"wrap_value":false,"show_pointer":true,"show_ticks":true}},{"title":"slew_rate","x":384.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/Preferences/slew_rate","period":0.06,"data_type":"double","show_submit_button":false}}]}},{"name":"odometry","grid_layout":{"layouts":[{"title":"state","x":512.0,"y":384.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"current_state","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/current_state","period":0.06,"data_type":"string","show_submit_button":false}},{"title":"remove_algae_state_duration","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/remove_algae_state_duration","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"state_descriptions","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/state_descriptions","period":0.06,"data_type":"string[]","show_submit_button":false}},{"title":"state_names","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/state_names","period":0.06,"data_type":"string[]","show_submit_button":false}}]},{"title":"translation_profile","x":0.0,"y":0.0,"width":256.0,"height":384.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/translation_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/translation_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/translation_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"rotation_profile","x":256.0,"y":0.0,"width":256.0,"height":640.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"kD","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kD","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kI","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kI","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxA","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kMaxA","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxInput","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kMaxInput","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMaxV","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kMaxV","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kMinInput","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kMinInput","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"kP","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/rotation_profile/kP","period":0.06,"data_type":"double","show_submit_button":false}}]},{"title":"USB_Camera","x":0.0,"y":384.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"cameraDistortion","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/cameraDistortion","period":0.06,"data_type":"double[]","show_submit_button":false}},{"title":"cameraIntrinsics","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/cameraIntrinsics","period":0.06,"data_type":"double[]","show_submit_button":false}},{"title":"driverMode","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/photonvision/USB_Camera/driverMode","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"driverModeRequest","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/photonvision/USB_Camera/driverModeRequest","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"hasTarget","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/photonvision/USB_Camera/hasTarget","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"heartbeat","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/heartbeat","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"inputSaveImgCmd","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/inputSaveImgCmd","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"latencyMillis","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/latencyMillis","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"outputSaveImgCmd","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/outputSaveImgCmd","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"pipelineIndexRequest","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/pipelineIndexRequest","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"pipelineIndexState","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/pipelineIndexState","period":0.06,"data_type":"int","show_submit_button":false}},{"title":"targetArea","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetArea","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"targetPitch","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetPitch","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"targetPixelsX","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetPixelsX","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"targetPixelsY","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetPixelsY","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"targetSkew","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetSkew","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"targetYaw","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/photonvision/USB_Camera/targetYaw","period":0.06,"data_type":"double","show_submit_button":false}}]}],"containers":[{"title":"Estimated Field","x":512.0,"y":0.0,"width":640.0,"height":384.0,"type":"Field","properties":{"topic":"/SmartDashboard/Estimated Field","period":0.06,"field_game":"Crescendo","robot_width":0.85,"robot_length":0.85,"show_other_objects":true,"show_trajectories":true}},{"title":"Robot","x":768.0,"y":384.0,"width":512.0,"height":128.0,"type":"Text Display","properties":{"topic":"/SmartDashboard/Estimated Field/Robot","period":0.06,"data_type":"double[]","show_submit_button":false}}]}},{"name":"Sammi Drive","grid_layout":{"layouts":[],"containers":[{"title":"photonvision_Port_1182_Output_MJPEG_Server","x":768.0,"y":128.0,"width":640.0,"height":384.0,"type":"Camera Stream","properties":{"topic":"/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server","period":0.06}}]}},{"name":"State Debug","grid_layout":{"layouts":[{"title":"arm","x":512.0,"y":256.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"current_state","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/arm_control/state/current_state","period":0.06,"data_type":"string","show_submit_button":false}},{"title":"state_descriptions","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/arm_control/state/state_descriptions","period":0.06,"data_type":"string[]","show_submit_button":false}},{"title":"state_names","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/arm_control/state/state_names","period":0.06,"data_type":"string[]","show_submit_button":false}}]},{"title":"Drive_control","x":768.0,"y":256.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"current_state","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/current_state","period":0.06,"data_type":"string","show_submit_button":false}},{"title":"state_descriptions","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/state_descriptions","period":0.06,"data_type":"string[]","show_submit_button":false}},{"title":"state_names","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/drive_control/state/state_names","period":0.06,"data_type":"string[]","show_submit_button":false}}]},{"title":"claw","x":256.0,"y":256.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"angle","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/claw/angle","period":0.06,"data_type":"double","show_submit_button":false}},{"title":"intake_limit","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/claw/intake_limit","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}}]},{"title":"elevator","x":1024.0,"y":384.0,"width":256.0,"height":128.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"height","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/components/elevator/height","period":0.06,"data_type":"double","show_submit_button":false}}]}],"containers":[{"title":"Autonomous Mode","x":1024.0,"y":256.0,"width":256.0,"height":128.0,"type":"ComboBox Chooser","properties":{"topic":"/SmartDashboard/Autonomous Mode","period":0.06,"sort_options":false}}]}},{"name":"Tab 6","grid_layout":{"layouts":[{"title":"state","x":768.0,"y":128.0,"width":256.0,"height":256.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"current_state","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/autonomous/Only L4/state/current_state","period":0.06,"data_type":"string","show_submit_button":false}},{"title":"state_descriptions","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/autonomous/Only L4/state/state_descriptions","period":0.06,"data_type":"string[]","show_submit_button":false}},{"title":"state_names","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Text Display","properties":{"topic":"/autonomous/Only L4/state/state_names","period":0.06,"data_type":"string[]","show_submit_button":false}}]},{"title":"error","x":1152.0,"y":0.0,"width":256.0,"height":512.0,"type":"List Layout","properties":{"label_position":"TOP"},"children":[{"title":"all_errors","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/error/all_errors","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"claw_error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/error/claw_error","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"climber_error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/error/climber_error","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}},{"title":"elevator_error","x":0.0,"y":0.0,"width":128.0,"height":128.0,"type":"Boolean Box","properties":{"topic":"/components/error/elevator_error","period":0.06,"data_type":"boolean","true_color":4283215696,"false_color":4294198070}}]}],"containers":[{"title":"Autonomous Mode","x":512.0,"y":128.0,"width":256.0,"height":128.0,"type":"ComboBox Chooser","properties":{"topic":"/SmartDashboard/Autonomous Mode","period":0.06,"sort_options":false}}]}}]}
+{
+  "version": 1.0,
+  "grid_size": 128,
+  "tabs": [
+    {
+      "name": "arm",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "elevator_profile",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kMaxA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kMaxV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_profile/kV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "elevator_controller",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Error",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_controller/Error",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Measurement",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_controller/Measurement",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Output",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_controller/Output",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Reference",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/elevator_controller/Reference",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "claw_profile",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 768.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kMaxA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kMaxV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_profile/kV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "claw_controller",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Error",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_controller/Error",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Measurement",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_controller/Measurement",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Output",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_controller/Output",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Reference",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/claw_controller/Reference",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "height",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/elevator/height",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "angle",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/claw/angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "current_state",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/arm_control/state/current_state",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Alerts",
+            "x": 1280.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "Alerts",
+            "properties": {
+              "topic": "/SmartDashboard/Alerts",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "wheel_twist",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Preferences/wheel_twist",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "slew_rate",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Preferences/slew_rate",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "intake_limit",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/components/claw/intake_limit",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "falcon_encoder",
+            "x": 640.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/climber/falcon_encoder",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "angle",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/climber/angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "swerve",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "11_speed_controller",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Error",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/11_speed_controller/Error",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Measurement",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/11_speed_controller/Measurement",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Output",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/11_speed_controller/Output",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Reference",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/11_speed_controller/Reference",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "12_direction_controller",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Error",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/12_direction_controller/Error",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Output",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/12_direction_controller/Output",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "direction_profile",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 768.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kMaxA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxInput",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kMaxInput",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kMaxV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMinInput",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kMinInput",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/direction_profile/kV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "speed_profile",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 768.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/speed_profile/kV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Swerve Drive",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 512.0,
+            "height": 512.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "Measurement",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/SmartDashboard/12_direction_controller/Measurement",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -180.0,
+              "end_angle": 180.0,
+              "min_value": -3.14,
+              "max_value": 3.14,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
+          },
+          {
+            "title": "Reference",
+            "x": 1280.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/SmartDashboard/12_direction_controller/Reference",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -180.0,
+              "end_angle": 180.0,
+              "min_value": -3.14,
+              "max_value": 3.14,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
+          },
+          {
+            "title": "slew_rate",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Preferences/slew_rate",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "odometry",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "state",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "remove_algae_state_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/remove_algae_state_duration",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "translation_profile",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/translation_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/translation_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/translation_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "rotation_profile",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 640.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMaxA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxInput",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMaxInput",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMaxV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMinInput",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMinInput",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Global_Shutter_Camera",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "cameraDistortion",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/cameraDistortion",
+                  "period": 0.06,
+                  "data_type": "double[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "cameraIntrinsics",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/cameraIntrinsics",
+                  "period": 0.06,
+                  "data_type": "double[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "driverMode",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/driverMode",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "driverModeRequest",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/driverModeRequest",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "hasTarget",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/hasTarget",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "heartbeat",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/heartbeat",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "inputSaveImgCmd",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/inputSaveImgCmd",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "latencyMillis",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/latencyMillis",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "outputSaveImgCmd",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/outputSaveImgCmd",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "pipelineIndexRequest",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/pipelineIndexRequest",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "pipelineIndexState",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/pipelineIndexState",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetArea",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetArea",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetPitch",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetPitch",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetPixelsX",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetPixelsX",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetPixelsY",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetPixelsY",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetSkew",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetSkew",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "targetYaw",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Global_Shutter_Camera/targetYaw",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Estimated Field",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 384.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Estimated Field",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295
+            }
+          },
+          {
+            "title": "Robot",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Estimated Field/Robot",
+              "period": 0.06,
+              "data_type": "double[]",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "distance_from_desired_pose",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/swerve_drive/distance_from_desired_pose",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sammi Drive",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "photonvision_Port_1182_Output_MJPEG_Server",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 640.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "State Debug",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "arm",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Drive_control",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "claw",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/claw/angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "intake_limit",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/components/claw/intake_limit",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "elevator",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "height",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/elevator/height",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Autonomous Mode",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Autonomous Mode",
+              "period": 0.06,
+              "sort_options": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Auto",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "state",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "remove_algae_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/remove_algae_duration",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/drive_control/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "state",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/components/arm_control/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "state",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "back_up_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/back_up_duration",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "current_state",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/current_state",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "drive_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/drive_duration",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "raise_arm_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/raise_arm_duration",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "score_duration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/score_duration",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_descriptions",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/state_descriptions",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "state_names",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/autonomous/hardcode l4/state/state_names",
+                  "period": 0.06,
+                  "data_type": "string[]",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Estimated Field",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 256.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Estimated Field",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295
+            }
+          },
+          {
+            "title": "Autonomous Mode",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Autonomous Mode",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Alerts",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "Alerts",
+            "properties": {
+              "topic": "/SmartDashboard/Alerts",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Distance",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Distance",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "photonvision_Port_1184_Output_MJPEG_Server",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "distance_from_desired_pose",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/swerve_drive/distance_from_desired_pose",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "top_speed",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Preferences/top_speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Main",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "photonvision_Port_1181_Input_MJPEG_Server",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1181_Input_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "photonvision_Port_1184_Output_MJPEG_Server",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "resolution": [
+                320.0,
+                180.0
+              ]
+            }
+          },
+          {
+            "title": "Alerts",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Alerts",
+            "properties": {
+              "topic": "/SmartDashboard/Alerts",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Autonomous Mode",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Autonomous Mode",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "Estimated Field",
+            "x": 896.0,
+            "y": 256.0,
+            "width": 512.0,
+            "height": 256.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Estimated Field",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295
+            }
+          },
+          {
+            "title": "USB Camera 0",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/USB Camera 0",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

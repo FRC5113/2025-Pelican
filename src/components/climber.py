@@ -22,7 +22,7 @@ class Climber:
     encoder: DutyCycleEncoder
 
     motor_speed = will_reset_to(0)
-
+    
     """
     INITIALIZATION METHODS
     """
@@ -78,6 +78,7 @@ class Climber:
             self.motor_speed = 0
         if self.get_falcon_encoder() < -350.0 and self.motor_speed < 0:
             self.motor_speed = 0
-        if self.get_angle() <= ClimberAngle.STOWED.value:
-            self.motor.set_position(0)
+        # if self.get_angle() <= ClimberAngle.STOWED.value:
+        #     self.motor.set_position(0)
+        self.get_falcon_encoder()
         self.motor.set(self.motor_speed)

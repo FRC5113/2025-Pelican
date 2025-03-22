@@ -76,6 +76,7 @@ class ArmControl(StateMachine):
     @state(first=True)
     def homing(self):
         self.drive_scalar = 0.5
+        self.claw.set_target_angle(ClawAngle.SAFE_START)
         if self.elevator.get_lower_switch():
             self.unhomed_alert.disable()
             self.elevator.reset_encoders()

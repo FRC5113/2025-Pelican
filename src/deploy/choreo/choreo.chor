@@ -43,8 +43,8 @@
      "val":4.19
     },
     "heading":{
-     "exp":"0 rad",
-     "val":0.0
+     "exp":"3.14 rad",
+     "val":3.14
     }
    },
    "coral1L":{
@@ -253,8 +253,8 @@
    }
   },
   "mass":{
-   "exp":"136 lbs",
-   "val":61.68856232
+   "exp":"128 lbs",
+   "val":58.05982336
   },
   "inertia":{
    "exp":"6 kg m ^ 2",
@@ -282,16 +282,16 @@
   },
   "bumper":{
    "front":{
-    "exp":"19 in",
-    "val":0.4826
+    "exp":"18 in",
+    "val":0.4572
    },
    "side":{
-    "exp":"19 in",
-    "val":0.4826
+    "exp":"18.5 in",
+    "val":0.4699
    },
    "back":{
-    "exp":"19 in",
-    "val":0.4826
+    "exp":"18.5 in",
+    "val":0.4699
    }
   },
   "differentialTrackWidth":{
