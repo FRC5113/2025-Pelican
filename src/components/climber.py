@@ -10,9 +10,9 @@ from lemonlib.util import Alert, AlertType
 
 
 class ClimberAngle(Enum):
-    MIN = -73.0
+    MIN = -95.0
     MAX = 0.0
-    STOWED = -68.0
+    STOWED = -90.0
     DEPLOYED = -25.0
 
 
@@ -32,6 +32,7 @@ class Climber:
         self.motor_configs.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.motor.configurator.apply(self.motor_configs)
         self.limit_alert = Alert("Climber has exceeded limits!", type=AlertType.ERROR)
+        self.offset = 0
 
     """
     INFORMATIONAL METHODS
@@ -47,7 +48,7 @@ class Climber:
         return angle
 
     def get_falcon_encoder(self) -> units.turns:
-        return self.motor.get_position().value
+        return self.motor.get_position().value - self.offset
 
     def is_deployed(self) -> bool:
         return self.get_falcon_encoder() <= -300
@@ -64,7 +65,7 @@ class Climber:
     """
 
     def execute(self):
-        if self.get_angle() < ClimberAngle.MIN.value - 10:
+        if self.get_angle() < ClimberAngle.MIN.value - 20:
             self.limit_alert.enable()
             self.limit_alert.set_text(
                 f"Climber has exceeded limits! Current angle: {self.get_angle()}"
@@ -77,5 +78,5 @@ class Climber:
         if self.get_falcon_encoder() < -350.0 and self.motor_speed < 0:
             self.motor_speed = 0
         if self.get_angle() <= ClimberAngle.STOWED.value:
-            self.motor.set_position(0, timeout_seconds=0.0)
+            self.offset = self.motor.get_position().value
         self.motor.set(self.motor_speed)

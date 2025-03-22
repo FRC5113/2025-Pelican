@@ -10,30 +10,44 @@ from components.swerve_drive import SwerveDrive
 
 
 class Odometry:
-    camera: LemonCamera
-    robot_to_camera: Transform3d
+    camera_front: LemonCamera
+    camera_back: LemonCamera
+    robot_to_camera_front: Transform3d
+    robot_to_camera_back: Transform3d
     field_layout: AprilTagFieldLayout
     swerve_drive: SwerveDrive
     estimated_field: Field2d
 
     def setup(self):
-        self.camera_pose_estimator = PhotonPoseEstimator(
+        self.camera_pose_estimator_front = PhotonPoseEstimator(
             self.field_layout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            self.camera,
-            self.robot_to_camera,
+            self.camera_front,
+            self.robot_to_camera_front,
+        )
+        self.camera_pose_estimator_back = PhotonPoseEstimator(
+            self.field_layout,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            self.camera_back,
+            self.robot_to_camera_back,
         )
 
         SmartDashboard.putData("Estimated Field", self.estimated_field)
 
     def execute(self):
         # may need to tweak timestamp to match system time
-        self.camera.update()
-        camera_estimator_result = self.camera_pose_estimator.update()
-        if camera_estimator_result is not None:
+        self.camera_front.update()
+        camera_estimator_result_front = self.camera_pose_estimator_front.update()
+        camera_estimator_result_back = self.camera_pose_estimator_back.update()
+        if camera_estimator_result_front is not None:
             self.swerve_drive.add_vision_measurement(
-                camera_estimator_result.estimatedPose.toPose2d(),
-                self.camera.getLatestResult().getTimestampSeconds(),
+                camera_estimator_result_front.estimatedPose.toPose2d(),
+                self.camera_front.getLatestResult().getTimestampSeconds(),
+            )
+        if camera_estimator_result_back is not None:
+            self.swerve_drive.add_vision_measurement(
+                camera_estimator_result_back.estimatedPose.toPose2d(),
+                self.camera_back.getLatestResult().getTimestampSeconds(),
             )
         self.estimated_field.setRobotPose(self.swerve_drive.get_estimated_pose())
         if self.swerve_drive.has_desired_pose:

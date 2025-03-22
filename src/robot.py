@@ -20,6 +20,8 @@ from wpilib import (
     DutyCycleEncoder,
     DriverStation,
     RobotBase,
+    PowerDistribution,
+    
 )
 
 from wpimath import units, applyDeadband
@@ -37,7 +39,7 @@ import magicbot
 from magicbot import feedback
 
 from lemonlib import LemonInput, LemonCamera
-from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY
+from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY,is_red
 from lemonlib.smart import SmartPreference, SmartProfile
 
 
@@ -246,11 +248,17 @@ class MyRobot(magicbot.MagicRobot):
         """
         ODOMETRY
         """
-        self.robot_to_camera = Transform3d(
+        self.robot_to_camera_front = Transform3d(
             -0.2286,
             0.0,
             0.2667,
             Rotation3d(0.0, 0.0, math.pi),
+        )
+        self.robot_to_camera_back = Transform3d(
+            -0.0381,
+            0.0,
+            0.762,
+            Rotation3d(0.0, math.pi/6, 0.0),
         )
 
         # self.field_layout = AprilTagFieldLayout(
@@ -260,9 +268,10 @@ class MyRobot(magicbot.MagicRobot):
             AprilTagField.k2025ReefscapeWelded
         )
 
-        self.camera = LemonCamera(
-            "Global_Shutter_Camera", self.robot_to_camera, self.field_layout
+        self.camera_front = LemonCamera(
+            "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
         )
+        self.camera_back = LemonCamera("USB_Camera",self.robot_to_camera_back,self.field_layout)
 
         """
         MISCELLANEOUS
@@ -288,8 +297,11 @@ class MyRobot(magicbot.MagicRobot):
         AlertManager(self.logger)
         if self.low_bandwidth:
             AlertManager.instant_alert(
-                "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.WARNING
+                "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.INFO
             )
+
+        self.pdh = PowerDistribution()
+        
 
         self.estimated_field = Field2d()
         # CameraServer().launch()
@@ -300,6 +312,7 @@ class MyRobot(magicbot.MagicRobot):
         self.claw_ligament = self.elevator_ligament.appendLigament(
             "Claw", 5, 0, color=Color8Bit(0, 150, 0)
         )
+        SmartDashboard.putData("Arm", self.arm_visuize)
 
     def autonomousInit(self):
         if DriverStation.isFMSAttached():
@@ -322,6 +335,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
+
+        self.pigeon.set_yaw(self.pigeon.get_yaw().value + 180)
 
     def disabledPeriodic(self):
         self.leds.move_across((5, 5, 0), 20, 20)
@@ -383,49 +398,51 @@ class MyRobot(magicbot.MagicRobot):
             elif not self.upper_algae_button_released:
                 self.upper_algae_button_released = True
                 self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
-            if self.primary.getPOV() == 90:
+
+
+            if self.primary.getPOV() in (45,90,135):
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
+                            self.camera_front.get_best_pose(True).transformBy(
                                 Transform2d(0.55, 0.21, Rotation2d())
                             )
                         )
                 if self.secondary.getAButton():  # L1
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
+                            self.camera_front.get_best_pose(True).transformBy(
                                 Transform2d(0.6, 0.21, Rotation2d())
                             )
                         )
                 if self.secondary.getYButton():  # L4
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.52, 0.2, Rotation2d())
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.53, 0.21, Rotation2d())
                             )
                         )
 
-            if self.primary.getPOV() == 270:
+            if self.primary.getPOV() in (225,270,315):
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.565, -0.21, Rotation2d(-0.1))
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.565, -0.21, Rotation2d())
                             )
                         )
                 if self.secondary.getAButton():  # L1
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.6, -0.19, Rotation2d(-0.1))
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.6, -0.19, Rotation2d())
                             )
                         )
                 if self.secondary.getYButton():  # L4
-                    if self.camera.get_best_tag() is not None:
+                    if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
-                            self.camera.get_best_pose(True).transformBy(
-                                Transform2d(0.52, -0.19, Rotation2d(-0.1))
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.53, -0.21, Rotation2d())
                             )
                         )
 
@@ -444,9 +461,33 @@ class MyRobot(magicbot.MagicRobot):
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
             if self.secondary.getBButton():
                 self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.565, -0.21, Rotation2d()) < 0.03
+                    )) or 
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.55, 0.21, Rotation2d()) < 0.03
+                    ))):
+                    self.led_strip.is_aligned()
             if self.secondary.getXButton():
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.565, -0.21, Rotation2d()) < 0.03
+                    )) or 
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.55, 0.21, Rotation2d()) < 0.03
+                    ))):
+                    self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.53, -0.21, Rotation2d()) < 0.03
+                    )) or 
+                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
+                        Transform2d(0.53, 0.21, Rotation2d()) < 0.03
+                    ))):
+                    self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
             if self.secondary.getStartButton():
                 self.arm_control.set(
@@ -506,6 +547,10 @@ class MyRobot(magicbot.MagicRobot):
 
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
+    
+    @feedback
+    def get_alience(self):
+        return is_red()
 
     # override _do_periodics() to access watchdog
     # DON'T DO ANYTHING ELSE HERE UNLESS YOU KNOW WHAT YOU'RE DOING

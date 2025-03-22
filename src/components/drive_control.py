@@ -103,6 +103,8 @@ class DriveControl(StateMachine):
             self.field_relative,
             self.period,
         )
+        if DriverStation.isAutonomousEnabled():
+            self.next_state("run_auton_routine")
         if self.remove_algae_var:
             self.next_state("remove_algae_placement")
         if self.go_to_pose:

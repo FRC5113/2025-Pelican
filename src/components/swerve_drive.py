@@ -184,6 +184,11 @@ class SwerveDrive(Sendable):
             self.get_estimated_pose().translation()
         )
 
+    def get_distance_from_pose(self, pose: Pose2d) -> units.meters:
+        return pose.translation().distance(
+            self.get_estimated_pose().translation()
+        )
+
     """
     CONTROL METHODS
     """

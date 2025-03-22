@@ -78,7 +78,10 @@ class AutoBase(AutonomousStateMachine):
         )
 
     def get_starting_pose(self) -> Pose2d | None:
-        return self.trajectories[0].get_initial_pose(is_red())
+        if self.trajectories[0].get_initial_pose(is_red()) is not None:
+            return self.trajectories[0].get_initial_pose(is_red())
+        else:
+            return Pose2d()
 
     @state(first=True)
     def next_step(self):
@@ -121,7 +124,7 @@ class AutoBase(AutonomousStateMachine):
         sample = self.current_trajectory.sample_at(state_tm, is_red())
         if sample:
 
-            self.swerve_drive.follow_trajectory(sample)
+            self.drive_control.drive_auto(sample)
 
             SmartDashboard.putNumber("Distance", distance)
             if distance < self.DISTANCE_TOLERANCE:

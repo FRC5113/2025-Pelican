@@ -4,11 +4,12 @@ from components.drive_control import DriveControl
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d, Transform2d
 from wpilib import DriverStation
 from lemonlib import LemonCamera
-from lemonlib.util import is_red
+from lemonlib.util import is_red,LEDController
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
 from components.elevator import ElevatorHeight, Elevator
 from components.claw import ClawAngle, Claw
+from components.leds import LEDStrip
 import math
 
 
@@ -116,6 +117,7 @@ class Top_2L__2R(AutoBase):
         )
 
 
+
 class passline(AutonomousStateMachine):
     MODE_NAME = "passline"
 
@@ -124,7 +126,26 @@ class passline(AutonomousStateMachine):
     @timed_state(duration=1, first=True, must_finish=True)
     def drive(self):
         self.drive_control.engage()
-        self.drive_control.drive_auto_manual(-1, 0, 0, True)
+        self.drive_control.drive_auto_manual(-1, 0, 0, False)
+
+    @state
+    def finish(self):
+        self.done()
+
+class waitpassline(AutonomousStateMachine):
+    MODE_NAME = "wait passline"
+
+    drive_control: DriveControl
+    led_strip: LEDStrip
+
+    @timed_state(duration=7,first=True,next_state="drive")
+    def wait(self):
+        self.led_strip.justin_fun()
+
+    @timed_state(duration=1, must_finish=True)
+    def drive(self):
+        self.drive_control.engage()
+        self.drive_control.drive_auto_manual(-1, 0, 0, False)
 
     @state
     def finish(self):
@@ -135,7 +156,7 @@ class blue_l4(AutonomousStateMachine):
     MODE_NAME = "hardcode l4"
 
     drive_control: DriveControl
-    camera: LemonCamera
+    camera_front: LemonCamera
     swerve_drive: SwerveDrive
     arm_control: ArmControl
     claw: Claw
@@ -145,7 +166,7 @@ class blue_l4(AutonomousStateMachine):
     def drive(self):
         self.arm_control.engage()
         self.drive_control.engage()
-        self.drive_control.drive_auto_manual(1, 0, 0, True)
+        self.drive_control.drive_auto_manual(-1, 0, 0, False)
 
     @timed_state(duration=1.0, next_state="align")
     def raise_arm(self):
@@ -159,19 +180,19 @@ class blue_l4(AutonomousStateMachine):
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         self.drive_control.engage()
-        if self.camera.has_target():
+        if self.camera_front.has_target():
             if is_red():
-                print(self.camera.get_tag_pose(10, True))
+                print(self.camera_front.get_tag_pose(10, True))
                 self.drive_control.request_pose(
-                    self.camera.get_tag_pose(10, True).transformBy(
-                        Transform2d(0.4, 0.2, Rotation2d())
+                    self.camera_front.get_tag_pose(10, True).transformBy(
+                        Transform2d(0.53, 0.21, Rotation2d())
                     )
                 )
             else:
-                print(self.camera.get_tag_pose(21, True))
+                print(self.camera_front.get_tag_pose(21, True))
                 self.drive_control.request_pose(
-                    self.camera.get_tag_pose(21, True).transformBy(
-                        Transform2d(0.3, 0.2, Rotation2d())
+                    self.camera_front.get_tag_pose(21, True).transformBy(
+                        Transform2d(0.53, 0.21, Rotation2d())
                     )
                 )
         self.swerve_drive.has_desired_pose = True

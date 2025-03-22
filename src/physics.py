@@ -103,7 +103,7 @@ class PhysicsEngine:
 
         # Vision Simulation
         self.vision_sim = LemonCameraSim(
-            robot.camera, robot.field_layout, fov=100.0, fps=20.0
+            robot.camera_front, robot.field_layout, fov=100.0, fps=20.0
         )
         # self.vision_sim.addAprilTags(robot.field_layout)
 
