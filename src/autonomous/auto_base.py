@@ -27,7 +27,7 @@ class AutoBase(AutonomousStateMachine):
     odometry: Odometry
     claw: Claw
     estimated_field: Field2d
-    elevator: Elevator 
+    elevator: Elevator
 
     DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -59,7 +59,7 @@ class AutoBase(AutonomousStateMachine):
         self.current_step = -1
         self.trajectory_index = -1
         starting_pose = self.get_starting_pose()
-        if RobotBase.isSimulation() and starting_pose is not None:
+        if starting_pose is not None:
             self.swerve_drive.set_starting_pose(starting_pose)
 
         super().on_enable()
@@ -167,7 +167,7 @@ class AutoBase(AutonomousStateMachine):
         if not self.claw.get_intake_limit():
             self.next_state("next_step")
 
-    @timed_state(duration=2, next_state="next_step")
+    @timed_state(duration=4, next_state="next_step")
     def level_four(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)

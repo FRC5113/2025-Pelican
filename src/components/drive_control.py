@@ -49,7 +49,7 @@ class DriveControl(StateMachine):
             self.field_relative = field_relative
 
     def request_remove_algae(
-        self, elevatorheight, raiseclaw,period: units.seconds = 0.02
+        self, elevatorheight, raiseclaw, period: units.seconds = 0.02
     ):
         self.remove_algae_var = True
         self.elevatorheight = elevatorheight
@@ -109,13 +109,16 @@ class DriveControl(StateMachine):
             self.next_state("going_to_pose")
 
     @state
-    def remove_algae_placement(self,state_tm):
+    def remove_algae_placement(self, state_tm):
         self.arm_control.set(self.elevatorheight, ClawAngle.SAFE_END)
         if state_tm > 1.0:
             self.swerve_drive.drive(-1, 0, 0, False, self.period)
         if not self.remove_algae_var:
             self.next_state("free")
-        if self.arm_control.at_point(self.elevatorheight, ClawAngle.SAFE_END) and  not self.raiseclaw:
+        if (
+            self.arm_control.at_point(self.elevatorheight, ClawAngle.SAFE_END)
+            and not self.raiseclaw
+        ):
             self.next_state("remove_algae")
 
     @timed_state(duration=1.5, next_state="free", must_finish=True)

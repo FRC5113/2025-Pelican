@@ -80,7 +80,6 @@ class Claw:
         that 0 rotations corresponds to up."""
         return self.hinge_encoder.getPosition()
 
-    @feedback
     def get_angle(self) -> units.degrees:
         """Return the angle of the hinge normalized to [-180,180].
         An angle of 0 refers to the claw in the up/stowed position.
@@ -93,7 +92,6 @@ class Claw:
     def get_setpoint(self) -> units.degrees:
         return self.target_angle
 
-    @feedback
     def get_intake_limit(self) -> bool:
         return self.intake_limit.get()
 

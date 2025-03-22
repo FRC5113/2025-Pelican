@@ -194,7 +194,6 @@ class blue_l4(AutonomousStateMachine):
         self.drive_control.engage()
         self.drive_control.drive_auto_manual(-1, 0, 0, True)
 
-
     @state
     def finish(self):
         self.done()

@@ -2,7 +2,15 @@ import math
 from pathlib import Path
 
 import wpilib
-from wpilib import Field2d, SmartDashboard, DataLogManager,CameraServer
+from wpilib import (
+    Field2d,
+    SmartDashboard,
+    DataLogManager,
+    CameraServer,
+    Mechanism2d,
+    MechanismLigament2d,
+    Color8Bit,
+)
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
@@ -285,6 +293,14 @@ class MyRobot(magicbot.MagicRobot):
 
         self.estimated_field = Field2d()
         # CameraServer().launch()
+
+        self.arm_visuize = Mechanism2d(20, 50)
+        self.arm_root = self.arm_visuize.getRoot("Arm Root", 10, 0)
+        self.elevator_ligament = self.arm_root.appendLigament("Elevator", 5, 90)
+        self.claw_ligament = self.elevator_ligament.appendLigament(
+            "Claw", 5, 0, color=Color8Bit(0, 150, 0)
+        )
+
     def autonomousInit(self):
         if DriverStation.isFMSAttached():
             DataLogManager.start()
@@ -306,10 +322,9 @@ class MyRobot(magicbot.MagicRobot):
 
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
-    
+
     def disabledPeriodic(self):
         self.leds.move_across((5, 5, 0), 20, 20)
-        
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
@@ -358,24 +373,16 @@ class MyRobot(magicbot.MagicRobot):
 
             if self.primary.getPOV() == 180:
                 self.lower_algae_button_released = False
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L1, True
-                )
+                self.drive_control.request_remove_algae(ElevatorHeight.L1, True)
             elif not self.lower_algae_button_released:
                 self.lower_algae_button_released = True
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L1, False
-                )
+                self.drive_control.request_remove_algae(ElevatorHeight.L1, False)
             if self.primary.getPOV() == 0:
                 self.upper_algae_button_released = False
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L2, True
-                )
+                self.drive_control.request_remove_algae(ElevatorHeight.L2, True)
             elif not self.upper_algae_button_released:
                 self.upper_algae_button_released = True
-                self.drive_control.request_remove_algae(
-                    ElevatorHeight.L2, False
-                )
+                self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
             if self.primary.getPOV() == 90:
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
                     if self.camera.get_best_tag() is not None:
@@ -463,6 +470,9 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getPOV() == 270:
                 self.arm_control.next_state_now("elevator_failsafe")
 
+            self.elevator_ligament.setLength((self.elevator.get_height() * 39.37) + 5)
+            self.claw_ligament.setAngle(self.claw.get_angle() - 90)
+
         with self.consumeExceptions():
             """
             CLIMBER
@@ -494,7 +504,6 @@ class MyRobot(magicbot.MagicRobot):
         #     if self.sysid_con.getYButton():
         #         self.sysid_drive.dynamic_reverse()
 
-    @feedback
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
 

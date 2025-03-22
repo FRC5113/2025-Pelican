@@ -73,7 +73,6 @@ class Elevator:
         """
         return (self.left_encoder.getPosition() - self.right_encoder.getPosition()) / 2
 
-    @feedback
     def get_height(self) -> units.meters:
         """Get the current height of the elevator."""
         return (
@@ -83,11 +82,9 @@ class Elevator:
     def get_setpoint(self) -> units.meters:
         return self.target_height
 
-    @feedback
     def get_lower_switch(self) -> bool:
         return self.lower_switch.get()
 
-    @feedback
     def get_upper_switch(self) -> bool:
         return self.upper_switch.get()
 

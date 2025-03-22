@@ -37,16 +37,13 @@ class LEDStrip:
     INFORMATIONAL METHODS
     """
 
-    @feedback
     def get_colors(self) -> list[str]:
         """Returns LED colors in list of hex strings"""
         return [Color(led.r, led.g, led.b).hexString() for led in self.leds.buffer]
 
-    @feedback
     def has_warnings_present(self) -> bool:
         return len(AlertManager.get_strings(AlertType.WARNING)) > 0
 
-    @feedback
     def has_errors_present(self) -> bool:
         return len(AlertManager.get_strings(AlertType.ERROR)) > 0
 
