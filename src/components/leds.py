@@ -67,7 +67,10 @@ class LEDStrip:
             self.leds.set_solid_color(self.error_color)
         elif self.has_warnings_present():
             self.leds.set_solid_color(self.warning_color)
-        elif 0 < self.swerve_drive.get_distance_from_desired_pose() <= 0.03 or self.is_aligned:
+        elif (
+            0 < self.swerve_drive.get_distance_from_desired_pose() <= 0.03
+            or self.is_aligned
+        ):
             self.leds.set_solid_color(self.aligned_branch)
         elif self.climber.is_deployed():
             self.leds.set_solid_color(self.fully_climbed)
@@ -80,4 +83,4 @@ class LEDStrip:
 
         else:
             # self.leds.move_across((255, 255, 0), 20, 50)
-            self.leds.set_solid_color((50,50,50))
+            self.leds.set_solid_color((50, 50, 50))

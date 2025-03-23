@@ -4,7 +4,7 @@ from components.drive_control import DriveControl
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d, Transform2d
 from wpilib import DriverStation
 from lemonlib import LemonCamera
-from lemonlib.util import is_red,LEDController
+from lemonlib.util import is_red, LEDController
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
 from components.elevator import ElevatorHeight, Elevator
@@ -117,7 +117,6 @@ class Top_2L__2R(AutoBase):
         )
 
 
-
 class passline(AutonomousStateMachine):
     MODE_NAME = "passline"
 
@@ -132,13 +131,14 @@ class passline(AutonomousStateMachine):
     def finish(self):
         self.done()
 
+
 class waitpassline(AutonomousStateMachine):
     MODE_NAME = "wait passline"
 
     drive_control: DriveControl
     led_strip: LEDStrip
 
-    @timed_state(duration=7,first=True,next_state="drive")
+    @timed_state(duration=7, first=True, next_state="drive")
     def wait(self):
         self.led_strip.justin_fun()
 

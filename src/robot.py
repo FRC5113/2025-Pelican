@@ -21,7 +21,6 @@ from wpilib import (
     DriverStation,
     RobotBase,
     PowerDistribution,
-    
 )
 
 from wpimath import units, applyDeadband
@@ -39,7 +38,15 @@ import magicbot
 from magicbot import feedback
 
 from lemonlib import LemonInput, LemonCamera
-from lemonlib.util import curve, AlertManager, AlertType, LEDController, SnapX, SnapY,is_red
+from lemonlib.util import (
+    curve,
+    AlertManager,
+    AlertType,
+    LEDController,
+    SnapX,
+    SnapY,
+    is_red,
+)
 from lemonlib.smart import SmartPreference, SmartProfile
 
 
@@ -258,7 +265,7 @@ class MyRobot(magicbot.MagicRobot):
             -0.0381,
             0.0,
             0.762,
-            Rotation3d(0.0, math.pi/6, 0.0),
+            Rotation3d(0.0, math.pi / 6, 0.0),
         )
 
         # self.field_layout = AprilTagFieldLayout(
@@ -271,7 +278,9 @@ class MyRobot(magicbot.MagicRobot):
         self.camera_front = LemonCamera(
             "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
         )
-        self.camera_back = LemonCamera("USB_Camera",self.robot_to_camera_back,self.field_layout)
+        self.camera_back = LemonCamera(
+            "USB_Camera", self.robot_to_camera_back, self.field_layout
+        )
 
         """
         MISCELLANEOUS
@@ -301,7 +310,6 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         self.pdh = PowerDistribution()
-        
 
         self.estimated_field = Field2d()
         # CameraServer().launch()
@@ -342,6 +350,7 @@ class MyRobot(magicbot.MagicRobot):
         self.leds.move_across((5, 5, 0), 20, 20)
 
     def teleopPeriodic(self):
+        self.primary.setRumbleLeft(1)
         with self.consumeExceptions():
 
             """
@@ -399,8 +408,7 @@ class MyRobot(magicbot.MagicRobot):
                 self.upper_algae_button_released = True
                 self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
 
-
-            if self.primary.getPOV() in (45,90,135):
+            if self.primary.getPOV() in (45, 90, 135):
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
                     if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
@@ -423,7 +431,7 @@ class MyRobot(magicbot.MagicRobot):
                             )
                         )
 
-            if self.primary.getPOV() in (225,270,315):
+            if self.primary.getPOV() in (225, 270, 315):
                 if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
                     if self.camera_front.get_best_tag() is not None:
                         self.drive_control.request_pose(
@@ -462,33 +470,50 @@ class MyRobot(magicbot.MagicRobot):
             if self.secondary.getBButton():
                 self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
                 if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                    )) or 
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                    ))):
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.565, -0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.55, 0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                ):
                     self.led_strip.is_aligned()
             if self.secondary.getXButton():
                 if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                    )) or 
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                    ))):
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.565, -0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.55, 0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                ):
                     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
+
                 if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.53, -0.21, Rotation2d()) < 0.03
-                    )) or 
-                    self.swerve_drive.get_distance_from_pose(self.camera_front.get_best_pose(True).transformBy(
-                        Transform2d(0.53, 0.21, Rotation2d()) < 0.03
-                    ))):
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.53, -0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.53, 0.21, Rotation2d()) < 0.03
+                        )
+                    )
+                ):
                     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+
             if self.secondary.getStartButton():
                 self.arm_control.set(
                     ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE
@@ -547,7 +572,7 @@ class MyRobot(magicbot.MagicRobot):
 
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
-    
+
     @feedback
     def get_alience(self):
         return is_red()
