@@ -11,7 +11,7 @@ from magicbot.state_machine import state, timed_state
 
 from lemonlib.smart import SmartProfile
 
-from components.odometry import Odometry
+# from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
 from components.claw import Claw, ClawAngle
@@ -20,7 +20,7 @@ from components.elevator import Elevator, ElevatorHeight
 
 class DriveControl(StateMachine):
     arm_control: ArmControl
-    odometry: Odometry
+    # odometry: Odometry
     swerve_drive: SwerveDrive
 
     pigeon: Pigeon2

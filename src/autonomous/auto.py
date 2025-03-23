@@ -22,6 +22,7 @@ Trajectories:
 - Center-Start-4R
 - 4R-BottomStation
 - BottomStation-6L
+- Side-2R
 """
 
 """
@@ -34,6 +35,16 @@ States:
 - spit
 """
 
+class side_2r(AutoBase):
+    MODE_NAME = "Side>2R"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "Side-2R",
+                "state:level_four",
+            ]
+        )
 
 class Center_4R(AutoBase):
     MODE_NAME = "Bottom>L4"
@@ -152,69 +163,69 @@ class waitpassline(AutonomousStateMachine):
         self.done()
 
 
-class blue_l4(AutonomousStateMachine):
-    MODE_NAME = "hardcode l4"
+# class blue_l4(AutonomousStateMachine):
+#     MODE_NAME = "hardcode l4"
 
-    drive_control: DriveControl
-    camera_front: LemonCamera
-    swerve_drive: SwerveDrive
-    arm_control: ArmControl
-    claw: Claw
-    elevator: Elevator
+#     drive_control: DriveControl
+#     camera_front: LemonCamera
+#     swerve_drive: SwerveDrive
+#     arm_control: ArmControl
+#     claw: Claw
+#     elevator: Elevator
 
-    @timed_state(first=True, duration=1, must_finish=True, next_state="raise_arm")
-    def drive(self):
-        self.arm_control.engage()
-        self.drive_control.engage()
-        self.drive_control.drive_auto_manual(-1, 0, 0, False)
+#     @timed_state(first=True, duration=1, must_finish=True, next_state="raise_arm")
+#     def drive(self):
+#         self.arm_control.engage()
+#         self.drive_control.engage()
+#         self.drive_control.drive_auto_manual(-1, 0, 0, False)
 
-    @timed_state(duration=1.0, next_state="align")
-    def raise_arm(self):
-        self.arm_control.engage()
-        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        # if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
-        #     self.next_state("align")
+#     @timed_state(duration=1.0, next_state="align")
+#     def raise_arm(self):
+#         self.arm_control.engage()
+#         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+#         # if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
+#         #     self.next_state("align")
 
-    @state
-    def align(self):
-        self.arm_control.engage()
-        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        self.drive_control.engage()
-        if self.camera_front.has_target():
-            if is_red():
-                print(self.camera_front.get_tag_pose(10, True))
-                self.drive_control.request_pose(
-                    self.camera_front.get_tag_pose(10, True).transformBy(
-                        Transform2d(0.53, 0.21, Rotation2d())
-                    )
-                )
-            else:
-                print(self.camera_front.get_tag_pose(21, True))
-                self.drive_control.request_pose(
-                    self.camera_front.get_tag_pose(21, True).transformBy(
-                        Transform2d(0.53, 0.21, Rotation2d())
-                    )
-                )
-        self.swerve_drive.has_desired_pose = True
-        # print(self.swerve_drive.has_desired_pose)
-        if (
-            0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.02
-            and self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH)
-        ):
-            self.next_state("score")
+#     @state
+#     def align(self):
+#         self.arm_control.engage()
+#         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+#         self.drive_control.engage()
+#         if self.camera_front.has_target():
+#             if is_red():
+#                 print(self.camera_front.get_tag_pose(10, True))
+#                 self.drive_control.request_pose(
+#                     self.camera_front.get_tag_pose(10, True).transformBy(
+#                         Transform2d(0.53, 0.21, Rotation2d())
+#                     )
+#                 )
+#             else:
+#                 print(self.camera_front.get_tag_pose(21, True))
+#                 self.drive_control.request_pose(
+#                     self.camera_front.get_tag_pose(21, True).transformBy(
+#                         Transform2d(0.53, 0.21, Rotation2d())
+#                     )
+#                 )
+#         self.swerve_drive.has_desired_pose = True
+#         # print(self.swerve_drive.has_desired_pose)
+#         if (
+#             0.0 < self.swerve_drive.get_distance_from_desired_pose() < 0.02
+#             and self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH)
+#         ):
+#             self.next_state("score")
 
-    @timed_state(duration=1, next_state="back_up")
-    def score(self):
-        self.arm_control.engage()
-        self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-        self.arm_control.set_wheel_voltage(-8)
+#     @timed_state(duration=1, next_state="back_up")
+#     def score(self):
+#         self.arm_control.engage()
+#         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+#         self.arm_control.set_wheel_voltage(-8)
 
-    @timed_state(duration=1, next_state="finish")
-    def back_up(self):
-        self.arm_control.engage()
-        self.drive_control.engage()
-        self.drive_control.drive_auto_manual(-1, 0, 0, True)
+#     @timed_state(duration=1, next_state="finish")
+#     def back_up(self):
+#         self.arm_control.engage()
+#         self.drive_control.engage()
+#         self.drive_control.drive_auto_manual(-1, 0, 0, True)
 
-    @state
-    def finish(self):
-        self.done()
+#     @state
+#     def finish(self):
+#         self.done()

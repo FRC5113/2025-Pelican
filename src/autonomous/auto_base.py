@@ -14,7 +14,7 @@ from magicbot import feedback
 from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.drive_control import DriveControl
-from components.odometry import Odometry
+# from components.odometry import Odometry
 from components.claw import Claw, ClawAngle
 from components.elevator import ElevatorHeight, Elevator
 from lemonlib.util import AlertManager, is_red
@@ -24,12 +24,12 @@ class AutoBase(AutonomousStateMachine):
     swerve_drive: SwerveDrive
     drive_control: DriveControl
     arm_control: ArmControl
-    odometry: Odometry
+    # odometry: Odometry
     claw: Claw
     estimated_field: Field2d
     elevator: Elevator
 
-    DISTANCE_TOLERANCE = 0.05  # metres
+    DISTANCE_TOLERANCE = 0.1  # metres
     ANGLE_TOLERANCE = math.radians(3)
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1

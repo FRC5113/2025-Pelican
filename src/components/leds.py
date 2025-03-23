@@ -84,3 +84,4 @@ class LEDStrip:
         else:
             # self.leds.move_across((255, 255, 0), 20, 50)
             self.leds.set_solid_color((50, 50, 50))
+

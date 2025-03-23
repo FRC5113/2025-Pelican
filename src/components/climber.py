@@ -41,17 +41,19 @@ class Climber:
     def get_position(self) -> units.degrees:
         return self.encoder.get()
 
+    @feedback
     def get_angle(self) -> units.degrees:
         angle = self.get_position() * 360
         if angle > 180:
             angle -= 360
         return angle
 
+    @feedback
     def get_falcon_encoder(self) -> units.turns:
         return self.motor.get_position().value - self.offset
 
     def is_deployed(self) -> bool:
-        return self.get_falcon_encoder() <= -300
+        return self.get_falcon_encoder() <= -425
 
     """
     CONTROL METHODS
@@ -75,7 +77,7 @@ class Climber:
 
         if self.get_angle() < ClimberAngle.MIN.value and self.motor_speed > 0:
             self.motor_speed = 0
-        if self.get_falcon_encoder() < -350.0 and self.motor_speed < 0:
+        if self.get_falcon_encoder() < -480.0 and self.motor_speed < 0:
             self.motor_speed = 0
         if self.get_angle() <= ClimberAngle.STOWED.value:
             self.offset = self.motor.get_position().value
