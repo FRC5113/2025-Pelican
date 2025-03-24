@@ -1,4 +1,4 @@
-from ._alert import Alert, AlertManager, AlertType
-from ._rand import *
-from ._ledcontroller import LEDController
-from ._sysid import MagicSysIdRoutine
+from .alert import Alert, AlertManager, AlertType
+from .rand import *
+from .ledcontroller import LEDController
+from .sysid import MagicSysIdRoutine

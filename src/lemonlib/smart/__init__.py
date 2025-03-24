@@ -1,3 +1,3 @@
-from ._controller import SmartController
-from ._preference import SmartPreference
-from ._profile import SmartProfile
+from .controller import SmartController
+from .preference import SmartPreference
+from .profile import SmartProfile

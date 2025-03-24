@@ -19,7 +19,7 @@ jobs:
         with:
           source_file: "src/lemonlib/" # Folder to copy
           destination_repo: "FRC5113/LemonLib" # Target repo
-          destination_folder: "lemonlib/" # Folder where to copy it
+          destination_folder: "/" # Folder where to copy it
           user_email: "rradtke1208@gmail.com"
           user_name: "Ryanforce08"
           commit_message: "AUTO: Copying lemonlib from 2025-Pelican to LemonLib"

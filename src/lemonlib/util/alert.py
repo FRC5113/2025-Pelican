@@ -5,7 +5,7 @@ from wpilib import SmartDashboard, Timer
 from wpiutil import Sendable, SendableBuilder
 from ntcore import NetworkTableInstance, PubSubOptions
 import json
-
+from .elastic import Notification,send_notification
 
 class AlertType(Enum):
     """
@@ -65,14 +65,14 @@ class Alert:
                     AlertManager.logger.info(self.text)
 
             # Send notification to Elastic dashboard.
-            notification = ElasticNotification(
+            notification = Notification(
                 level=self.type.name,
                 title="Robot Alert",
                 description=self.text,
                 display_time=int(self.timeout * 1000) if self.timeout > 0 else 3000,
             )
             if self.elasticnoti:
-                Elastic.send_alert(notification)
+                send_notification(notification)
 
         self.active = active
 
@@ -193,81 +193,4 @@ class AlertManager(Sendable):
         alert.enable()
 
 
-class ElasticNotification:
-    """
-    Represents a notification object to be sent to the Elastic dashboard.
-    """
 
-    class NotificationLevel:
-        INFO = "INFO"
-        WARNING = "WARNING"
-        ERROR = "ERROR"
-
-    def __init__(
-        self,
-        level=NotificationLevel.INFO,
-        title: str = "",
-        description: str = "",
-        display_time: int = 3000,
-        width: float = 350,
-        height: float = -1,
-    ):
-        """
-        Initialize an ElasticNotification object.
-
-        Args:
-            level (str): Severity level of the notification.
-            title (str): Title of the notification.
-            description (str): Description of the notification.
-            display_time (int): Display duration in milliseconds.
-            width (float): Width of the notification display.
-            height (float): Height of the notification display.
-        """
-        self.level = level
-        self.title = title
-        self.description = description
-        self.display_time = display_time
-        self.width = width
-        self.height = height
-
-    def to_dict(self) -> Dict[str, str | float | int]:
-        """
-        Convert the notification to a dictionary for JSON serialization.
-
-        Returns:
-            Dict: Dictionary representation of the notification.
-        """
-        return {
-            "level": self.level,
-            "title": self.title,
-            "description": self.description,
-            "displayTime": self.display_time,
-            "width": self.width,
-            "height": self.height,
-        }
-
-    # Chained methods for modifying properties omitted for brevity...
-
-
-class Elastic:
-    """
-    Handles sending notifications to the Elastic dashboard using NetworkTables.
-    """
-
-    _topic = NetworkTableInstance.getDefault().getStringTopic(
-        "/Elastic/RobotNotifications"
-    )
-    _publisher = _topic.publish(PubSubOptions(sendAll=True, keepDuplicates=True))
-
-    @staticmethod
-    def send_alert(alert: ElasticNotification):
-        """
-        Send an alert notification to the Elastic dashboard.
-
-        Args:
-            alert (ElasticNotification): The notification object.
-        """
-        try:
-            Elastic._publisher.set(json.dumps(alert.to_dict()))
-        except Exception as e:
-            print(f"Error serializing alert: {e}")

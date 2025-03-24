@@ -12,7 +12,7 @@ from wpimath.controller import (
     ArmFeedforward,
 )
 from wpiutil import Sendable, SendableBuilder
-from ._controller import SmartController
+from .controller import SmartController
 
 
 class SmartProfile(Sendable):

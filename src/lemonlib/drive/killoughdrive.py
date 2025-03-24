@@ -4,7 +4,7 @@ from wpimath import applyDeadband
 import math
 from wpiutil import Sendable
 from lemonlib.util import clamp
-from ._vector2d import Vector2d
+from .vector2d import Vector2d
 
 
 class KilloughDrive(RobotDriveBase, Sendable):
