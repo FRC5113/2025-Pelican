@@ -114,22 +114,23 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.swerve_drive.get_estimated_pose()
         final_pose = self.current_trajectory.get_final_pose(is_red())
         distance = current_pose.translation().distance(final_pose.translation())
+        angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
         SmartDashboard.putString("Final Pose", f"{final_pose}")
 
         if (
             distance < self.DISTANCE_TOLERANCE
+            and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
             and state_tm > self.current_trajectory.get_total_time() / 2.0
         ):
             self.next_state("next_step")
 
         sample = self.current_trajectory.sample_at(state_tm, is_red())
-        if sample:
+        if sample is not None:
 
             self.drive_control.drive_auto(sample)
 
             SmartDashboard.putNumber("Distance", distance)
-            if distance < self.DISTANCE_TOLERANCE:
-                self.next_state("next_step")
+
 
     """
     STATES
@@ -171,7 +172,7 @@ class AutoBase(AutonomousStateMachine):
         if not self.claw.get_intake_limit():
             self.next_state("next_step")
 
-    @timed_state(duration=4, next_state="next_step")
+    @timed_state(duration=2.8, next_state="next_step")
     def level_four(self) -> None:
         self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)

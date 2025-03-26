@@ -230,10 +230,10 @@ class SwerveDrive(Sendable):
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
             sample.omega
             + self.theta_controller.calculate(
-                pose.rotation().radians(), sample.heading
+                pose.rotation().radians(), sample.omega
             ),
         )
-        self.drive(speeds.vx, speeds.vy, speeds.omega, True, self.period)
+        self.drive(speeds.vx, speeds.vy, speeds.omega, False, self.period)
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""

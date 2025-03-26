@@ -61,10 +61,7 @@ class DriveControl(StateMachine):
 
     def drive_auto(self, sample: SwerveSample):
         self.engage()
-        self.translationX = sample.vx
-        self.translationY = sample.vy
-        self.rotationX = sample.omega
-        self.field_relative = True
+        self.sample = sample
 
     def drive_auto_manual(
         self,
@@ -140,12 +137,6 @@ class DriveControl(StateMachine):
         # used to drive the bot and used here to keep driving in one place
         # main controls are in the auto_base.py like intake eject etc
 
-        self.swerve_drive.drive(
-            self.translationX,
-            self.translationY,
-            self.rotationX,
-            self.field_relative,
-            self.period,
-        )
+        self.swerve_drive.follow_trajectory(self.sample)
         if DriverStation.isTeleop():
             self.next_state("free")

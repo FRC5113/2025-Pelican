@@ -10,11 +10,6 @@ from wpilib import (
     Mechanism2d,
     MechanismLigament2d,
     Color8Bit,
-)
-from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
-from rev import SparkMax, SparkLowLevel
-from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import (
     RobotController,
     DigitalInput,
     DutyCycleEncoder,
@@ -33,7 +28,11 @@ from wpimath.geometry import (
     Rotation3d,
     Translation2d,
 )
-from photonlibpy.photonCamera import PhotonCamera
+
+from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
+from rev import SparkMax, SparkLowLevel
+from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
+
 import magicbot
 from magicbot import feedback
 
@@ -48,7 +47,6 @@ from lemonlib.util import (
     is_red,
 )
 from lemonlib.smart import SmartPreference, SmartProfile
-
 
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
@@ -318,8 +316,13 @@ class MyRobot(magicbot.MagicRobot):
             "Claw", 5, 0, color=Color8Bit(0, 150, 0)
         )
         SmartDashboard.putData("Arm", self.arm_visuize)
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self.alliance = True
+        else:
+            self.alliance = False
 
     def autonomousInit(self):
+
         if DriverStation.isFMSAttached():
             DataLogManager.start()
 
