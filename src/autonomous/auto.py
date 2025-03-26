@@ -35,6 +35,7 @@ States:
 - spit
 """
 
+
 class side_2r(AutoBase):
     MODE_NAME = "Side>2R"
 
@@ -45,6 +46,7 @@ class side_2r(AutoBase):
                 "state:level_four",
             ]
         )
+
 
 class Center_4R(AutoBase):
     MODE_NAME = "Bottom>L4"

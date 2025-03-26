@@ -6,7 +6,27 @@ from components.drive_control import DriveControl
 from wpimath import units
 
 
-class SysIdDrive(MagicSysIdRoutine):
+class SysIdDriveLinear(MagicSysIdRoutine):
+    swerve_drive: SwerveDrive
+    drive_control: DriveControl
+    period: units.seconds = 0.02
+
+    def setup(self):
+        self.setup_sysid(
+            SysIdRoutine.Config(rampRate=0.4, stepVoltage=7.0, timeout=5),
+            SysIdRoutine.Mechanism(
+                self.drive_sysid,
+                self.swerve_drive.log,
+                self.swerve_drive,
+                "Drive Linear",
+            ),
+        )
+
+    def drive_sysid(self, voltage: units.volts) -> None:
+        self.drive_control.drive_manual(voltage, 0, 0, False)
+
+
+class SysIdDriveRotation(MagicSysIdRoutine):
     swerve_drive: SwerveDrive
     drive_control: DriveControl
     period: units.seconds = 0.02
@@ -18,9 +38,9 @@ class SysIdDrive(MagicSysIdRoutine):
                 self.drive_sysid,
                 self.swerve_drive.log,
                 self.swerve_drive,
-                "Drive",
+                "Drive Rotatinal",
             ),
         )
 
     def drive_sysid(self, voltage: units.volts) -> None:
-        self.drive_control.drive_manual(voltage, 0, 0, True)
+        self.drive_control.drive_manual(0, 0, voltage, False)

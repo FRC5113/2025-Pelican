@@ -1,6 +1,6 @@
 from wpilib import Color
 from magicbot import will_reset_to, feedback
-from wpilib import DriverStation
+from wpilib import DriverStation, LEDPattern
 from components.arm_control import ArmControl
 from components.swerve_drive import SwerveDrive
 from components.climber import Climber
@@ -63,6 +63,7 @@ class LEDStrip:
     """
 
     def execute(self):
+
         if self.has_errors_present():
             self.leds.set_solid_color(self.error_color)
         elif self.has_warnings_present():
@@ -80,8 +81,5 @@ class LEDStrip:
             self.leds.scolling_rainbow(6)
         elif DriverStation.isAutonomousEnabled():
             self.leds.move_across(self.auton_color, 20, 50)
-
         else:
-            # self.leds.move_across((255, 255, 0), 20, 50)
             self.leds.set_solid_color((50, 50, 50))
-

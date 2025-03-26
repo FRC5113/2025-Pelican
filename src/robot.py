@@ -50,8 +50,7 @@ from lemonlib.util import (
 from lemonlib.smart import SmartPreference, SmartProfile
 
 
-
-# from components.odometry import Odometry
+from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
 from components.elevator import Elevator, ElevatorHeight
@@ -60,14 +59,14 @@ from components.climber import Climber
 from components.arm_control import ArmControl
 from components.drive_control import DriveControl
 from components.leds import LEDStrip
-from components.sysid_drive import SysIdDrive
+from components.sysid_drive import SysIdDriveLinear
 
 
 class MyRobot(magicbot.MagicRobot):
-    sysid_drive: SysIdDrive
+    sysid_drive: SysIdDriveLinear
     drive_control: DriveControl
     arm_control: ArmControl
-    # odometry: Odometry
+    odometry: Odometry
     led_strip: LEDStrip
 
     swerve_drive: SwerveDrive
@@ -276,21 +275,18 @@ class MyRobot(magicbot.MagicRobot):
             AprilTagField.k2025ReefscapeWelded
         )
 
-        # self.camera_front = LemonCamera(
-        #     "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
-        # )
-        # self.camera_back = LemonCamera(
-        #     "USB_Camera", self.robot_to_camera_back, self.field_layout
-        # )
+        self.camera_front = LemonCamera(
+            "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
+        )
+        self.camera_back = LemonCamera(
+            "USB_Camera", self.robot_to_camera_back, self.field_layout
+        )
 
         """
         MISCELLANEOUS
         """
 
         self.period: units.seconds = 0.02
-
-        # self.primary = PS5Controller(0)
-        # self.secondary = XboxController(1)
 
         self.leds = LEDController(0, 112)  # broken amount is 46
 
@@ -409,51 +405,51 @@ class MyRobot(magicbot.MagicRobot):
                 self.upper_algae_button_released = True
                 self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
 
-            # if self.primary.getPOV() in (45, 90, 135):
-            #     if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.55, 0.21, Rotation2d())
-            #                 )
-            #             )
-            #     if self.secondary.getAButton():  # L1
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.6, 0.21, Rotation2d())
-            #                 )
-            #             )
-            #     if self.secondary.getYButton():  # L4
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.53, 0.21, Rotation2d())
-            #                 )
-            #             )
+            if self.primary.getPOV() in (45, 90, 135):
+                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.55, 0.21, Rotation2d())
+                            )
+                        )
+                if self.secondary.getAButton():  # L1
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.6, 0.21, Rotation2d())
+                            )
+                        )
+                if self.secondary.getYButton():  # L4
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.53, 0.21, Rotation2d())
+                            )
+                        )
 
-            # if self.primary.getPOV() in (225, 270, 315):
-            #     if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.565, -0.21, Rotation2d())
-            #                 )
-            #             )
-            #     if self.secondary.getAButton():  # L1
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.6, -0.19, Rotation2d())
-            #                 )
-            #             )
-            #     if self.secondary.getYButton():  # L4
-            #         if self.camera_front.get_best_tag() is not None:
-            #             self.drive_control.request_pose(
-            #                 self.camera_front.get_best_pose(True).transformBy(
-            #                     Transform2d(0.53, -0.21, Rotation2d())
-            #                 )
-            #             )
+            if self.primary.getPOV() in (225, 270, 315):
+                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.565, -0.21, Rotation2d())
+                            )
+                        )
+                if self.secondary.getAButton():  # L1
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.6, -0.19, Rotation2d())
+                            )
+                        )
+                if self.secondary.getYButton():  # L4
+                    if self.camera_front.get_best_tag() is not None:
+                        self.drive_control.request_pose(
+                            self.camera_front.get_best_pose(True).transformBy(
+                                Transform2d(0.53, -0.21, Rotation2d())
+                            )
+                        )
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
