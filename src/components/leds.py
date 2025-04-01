@@ -7,9 +7,11 @@ from components.climber import Climber
 from components.claw import Claw
 
 from lemonlib.util import LEDController, AlertManager, AlertType
+from commands2 import Command
+from lemonlib.command import CommandComponent
 
 
-class LEDStrip:
+class LEDStrip(CommandComponent):
     swerve_drive: SwerveDrive
     climber: Climber
     claw: Claw
@@ -57,6 +59,9 @@ class LEDStrip:
 
     def justin_fun(self):
         self.justin_bool = True
+
+    def commandtest(self) -> Command:
+        return self.leds.set_solid_color((0, 255, 0))
 
     """
     EXECUTE

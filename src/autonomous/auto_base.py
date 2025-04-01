@@ -1,6 +1,7 @@
 import math
 
 import choreo
+import choreo.util
 import wpilib
 from wpilib import Field2d, RobotBase, SmartDashboard, DataLogManager
 from typing import List
@@ -42,7 +43,6 @@ class AutoBase(AutonomousStateMachine):
         self.current_step = -1
         self.trajectory_index = -1
         self.trajectories: list[SwerveTrajectory] = []
-        self.current_trajectory: SwerveTrajectory | None = None
         self.starting_pose = None
         SmartDashboard.putNumber("Distance", 0)
         SmartDashboard.putString("Final Pose", "none")
@@ -55,13 +55,14 @@ class AutoBase(AutonomousStateMachine):
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
                     pass  # Ignore missing trajectories
+        
 
     def on_enable(self) -> None:
-        self.current_step = -1
-        self.trajectory_index = -1
         starting_pose = self.get_starting_pose()
         if starting_pose is not None:
             self.swerve_drive.set_starting_pose(starting_pose)
+        self.current_step = -1
+        self.trajectory_index = -1
 
         super().on_enable()
 
@@ -72,17 +73,21 @@ class AutoBase(AutonomousStateMachine):
             for trajectory in self.trajectories
             for sample in trajectory.get_samples()
         ]
-
-    def display_trajectory(self) -> None:
-        self.estimated_field.getObject("Trajectory").setPoses(
-            self._get_full_path_poses()
-        )
-
+    
     def get_starting_pose(self) -> Pose2d | None:
         if self.trajectories[0].get_initial_pose(is_red()) is not None:
             return self.trajectories[0].get_initial_pose(is_red())
         else:
             return Pose2d()
+
+    def display_trajectory(self) -> None:
+        self.estimated_field.getObject("trajectory").setPoses(self._get_full_path_poses())
+        print(self._get_full_path_poses())
+
+    def on_disable(self) -> None:
+        super().on_disable()
+        self.estimated_field.getObject("trajectory").setPoses([])
+
 
     @state(first=True)
     def next_step(self):
@@ -107,9 +112,6 @@ class AutoBase(AutonomousStateMachine):
     @state
     def tracking_trajectory(self, state_tm):
         """Follows the current trajectory and transitions when done."""
-        if not self.current_trajectory:
-            self.next_state("next_step")
-            return
 
         current_pose = self.swerve_drive.get_estimated_pose()
         final_pose = self.current_trajectory.get_final_pose(is_red())

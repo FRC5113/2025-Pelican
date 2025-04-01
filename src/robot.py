@@ -16,6 +16,7 @@ from wpilib import (
     DriverStation,
     RobotBase,
     PowerDistribution,
+    
 )
 
 from wpimath import units, applyDeadband
@@ -28,6 +29,8 @@ from wpimath.geometry import (
     Rotation3d,
     Translation2d,
 )
+
+from wpinet import WebServer
 
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from rev import SparkMax, SparkLowLevel
@@ -48,6 +51,7 @@ from lemonlib.util import (
 )
 from lemonlib.smart import SmartPreference, SmartProfile
 
+from autonomous.auto_base import AutoBase
 from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
@@ -59,8 +63,10 @@ from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
+from lemonlib.command import commandmagicrobot
 
-class MyRobot(magicbot.MagicRobot):
+
+class MyRobot(commandmagicrobot.CommandMagicRobot):
     sysid_drive: SysIdDriveLinear
     drive_control: DriveControl
     arm_control: ArmControl
@@ -320,6 +326,9 @@ class MyRobot(magicbot.MagicRobot):
             self.alliance = True
         else:
             self.alliance = False
+        self.webserver = WebServer.getInstance()
+        if not DriverStation.isFMSAttached():
+            self.webserver.start(port=5800, path=str(Path(__file__).parent.resolve() / "deploy/elastic-layout.json"))
 
     def autonomousInit(self):
 
@@ -350,7 +359,9 @@ class MyRobot(magicbot.MagicRobot):
         self.leds.move_across((5, 5, 0), 20, 20)
 
     def teleopPeriodic(self):
-
+        self._display_auto_trajectory()
+        
+        print(self.control_loop_wait_time,self.period)
         with self.consumeExceptions():
 
             """
@@ -573,10 +584,19 @@ class MyRobot(magicbot.MagicRobot):
 
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
+    
+    def _display_auto_trajectory(self) -> None:
+        selected_auto = self._automodes.chooser.getSelected()
+        if isinstance(selected_auto, AutoBase):
+            selected_auto.display_trajectory()
 
     @feedback
-    def get_alience(self):
-        return is_red()
+    def _display_auto_state(self) -> None:
+        selected_auto = self._automodes.chooser.getSelected()
+        if isinstance(selected_auto, AutoBase):
+            return selected_auto.current_state
+        return "No Auto Selected"
+
 
     # override _do_periodics() to access watchdog
     # DON'T DO ANYTHING ELSE HERE UNLESS YOU KNOW WHAT YOU'RE DOING

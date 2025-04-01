@@ -1788,9 +1788,9 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "state",
-            "x": 256.0,
-            "y": 384.0,
+            "title": "translation_profile",
+            "x": 512.0,
+            "y": 640.0,
             "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
@@ -1799,224 +1799,155 @@
             },
             "children": [
               {
-                "title": "current_state",
+                "title": "kD",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/components/drive_control/state/current_state",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "remove_algae_duration",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/components/drive_control/state/remove_algae_duration",
+                  "topic": "/SmartDashboard/translation_profile/kD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "state_descriptions",
+                "title": "kI",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/components/drive_control/state/state_descriptions",
+                  "topic": "/SmartDashboard/translation_profile/kI",
                   "period": 0.06,
-                  "data_type": "string[]",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "state_names",
+                "title": "kP",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/components/drive_control/state/state_names",
+                  "topic": "/SmartDashboard/translation_profile/kP",
                   "period": 0.06,
-                  "data_type": "string[]",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               }
             ]
           },
           {
-            "title": "state",
-            "x": 896.0,
+            "title": "rotation_profile",
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 640.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "current_state",
+                "title": "kD",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/components/arm_control/state/current_state",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "state_descriptions",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/components/arm_control/state/state_descriptions",
-                  "period": 0.06,
-                  "data_type": "string[]",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "state_names",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/components/arm_control/state/state_names",
-                  "period": 0.06,
-                  "data_type": "string[]",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "state",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "back_up_duration",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/autonomous/hardcode l4/state/back_up_duration",
-                  "period": 0.06,
-                  "data_type": "int",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "current_state",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/autonomous/hardcode l4/state/current_state",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "drive_duration",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/autonomous/hardcode l4/state/drive_duration",
-                  "period": 0.06,
-                  "data_type": "int",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "raise_arm_duration",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/autonomous/hardcode l4/state/raise_arm_duration",
+                  "topic": "/SmartDashboard/rotation_profile/kD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "score_duration",
+                "title": "kI",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/autonomous/hardcode l4/state/score_duration",
+                  "topic": "/SmartDashboard/rotation_profile/kI",
                   "period": 0.06,
-                  "data_type": "int",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "state_descriptions",
+                "title": "kMaxA",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/autonomous/hardcode l4/state/state_descriptions",
+                  "topic": "/SmartDashboard/rotation_profile/kMaxA",
                   "period": 0.06,
-                  "data_type": "string[]",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "state_names",
+                "title": "kMaxInput",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/autonomous/hardcode l4/state/state_names",
+                  "topic": "/SmartDashboard/rotation_profile/kMaxInput",
                   "period": 0.06,
-                  "data_type": "string[]",
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMaxV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMaxV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kMinInput",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kMinInput",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/rotation_profile/kP",
+                  "period": 0.06,
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               }
@@ -2071,9 +2002,9 @@
           },
           {
             "title": "Distance",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 0.0,
+            "y": 512.0,
+            "width": 512.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2097,31 +2028,85 @@
             }
           },
           {
-            "title": "distance_from_desired_pose",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 128.0,
+            "title": "Auto State",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/components/swerve_drive/distance_from_desired_pose",
+              "topic": "/robot/_display_auto_state",
               "period": 0.06,
-              "data_type": "double",
+              "data_type": "string",
               "show_submit_button": false
             }
           },
           {
-            "title": "top_speed",
-            "x": 768.0,
+            "title": "Arm State",
+            "x": 256.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/Preferences/top_speed",
+              "topic": "/components/arm_control/state/current_state",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Drive State",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/components/drive_control/state/current_state",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "FMSInfo",
+            "x": 0.0,
+            "y": 768.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Final Pose",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Final Pose",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 768.0,
+            "y": 640.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Radians"
             }
           }
         ]
