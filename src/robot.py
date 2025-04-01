@@ -16,7 +16,6 @@ from wpilib import (
     DriverStation,
     RobotBase,
     PowerDistribution,
-    
 )
 
 from wpimath import units, applyDeadband
@@ -328,7 +327,12 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
             self.alliance = False
         self.webserver = WebServer.getInstance()
         if not DriverStation.isFMSAttached():
-            self.webserver.start(port=5800, path=str(Path(__file__).parent.resolve() / "deploy/elastic-layout.json"))
+            self.webserver.start(
+                port=5800,
+                path=str(
+                    Path(__file__).parent.resolve() / "deploy/elastic-layout.json"
+                ),
+            )
 
     def autonomousInit(self):
 
@@ -360,8 +364,8 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
 
     def teleopPeriodic(self):
         self._display_auto_trajectory()
-        
-        print(self.control_loop_wait_time,self.period)
+
+        print(self.control_loop_wait_time, self.period)
         with self.consumeExceptions():
 
             """
@@ -584,7 +588,7 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
 
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
-    
+
     def _display_auto_trajectory(self) -> None:
         selected_auto = self._automodes.chooser.getSelected()
         if isinstance(selected_auto, AutoBase):
@@ -596,7 +600,6 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         if isinstance(selected_auto, AutoBase):
             return selected_auto.current_state
         return "No Auto Selected"
-
 
     # override _do_periodics() to access watchdog
     # DON'T DO ANYTHING ELSE HERE UNLESS YOU KNOW WHAT YOU'RE DOING

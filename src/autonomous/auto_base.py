@@ -55,7 +55,6 @@ class AutoBase(AutonomousStateMachine):
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
                     pass  # Ignore missing trajectories
-        
 
     def on_enable(self) -> None:
         starting_pose = self.get_starting_pose()
@@ -73,7 +72,7 @@ class AutoBase(AutonomousStateMachine):
             for trajectory in self.trajectories
             for sample in trajectory.get_samples()
         ]
-    
+
     def get_starting_pose(self) -> Pose2d | None:
         if self.trajectories[0].get_initial_pose(is_red()) is not None:
             return self.trajectories[0].get_initial_pose(is_red())
@@ -81,13 +80,14 @@ class AutoBase(AutonomousStateMachine):
             return Pose2d()
 
     def display_trajectory(self) -> None:
-        self.estimated_field.getObject("trajectory").setPoses(self._get_full_path_poses())
+        self.estimated_field.getObject("trajectory").setPoses(
+            self._get_full_path_poses()
+        )
         print(self._get_full_path_poses())
 
     def on_disable(self) -> None:
         super().on_disable()
         self.estimated_field.getObject("trajectory").setPoses([])
-
 
     @state(first=True)
     def next_step(self):
@@ -132,7 +132,6 @@ class AutoBase(AutonomousStateMachine):
             self.drive_control.drive_auto(sample)
 
             SmartDashboard.putNumber("Distance", distance)
-
 
     """
     STATES

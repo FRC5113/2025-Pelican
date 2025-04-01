@@ -34,8 +34,6 @@ class Odometry:
 
         SmartDashboard.putData("Estimated Field", self.estimated_field)
 
-    
-
     def execute(self):
         # may need to tweak timestamp to match system time
         self.camera_front.update()
