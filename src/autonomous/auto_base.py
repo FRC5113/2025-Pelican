@@ -55,6 +55,7 @@ class AutoBase(AutonomousStateMachine):
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
                     pass  # Ignore missing trajectories
+        
 
     def on_enable(self) -> None:
         starting_pose = self.get_starting_pose()
@@ -68,9 +69,9 @@ class AutoBase(AutonomousStateMachine):
     def _get_full_path_poses(self) -> list[Pose2d]:
         """Get a list of poses for the full path for display."""
         return [
-            sample.get_pose()
+            sample
             for trajectory in self.trajectories
-            for sample in trajectory.get_samples()
+            for sample in trajectory.get_poses()
         ]
 
     def get_starting_pose(self) -> Pose2d | None:
@@ -83,7 +84,6 @@ class AutoBase(AutonomousStateMachine):
         self.estimated_field.getObject("trajectory").setPoses(
             self._get_full_path_poses()
         )
-        print(self._get_full_path_poses())
 
     def on_disable(self) -> None:
         super().on_disable()

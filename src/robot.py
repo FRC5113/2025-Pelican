@@ -289,7 +289,7 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         MISCELLANEOUS
         """
 
-        self.period: units.seconds = 0.02
+        # self.period: units.seconds = 0.02
 
         self.leds = LEDController(0, 112)  # broken amount is 46
 
@@ -335,7 +335,7 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
             )
 
     def autonomousInit(self):
-
+        
         if DriverStation.isFMSAttached():
             DataLogManager.start()
 
@@ -361,11 +361,10 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
 
     def disabledPeriodic(self):
         self.leds.move_across((5, 5, 0), 20, 20)
+    
 
     def teleopPeriodic(self):
-        self._display_auto_trajectory()
-
-        print(self.control_loop_wait_time, self.period)
+        
         with self.consumeExceptions():
 
             """
@@ -573,6 +572,10 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
                 self.arm_control.next_state_now("positioning_claw")
                 self.led_strip.justin_fun()
 
+            if self.primary.getYButton():
+                self.led_strip.commandtest()
+                
+
         # with self.consumeExceptions():
         #     """
         #     SYS-ID
@@ -586,9 +589,10 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         #     if self.sysid_con.getYButton():
         #         self.sysid_drive.dynamic_reverse()
 
+
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
-
+    
     def _display_auto_trajectory(self) -> None:
         selected_auto = self._automodes.chooser.getSelected()
         if isinstance(selected_auto, AutoBase):
@@ -600,13 +604,17 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         if isinstance(selected_auto, AutoBase):
             return selected_auto.current_state
         return "No Auto Selected"
+    
+    def autonomousPeriodic(self):
+        self._display_auto_trajectory()
+    
 
     # override _do_periodics() to access watchdog
     # DON'T DO ANYTHING ELSE HERE UNLESS YOU KNOW WHAT YOU'RE DOING
     def _do_periodics(self):
         super()._do_periodics()
-        self.period = max(0.02, self.watchdog.getTime())
-
+        # self.period = max(0.02, self.watchdog.getTime())
+    
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
