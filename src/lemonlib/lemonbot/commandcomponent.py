@@ -2,7 +2,7 @@ import logging
 from commands2 import Subsystem, Command
 
 
-class CommandComponent(Subsystem):
+class LemonComponent(Subsystem):
     """
     To automagically retrieve variables defined in your base robot
     object, you can add the following::
@@ -70,7 +70,7 @@ class CommandComponent(Subsystem):
         component. The command will be passed to the ``execute`` method of
         the component.
         """
-        self.run
+        self.run(command)
 
     def execute(self) -> None:
         """

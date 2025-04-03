@@ -8,10 +8,10 @@ from components.claw import Claw
 
 from lemonlib.util import LEDController, AlertManager, AlertType
 from commands2 import Command
-from lemonlib.command import CommandComponent
+from lemonlib import LemonComponent
 
 
-class LEDStrip(CommandComponent):
+class LEDStrip(LemonComponent):
     swerve_drive: SwerveDrive
     climber: Climber
     claw: Claw

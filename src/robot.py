@@ -62,10 +62,10 @@ from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
-from lemonlib.command import commandmagicrobot
+from lemonlib import LemonRobot,fms_feedback
 
 
-class MyRobot(commandmagicrobot.CommandMagicRobot):
+class MyRobot(LemonRobot):
     sysid_drive: SysIdDriveLinear
     drive_control: DriveControl
     arm_control: ArmControl
@@ -81,7 +81,6 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
     claw: Claw
     climber: Climber
 
-    low_bandwidth = False
     # greatest speed that chassis should move (not greatest possible speed)
     top_speed = SmartPreference(3.0)
     top_omega = SmartPreference(6.0)
@@ -590,6 +589,7 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         #         self.sysid_drive.dynamic_reverse()
 
 
+    @fms_feedback
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
     
@@ -598,7 +598,7 @@ class MyRobot(commandmagicrobot.CommandMagicRobot):
         if isinstance(selected_auto, AutoBase):
             selected_auto.display_trajectory()
 
-    @feedback
+    @fms_feedback
     def _display_auto_state(self) -> None:
         selected_auto = self._automodes.chooser.getSelected()
         if isinstance(selected_auto, AutoBase):

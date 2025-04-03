@@ -3,13 +3,17 @@ import commands2
 from wpilib import DriverStation
 
 
-class CommandMagicRobot(magicbot.MagicRobot):
+class LemonRobot(magicbot.MagicRobot):
     """
     Wrapper for the magicbot robot class to allow for command-based
     functionality. This class is used to create a robot that can be
     controlled using commands, while still using the magicbot framework.
     """
     
+    low_bandwidth = DriverStation.isFMSAttached()
+
+    
+
     def autonomousPeriodic(self):
         """
         Periodic code for autonomous mode should go here.
@@ -22,14 +26,16 @@ class CommandMagicRobot(magicbot.MagicRobot):
         components are called.
         """
         pass
-
+    
+    def autonomous(self):
+        super().autonomous()
+        self.autonomousPeriodic()
 
     def _do_periodics(self):
         super()._do_periodics()
         commands2.CommandScheduler.getInstance().run()
         self.period = max(self.control_loop_wait_time, self.watchdog.getTime())
-        if DriverStation.isAutonomous():
-            self.autonomousPeriodic()
+            
 
     def _enabled_periodic(self) -> None:
         """Run components and all periodic methods."""

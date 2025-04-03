@@ -8,12 +8,12 @@ import hal
 import pytest
 import wpilib.simulation
 from wpilib.simulation import DriverStationSim
-
-from lemonlib.control import LemonInput
 from lemonlib.simulation import LemonInputSim
 
 if typing.TYPE_CHECKING:
     from pyfrc.test_support.controller import TestController
+
+
 
 
 def rand_bool() -> bool:
@@ -67,7 +67,7 @@ def fuzz_joystick(joystick: wpilib.simulation.JoystickSim) -> None:
     joystick.setPOV(rand_pov())
 
 
-def fuzz_gamepad(gamepad: LemonInputSim) -> None:
+def fuzz_gamepad(gamepad: wpilib.simulation.XboxControllerSim) -> None:
     """Fuzz an XInput gamepad."""
     gamepad.setLeftX(rand_axis())
     gamepad.setLeftY(rand_axis())
@@ -77,18 +77,17 @@ def fuzz_gamepad(gamepad: LemonInputSim) -> None:
     gamepad.setRightTriggerAxis(random.random())
     for button in range(10):
         gamepad.setRawButton(button, rand_bool())
-    randpov = rand_pov()
-    gamepad.setPOV(randpov)
+    gamepad.setPOV(rand_pov())
 
 
 def get_alliance_stations() -> list[str]:
     choices_env_var = "FUZZ_ALLIANCE_STATIONS"
     choices_env = os.environ.get(choices_env_var, None)
-    if choices_env is not None:
+    if choices_env is not None:  # pragma: no cover
         return choices_env.split(",")
 
     stations = (1, 2, 3)
-    if "CI" in os.environ:
+    if "CI" in os.environ:  # pragma: no branch
         choices = [
             f"{alliance}{station}"
             for alliance in ("Blue", "Red")
