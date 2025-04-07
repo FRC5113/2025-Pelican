@@ -125,10 +125,8 @@ class AutoBase(AutonomousStateMachine):
             and state_tm > self.current_trajectory.get_total_time() / 2.0
         ):
             self.next_state("next_step")
-
         sample = self.current_trajectory.sample_at(state_tm, is_red())
         if sample is not None:
-
             self.drive_control.drive_auto(sample)
 
             SmartDashboard.putNumber("Distance", distance)
@@ -139,7 +137,6 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_coral(self) -> None:
-        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.STATION_CLOSE)
         if self.arm_control.at_point(ElevatorHeight.L1, ClawAngle.STATION_CLOSE):
             self.arm_control.set_wheel_voltage(-1)
@@ -148,7 +145,6 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_one(self) -> None:
-        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
         if self.arm_control.at_point(ElevatorHeight.L1, ClawAngle.TROUGH):
             self.arm_control.set_wheel_voltage(1)
@@ -157,7 +153,6 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_two(self) -> None:
-        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
         if self.arm_control.at_point(ElevatorHeight.L2, ClawAngle.BRANCH):
             self.arm_control.set_wheel_voltage(1)
@@ -166,7 +161,6 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def level_three(self) -> None:
-        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
         if self.arm_control.at_point(ElevatorHeight.L3, ClawAngle.BRANCH):
             self.arm_control.set_wheel_voltage(1)
@@ -175,8 +169,6 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=2.8, next_state="next_step")
     def level_four(self) -> None:
-        self.arm_control.engage()
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
-            self.arm_control.engage()
             self.arm_control.set_wheel_voltage(-10)

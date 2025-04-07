@@ -60,7 +60,6 @@ class DriveControl(StateMachine):
         self.desired_pose = pose
 
     def drive_auto(self, sample: SwerveSample):
-        self.engage()
         self.sample = sample
 
     def drive_auto_manual(

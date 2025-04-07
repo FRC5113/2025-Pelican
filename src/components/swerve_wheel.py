@@ -62,6 +62,7 @@ class SwerveWheel:
         self.direction_controller = self.direction_profile.create_turret_controller(
             f"{self.direction_motor.device_id}_direction"
         )
+        
 
     """
     INFORMATIONAL METHODS

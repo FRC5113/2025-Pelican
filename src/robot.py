@@ -391,8 +391,6 @@ class MyRobot(LemonRobot):
             if self.primary.getL2Axis() >= 0.8:
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
-
-            self.drive_control.engage()
             self.drive_control.drive_manual(
                 self.x_filter.calculate(
                     -self.sammi_curve(self.getLefty) * mult * self.top_speed
@@ -474,8 +472,6 @@ class MyRobot(LemonRobot):
             """
             ARM
             """
-
-            self.arm_control.engage()
             if self.elevator.error_detected():
                 self.arm_control.next_state("elevator_failsafe")
             if self.secondary.getAButton():
@@ -607,6 +603,10 @@ class MyRobot(LemonRobot):
     
     def autonomousPeriodic(self):
         self._display_auto_trajectory()
+
+    def enabledperiodic(self):
+        self.drive_control.engage()
+        self.arm_control.engage()
     
 
     # override _do_periodics() to access watchdog

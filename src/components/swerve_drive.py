@@ -38,6 +38,8 @@ class SwerveDrive(Sendable):
     translation_profile: SmartProfile
     rotation_profile: SmartProfile
 
+    
+
     translationX = will_reset_to(0)
     translationY = will_reset_to(0)
     rotationX = will_reset_to(0)
@@ -153,6 +155,9 @@ class SwerveDrive(Sendable):
         self.holonomic_controller = HolonomicDriveController(
             self.x_controller, self.y_controller, self.theta_controller
         )
+        self.theta_controller.enableContinuousInput(
+            -math.pi, math.pi
+        )
 
     """
     INFORMATIONAL METHODS
@@ -223,15 +228,8 @@ class SwerveDrive(Sendable):
 
     def follow_trajectory(self, sample: SwerveSample):
 
-        pose = self.get_estimated_pose()
+        self.set_desired_pose(sample.get_pose())
 
-        speeds = ChassisSpeeds(
-            sample.vx + self.x_controller.calculate(pose.X(), sample.x),
-            sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
-            sample.omega
-            + self.theta_controller.calculate(pose.rotation().radians(), sample.omega),
-        )
-        self.drive(speeds.vx, speeds.vy, speeds.omega, False, self.period)
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""
