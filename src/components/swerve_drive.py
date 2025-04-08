@@ -1,7 +1,7 @@
 import math
 
 
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard,DriverStation
 from wpimath import units
 from wpimath.controller import HolonomicDriveController
 from wpimath.estimator import SwerveDrive4PoseEstimator
@@ -227,8 +227,8 @@ class SwerveDrive(Sendable):
         self.pigeon_offset = Rotation2d.fromDegrees(offset)
 
     def follow_trajectory(self, sample: SwerveSample):
-
-        self.set_desired_pose(sample.get_pose())
+        if DriverStation.isAutonomousEnabled():
+            self.set_desired_pose(sample.get_pose())
 
 
     def set_starting_pose(self, pose: Pose2d):

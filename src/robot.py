@@ -311,7 +311,7 @@ class MyRobot(LemonRobot):
         self.pdh = PowerDistribution()
 
         self.estimated_field = Field2d()
-        CameraServer().launch()
+        # CameraServer().launch()
 
         self.arm_visuize = Mechanism2d(20, 50)
         self.arm_root = self.arm_visuize.getRoot("Arm Root", 10, 0)
