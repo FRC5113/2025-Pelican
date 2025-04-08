@@ -34,6 +34,7 @@ class DriveControl(StateMachine):
     translationY = will_reset_to(0)
     rotationX = will_reset_to(0)
     raiseclaw = will_reset_to(False)
+    sample: SwerveSample = None
 
     def drive_manual(
         self,
@@ -59,7 +60,7 @@ class DriveControl(StateMachine):
         self.go_to_pose = True
         self.desired_pose = pose
 
-    def drive_auto(self, sample: SwerveSample):
+    def drive_auto(self, sample: SwerveSample = None):
         self.sample = sample
 
     def drive_auto_manual(
@@ -135,7 +136,7 @@ class DriveControl(StateMachine):
     def run_auton_routine(self):
         # used to drive the bot and used here to keep driving in one place
         # main controls are in the auto_base.py like intake eject etc
-
-        self.swerve_drive.follow_trajectory(self.sample)
+        if self.sample is not None:
+            self.swerve_drive.follow_trajectory(self.sample)
         if DriverStation.isTeleop():
             self.next_state("free")

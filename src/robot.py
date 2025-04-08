@@ -62,7 +62,7 @@ from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
-from lemonlib import LemonRobot,fms_feedback
+from lemonlib import LemonRobot, fms_feedback
 
 
 class MyRobot(LemonRobot):
@@ -334,19 +334,16 @@ class MyRobot(LemonRobot):
             )
 
     def autonomousInit(self):
-        
+
         if DriverStation.isFMSAttached():
             DataLogManager.start()
 
     def teleopInit(self):
 
         # initialize HIDs here in case they are changed after robot initializes
-        if RobotBase.isSimulation():
-            self.primary = LemonInput(0)
-            self.secondary = LemonInput(1)
-        else:
-            self.primary = LemonInput(type="PS5")
-            self.secondary = LemonInput(type="Xbox")
+        self.primary = LemonInput(0)
+        self.secondary = LemonInput(1)
+
         self.sysid_con = LemonInput(2)
 
         self.x_filter = SlewRateLimiter(self.slew_rate)
@@ -356,14 +353,14 @@ class MyRobot(LemonRobot):
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
 
-        self.pigeon.set_yaw(self.pigeon.get_yaw().value + 180)
+        self.pigeon.set_yaw(self.pigeon.get_yaw().value)
 
     def disabledPeriodic(self):
         self.leds.move_across((5, 5, 0), 20, 20)
-    
+        
 
     def teleopPeriodic(self):
-        
+
         with self.consumeExceptions():
 
             """
@@ -569,7 +566,6 @@ class MyRobot(LemonRobot):
 
             if self.primary.getYButton():
                 self.led_strip.commandtest()
-                
 
         # with self.consumeExceptions():
         #     """
@@ -584,11 +580,10 @@ class MyRobot(LemonRobot):
         #     if self.sysid_con.getYButton():
         #         self.sysid_drive.dynamic_reverse()
 
-
     @fms_feedback
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
-    
+
     def _display_auto_trajectory(self) -> None:
         selected_auto = self._automodes.chooser.getSelected()
         if isinstance(selected_auto, AutoBase):
@@ -600,21 +595,20 @@ class MyRobot(LemonRobot):
         if isinstance(selected_auto, AutoBase):
             return selected_auto.current_state
         return "No Auto Selected"
-    
+
     def autonomousPeriodic(self):
         self._display_auto_trajectory()
 
     def enabledperiodic(self):
         self.drive_control.engage()
         self.arm_control.engage()
-    
 
     # override _do_periodics() to access watchdog
     # DON'T DO ANYTHING ELSE HERE UNLESS YOU KNOW WHAT YOU'RE DOING
     def _do_periodics(self):
         super()._do_periodics()
         # self.period = max(0.02, self.watchdog.getTime())
-    
+
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)

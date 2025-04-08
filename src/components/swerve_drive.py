@@ -22,9 +22,16 @@ from lemonlib.ctre import LemonPigeon
 from lemonlib.smart import SmartProfile
 from choreo.trajectory import SwerveSample
 from wpilib.sysid import SysIdRoutineLog
+from lemonlib import LemonComponent
+
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.controller import PPHolonomicDriveController
+from pathplannerlib.config import RobotConfig, PIDConstants
+
+from commands2 import Command
 
 
-class SwerveDrive(Sendable):
+class SwerveDrive(LemonComponent,Sendable):
     offset_x: units.meters
     offset_y: units.meters
     drive_gear_ratio: float
@@ -38,8 +45,6 @@ class SwerveDrive(Sendable):
     translation_profile: SmartProfile
     rotation_profile: SmartProfile
 
-    
-
     translationX = will_reset_to(0)
     translationY = will_reset_to(0)
     rotationX = will_reset_to(0)
@@ -48,6 +53,13 @@ class SwerveDrive(Sendable):
 
     def __init__(self) -> None:
         Sendable.__init__(self)
+        
+
+    def shouldFlipPath():
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # This will flip the path being followed to the red side of the field.
+        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
     """
     INITIALIZATION METHODS
@@ -96,6 +108,23 @@ class SwerveDrive(Sendable):
         )
         self.pigeon.set_yaw(180)
         # self.pigeon.reset()
+
+        config = RobotConfig.fromGUISettings()
+
+        # Configure the AutoBuilder last
+        AutoBuilder.configure(
+            self.get_estimated_pose(), # Robot pose supplier
+            self.resetPose, # Method to reset odometry (will be called if your auto has a starting pose)
+            self.chassis_speeds, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            lambda speeds, feedforwards: self.driveRobotRelative(speeds), # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also outputs individual module feedforwards
+            PPHolonomicDriveController( # PPHolonomicController is the built in path following controller for holonomic drive trains
+                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(5.0, 0.0, 0.0) # Rotation PID constants
+            ),
+            config, # The robot configuration
+            self.shouldFlipPath, # Supplier to control path flipping based on alliance color
+            self # Reference to this subsystem to set requirements
+        )
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("SwerveDrive")
@@ -155,9 +184,7 @@ class SwerveDrive(Sendable):
         self.holonomic_controller = HolonomicDriveController(
             self.x_controller, self.y_controller, self.theta_controller
         )
-        self.theta_controller.enableContinuousInput(
-            -math.pi, math.pi
-        )
+        self.theta_controller.enableContinuousInput(-math.pi, math.pi)
 
     """
     INFORMATIONAL METHODS
@@ -167,8 +194,8 @@ class SwerveDrive(Sendable):
         return self.pose_estimator.getEstimatedPosition()
 
     def get_velocity(self) -> ChassisSpeeds:
-        return self.kinematics.toChassisSpeeds(self.get_module_states())
-
+        return self.chassis_speeds
+        
     def get_module_states(
         self,
     ) -> tuple[
@@ -227,15 +254,41 @@ class SwerveDrive(Sendable):
         self.pigeon_offset = Rotation2d.fromDegrees(offset)
 
     def follow_trajectory(self, sample: SwerveSample):
-        if DriverStation.isAutonomousEnabled():
-            self.set_desired_pose(sample.get_pose())
+        holospeeds = self.holonomic_controller.calculate(
+            self.get_estimated_pose(),
+            sample.get_pose(),
+            0.0,
+            sample.get_pose().rotation(),
+        )
+        speeds = ChassisSpeeds(
+            sample.vx + holospeeds.vx,
+            sample.vy + holospeeds.vy,
+            sample.omega + holospeeds.omega,
 
+
+        )
+        self.drive(speeds.vx, speeds.vy, speeds.omega, False, self.period)
+
+
+    def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
+        """Drives the robot using ROBOT RELATIVE speeds.
+        This is used for path following."""
+        return self.drive(
+            speeds.vx,
+            speeds.vy,
+            speeds.omega,
+            False,
+            self.period,
+        )
 
     def set_starting_pose(self, pose: Pose2d):
         """ONLY USE IN SIM!"""
         self.starting_pose = pose
         if pose is not None:
             self.pose_estimator.resetPose(pose)
+
+    def resetPose(self):
+        self.pose_estimator.resetPose(Pose2d())
 
     """
     TELEMETRY METHODS

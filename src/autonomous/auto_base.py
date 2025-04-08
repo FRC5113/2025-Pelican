@@ -55,7 +55,6 @@ class AutoBase(AutonomousStateMachine):
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
                     pass  # Ignore missing trajectories
-        
 
     def on_enable(self) -> None:
         starting_pose = self.get_starting_pose()
@@ -117,11 +116,17 @@ class AutoBase(AutonomousStateMachine):
         final_pose = self.current_trajectory.get_final_pose(is_red())
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
+        velocity = self.swerve_drive.get_velocity()
+        speed = math.sqrt(math.pow(velocity.vx, 2.0) + math.pow(velocity.vy, 2.0))
         SmartDashboard.putString("Final Pose", f"{final_pose}")
 
         if (
             distance < self.DISTANCE_TOLERANCE
             and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
+            and math.isclose(speed, 0.0, abs_tol=self.TRANSLATIONAL_SPEED_TOLERANCE)
+            and math.isclose(
+                velocity.omega, 0.0, abs_tol=self.ROTATIONAL_SPEED_TOLERANCE
+            )
             and state_tm > self.current_trajectory.get_total_time() / 2.0
         ):
             self.next_state("next_step")
