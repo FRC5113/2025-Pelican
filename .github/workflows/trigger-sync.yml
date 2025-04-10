@@ -22,5 +22,5 @@ jobs:
           destination_folder: "/" # Folder where to copy it
           user_email: "rradtke1208@gmail.com"
           user_name: "Ryanforce08"
-          commit_message: "AUTO: Copying lemonlib from 2025-Pelican to LemonLib"
+          commit_message: ${{ github.event.head_commit.message }}
           git_server: "github.com"

@@ -66,6 +66,7 @@ class Elevator:
     """
     INFORMATIONAL METHODS
     """
+
     @fms_feedback
     def get_encoder_rotations(self) -> units.turns:
         """Return the average position of the encoders in motor
@@ -73,6 +74,7 @@ class Elevator:
         (Assumes right motor must be inverted)
         """
         return (self.left_encoder.getPosition() - self.right_encoder.getPosition()) / 2
+
     @fms_feedback
     def get_height(self) -> units.meters:
         """Get the current height of the elevator."""

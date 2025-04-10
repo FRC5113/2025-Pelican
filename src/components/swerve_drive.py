@@ -1,7 +1,7 @@
 import math
 
 
-from wpilib import SmartDashboard,DriverStation
+from wpilib import SmartDashboard, DriverStation
 from wpimath import units
 from wpimath.controller import HolonomicDriveController
 from wpimath.estimator import SwerveDrive4PoseEstimator
@@ -24,14 +24,11 @@ from choreo.trajectory import SwerveSample
 from wpilib.sysid import SysIdRoutineLog
 from lemonlib import LemonComponent
 
-# from pathplannerlib.auto import AutoBuilder
-# from pathplannerlib.controller import PPHolonomicDriveController
-# from pathplannerlib.config import RobotConfig, PIDConstants
 
 from commands2 import Command
 
 
-class SwerveDrive(LemonComponent,Sendable):
+class SwerveDrive(LemonComponent, Sendable):
     offset_x: units.meters
     offset_y: units.meters
     drive_gear_ratio: float
@@ -53,7 +50,6 @@ class SwerveDrive(LemonComponent,Sendable):
 
     def __init__(self) -> None:
         Sendable.__init__(self)
-        
 
     def shouldFlipPath():
         # Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -174,6 +170,7 @@ class SwerveDrive(LemonComponent,Sendable):
             lambda: self.swerve_module_states[3].angle.degrees(),
             lambda _: None,
         )
+        LemonComponent().initSendable(builder)
 
     def on_enable(self):
         self.x_controller = self.translation_profile.create_wpi_pid_controller()
@@ -195,7 +192,7 @@ class SwerveDrive(LemonComponent,Sendable):
 
     def get_velocity(self) -> ChassisSpeeds:
         return self.chassis_speeds
-        
+
     def get_module_states(
         self,
     ) -> tuple[
@@ -264,11 +261,8 @@ class SwerveDrive(LemonComponent,Sendable):
             sample.vx + holospeeds.vx,
             sample.vy + holospeeds.vy,
             sample.omega + holospeeds.omega,
-
-
         )
         self.drive(speeds.vx, speeds.vy, speeds.omega, False, self.period)
-
 
     def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
         """Drives the robot using ROBOT RELATIVE speeds.
@@ -342,6 +336,13 @@ class SwerveDrive(LemonComponent,Sendable):
     """
     EXECUTE
     """
+    def _commandtest(self) -> None:
+        print("Command test")
+
+    def commandtest(self) -> Command:
+        return self.runOnce(self._commandtest)
+    
+    
 
     def execute(self) -> None:
         self.sendAdvantageScopeData()

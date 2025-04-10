@@ -3,7 +3,7 @@ import math
 import choreo
 import choreo.util
 import wpilib
-from wpilib import Field2d, RobotBase, SmartDashboard, DataLogManager
+from wpilib import Field2d, RobotBase, SmartDashboard, DataLogManager, DriverStation
 from typing import List
 from choreo.trajectory import SwerveSample, SwerveTrajectory
 from magicbot import AutonomousStateMachine, state, timed_state, will_reset_to
@@ -51,14 +51,14 @@ class AutoBase(AutonomousStateMachine):
             if not item.startswith("state:"):  # Only load actual trajectories
                 try:
                     self.trajectories.append(choreo.load_swerve_trajectory(item))
-                    if self.starting_pose is None:
+                    if self.starting_pose is None and RobotBase.isSimulation():
                         self.starting_pose = self.get_starting_pose()
                 except ValueError:
                     pass  # Ignore missing trajectories
 
     def on_enable(self) -> None:
         starting_pose = self.get_starting_pose()
-        if starting_pose is not None:
+        if starting_pose is not None and RobotBase.isSimulation():
             self.swerve_drive.set_starting_pose(starting_pose)
         self.current_step = -1
         self.trajectory_index = -1
