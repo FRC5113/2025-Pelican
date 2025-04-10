@@ -396,7 +396,7 @@ class MyRobot(LemonRobot):
                     -self.sammi_curve(self.getLeftx) * mult * self.top_speed
                 ),
                 self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX())
+                    self.sammi_curve(self.primary.getRightX())
                     * rotate_mult
                     * self.top_omega
                 ),

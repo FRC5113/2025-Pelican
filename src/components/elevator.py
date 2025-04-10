@@ -8,6 +8,7 @@ from lemonlib.smart import SmartProfile
 from rev import SparkMax, SparkBaseConfig, SparkRelativeEncoder
 
 from lemonlib.util import Alert, AlertType
+from lemonlib import fms_feedback
 
 
 class ElevatorHeight(float, Enum):
@@ -65,14 +66,14 @@ class Elevator:
     """
     INFORMATIONAL METHODS
     """
-
+    @fms_feedback
     def get_encoder_rotations(self) -> units.turns:
         """Return the average position of the encoders in motor
         rotations. 0 should correspond to the lowest position.
         (Assumes right motor must be inverted)
         """
         return (self.left_encoder.getPosition() - self.right_encoder.getPosition()) / 2
-
+    @fms_feedback
     def get_height(self) -> units.meters:
         """Get the current height of the elevator."""
         return (

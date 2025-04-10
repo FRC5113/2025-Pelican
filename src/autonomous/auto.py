@@ -12,7 +12,7 @@ from components.claw import ClawAngle, Claw
 from components.leds import LEDStrip
 import math
 
-from pathplannerlib.auto import AutoBuilder,PathPlannerAuto
+# from pathplannerlib.auto import AutoBuilder,PathPlannerAuto
 
 
 """
@@ -167,12 +167,12 @@ class waitpassline(AutonomousStateMachine):
         self.done()
 
 
-class pathplanner(AutonomousStateMachine):
-    MODE_NAME = "wait test"
+# class pathplanner(AutonomousStateMachine):
+#     MODE_NAME = "wait test"
 
-    @state(first=True)
-    def main(self):
-        PathPlannerAuto('Example Auto')
+#     @state(first=True)
+#     def main(self):
+#         PathPlannerAuto('Example Auto')
 
 
 

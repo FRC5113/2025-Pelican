@@ -7,6 +7,7 @@ from magicbot import feedback, will_reset_to
 
 from lemonlib.util import Alert, AlertType, LEDController
 from lemonlib.smart import SmartPreference
+from lemonlib import fms_feedback
 
 
 class ClawAngle(float, Enum):
@@ -80,6 +81,7 @@ class Claw:
         that 0 rotations corresponds to up."""
         return self.hinge_encoder.getPosition()
 
+    @fms_feedback
     def get_angle(self) -> units.degrees:
         """Return the angle of the hinge normalized to [-180,180].
         An angle of 0 refers to the claw in the up/stowed position.
