@@ -1,4 +1,10 @@
-{
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+import json
+
+
+# Replace this with your full JSON data
+data = {
     "field": {
         "length": 6.502396488705896,
         "width": 4.089397791725192
@@ -99,10 +105,10 @@
             "pose": {
                 "rotation": {
                     "quaternion": {
-                        "W": 1.0,
+                        "W": 0.7071067811865476,
                         "X": 0.0,
                         "Y": 0.0,
-                        "Z": 0.0
+                        "Z": 0.7071067811865476
                     }
                 },
                 "translation": {
@@ -117,10 +123,10 @@
             "pose": {
                 "rotation": {
                     "quaternion": {
-                        "W": 1.0,
+                        "W": 0.7071067811865476,
                         "X": 0.0,
                         "Y": 0.0,
-                        "Z": 0.0
+                        "Z": 0.7071067811865476
                     }
                 },
                 "translation": {
@@ -129,6 +135,74 @@
                     "z": 0.26669985598207774
                 }
             }
+        },
+        {
+            "ID": 7,
+            "pose": {
+                "rotation": {
+                    "quaternion": {
+                        "W": 0.7071067811865476,
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.7071067811865476
+                    }
+                },
+                "translation": {
+                    "x": 1.9621489404395722,
+                    "y": 3.6321980386130592,
+                    "z": 0.29209984226608515
+                }
+            }
+        },
+        {
+            "ID": 9,
+            "pose": {
+                "rotation": {
+                    "quaternion": {
+                        "W": 0.9238795325112867,
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.3826834323650898
+                    }
+                },
+                "translation": {
+                    "x": 5.816596859037696,
+                    "y": 0.6095996708161777,
+                    "z": 1.4858991976144333
+                }
+            }
+        },
+        {
+            "ID": 10,
+            "pose": {
+                "rotation": {
+                    "quaternion": {
+                        "W": 0.38268343236508984,
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.9238795325112867
+                    }
+                },
+                "translation": {
+                    "x": 5.841996845321703,
+                    "y": 3.5559980797610367,
+                    "z": 1.282699307342374
+                }
+            }
         }
     ]
 }
+
+# Create a rotation for -90 degrees yaw (around Z-axis)
+yaw_offset = R.from_euler('z', 90, degrees=True)
+
+# Apply the offset to each tag's rotation
+for tag in data["tags"]:
+    q = tag["pose"]["rotation"]["quaternion"]
+    original_rot = R.from_quat([q["X"], q["Y"], q["Z"], q["W"]])
+    new_rot = yaw_offset * original_rot
+    x, y, z, w = new_rot.as_quat()
+    tag["pose"]["rotation"]["quaternion"] = {"W": w, "X": x, "Y": y, "Z": z}
+
+# Output the updated data as JSON
+print(json.dumps(data, indent=4))

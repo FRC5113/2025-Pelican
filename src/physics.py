@@ -102,9 +102,9 @@ class PhysicsEngine:
         SmartDashboard.putData("Arm Sim", self.arm_sim)
 
         # Vision Simulation
-        # self.vision_sim = LemonCameraSim(
-        #     robot.camera_front, robot.field_layout, fov=100.0, fps=20.0
-        # )
+        self.vision_sim = LemonCameraSim(
+            robot.camera_front, robot.field_layout, fov=100.0, fps=20.0
+        )
         # self.vision_sim.addAprilTags(robot.field_layout)
 
         # self.camera_props = SimCameraProperties()
@@ -210,4 +210,4 @@ class PhysicsEngine:
             self.claw_ligament.setAngle(self.claw_sim.getAngleDegrees() - 90)
 
             # Simulate Vision
-            # self.vision_sim.update(self.pose)
+            self.vision_sim.update(self.pose)

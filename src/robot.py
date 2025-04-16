@@ -64,6 +64,7 @@ from components.sysid_drive import SysIdDriveLinear
 
 from lemonlib import LemonRobot, fms_feedback
 from lemonlib.command import CommandLemonInput
+from lemonlib.util import get_file
 
 
 class MyRobot(LemonRobot):
@@ -271,12 +272,12 @@ class MyRobot(LemonRobot):
             Rotation3d(0.0, math.pi / 6, 0.0),
         )
 
-        # self.field_layout = AprilTagFieldLayout(
-        #     str(Path(__file__).parent.resolve() / "test_reef.json")
-        # )
-        self.field_layout = AprilTagFieldLayout.loadField(
-            AprilTagField.k2025ReefscapeWelded
+        self.field_layout = AprilTagFieldLayout(
+            str(Path(__file__).parent.resolve() / "2025_test_field.json")
         )
+        # self.field_layout = AprilTagFieldLayout.loadField(
+        #     AprilTagField.k2025ReefscapeWelded
+        # )
 
         self.camera_front = LemonCamera(
             "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
