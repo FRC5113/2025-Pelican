@@ -28,7 +28,7 @@ from lemonlib import LemonComponent
 from commands2 import Command
 
 
-class SwerveDrive(LemonComponent, Sendable):
+class SwerveDrive(Sendable):
     offset_x: units.meters
     offset_y: units.meters
     drive_gear_ratio: float

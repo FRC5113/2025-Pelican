@@ -36,6 +36,17 @@ States:
 """
 
 
+class test_L(AutoBase):
+    MODE_NAME = "testL"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "TestL",
+                "state:level_four",
+            ]
+        )
+
 class side_2r(AutoBase):
     MODE_NAME = "Side>2R"
 

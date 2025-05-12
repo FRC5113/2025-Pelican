@@ -101,21 +101,21 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.front_left_speed_motor = TalonFX(21)
-        self.front_left_direction_motor = TalonFX(22)
-        self.front_left_cancoder = CANcoder(23)
+        self.front_left_speed_motor = TalonFX(21,canbus="can0")
+        self.front_left_direction_motor = TalonFX(22,canbus="can0")
+        self.front_left_cancoder = CANcoder(23,canbus="can0")
 
-        self.front_right_speed_motor = TalonFX(31)
-        self.front_right_direction_motor = TalonFX(32)
-        self.front_right_cancoder = CANcoder(33)
+        self.front_right_speed_motor = TalonFX(31,canbus="can0")
+        self.front_right_direction_motor = TalonFX(32,canbus="can0")
+        self.front_right_cancoder = CANcoder(33,canbus="can0")
 
-        self.rear_left_speed_motor = TalonFX(11)
-        self.rear_left_direction_motor = TalonFX(12)
-        self.rear_left_cancoder = CANcoder(13)
+        self.rear_left_speed_motor = TalonFX(11,canbus="can0")
+        self.rear_left_direction_motor = TalonFX(12,canbus="can0")
+        self.rear_left_cancoder = CANcoder(13,canbus="can0")
 
-        self.rear_right_speed_motor = TalonFX(41)
-        self.rear_right_direction_motor = TalonFX(42)
-        self.rear_right_cancoder = CANcoder(43)
+        self.rear_right_speed_motor = TalonFX(41,canbus="can0")
+        self.rear_right_direction_motor = TalonFX(42,canbus="can0")
+        self.rear_right_cancoder = CANcoder(43,canbus="can0")
 
         # physical constants
         self.offset_x: units.meters = 0.381
@@ -294,7 +294,7 @@ class MyRobot(LemonRobot):
 
         self.leds = LEDController(0, 112)  # broken amount is 46
 
-        self.pigeon = Pigeon2(30)
+        self.pigeon = Pigeon2(30,canbus="can0")
 
         self.fms = DriverStation.isFMSAttached()
 
@@ -351,7 +351,6 @@ class MyRobot(LemonRobot):
         self._display_auto_trajectory()
 
     def teleopInit(self):
-
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(0)
         self.secondary = LemonInput(1)

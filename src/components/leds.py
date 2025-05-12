@@ -11,7 +11,7 @@ from commands2 import Command
 from lemonlib import LemonComponent
 
 
-class LEDStrip(LemonComponent):
+class LEDStrip():
     swerve_drive: SwerveDrive
     climber: Climber
     claw: Claw
