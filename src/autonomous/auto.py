@@ -35,6 +35,17 @@ States:
 - spit
 """
 
+class state_test(AutoBase):
+    MODE_NAME = "state-test"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "test-traj",
+                "state:level_four",
+            ]
+        )
+
 
 class test_L(AutoBase):
     MODE_NAME = "testL"

@@ -13,7 +13,7 @@ def is_fms_attached() -> bool:
     return DriverStation.isFMSAttached()
 
 
-def fms_feedback(f=None, *, key: Optional[str] = None) -> Callable:
+def  fms_feedback(f=None, *, key: Optional[str] = None) -> Callable:
     if f is None:
         return functools.partial(fms_feedback, key=key)
 

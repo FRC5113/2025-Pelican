@@ -102,7 +102,7 @@ class SwerveDrive(Sendable):
         self.pigeon_alert = Alert(
             "Pigeon heading has been reset.", AlertType.INFO, timeout=3.0
         )
-        self.pigeon.set_yaw(180)
+        # self.pigeon.set_yaw(180)
         # self.pigeon.reset()
 
         # config = RobotConfig.fromGUISettings()
@@ -170,7 +170,6 @@ class SwerveDrive(Sendable):
             lambda: self.swerve_module_states[3].angle.degrees(),
             lambda _: None,
         )
-        LemonComponent().initSendable(builder)
 
     def on_enable(self):
         self.x_controller = self.translation_profile.create_wpi_pid_controller()
@@ -239,8 +238,8 @@ class SwerveDrive(Sendable):
         self.has_desired_pose = True
 
     def reset_gyro(self) -> None:
-        # self.pigeon.set_yaw(180)
-        self.pigeon.reset()
+        self.pigeon.set_yaw(0)
+        # self.pigeon.reset()
         self.pigeon_alert.enable()
 
     def add_vision_measurement(self, pose: Pose2d, timestamp: units.seconds):
@@ -262,7 +261,7 @@ class SwerveDrive(Sendable):
             sample.vy + holospeeds.vy,
             sample.omega + holospeeds.omega,
         )
-        self.drive(speeds.vx, speeds.vy, speeds.omega, False, self.period)
+        self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
 
     def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
         """Drives the robot using ROBOT RELATIVE speeds.
@@ -336,13 +335,6 @@ class SwerveDrive(Sendable):
     """
     EXECUTE
     """
-    def _commandtest(self) -> None:
-        print("Command test")
-
-    def commandtest(self) -> Command:
-        return self.runOnce(self._commandtest)
-    
-    
 
     def execute(self) -> None:
         self.sendAdvantageScopeData()

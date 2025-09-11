@@ -31,8 +31,9 @@ class AutoBase(AutonomousStateMachine):
     estimated_field: Field2d
     elevator: Elevator
 
-    DISTANCE_TOLERANCE = 0.1  # metres
-    ANGLE_TOLERANCE = math.radians(3)
+
+    DISTANCE_TOLERANCE = 0.05  # metres
+    ANGLE_TOLERANCE = math.radians(1)
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
 
@@ -174,6 +175,8 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=2.8, next_state="next_step")
     def level_four(self) -> None:
+        self.swerve_drive.drive(0.0,0.2,0.0,False,0.02)
         self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
         if self.arm_control.at_point(ElevatorHeight.L4, ClawAngle.BRANCH):
             self.arm_control.set_wheel_voltage(-10)
+            

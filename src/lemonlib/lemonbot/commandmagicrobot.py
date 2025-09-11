@@ -13,7 +13,7 @@ class LemonRobot(magicbot.MagicRobot):
     controlled using commands, while still using the magicbot framework.
     """
 
-    low_bandwidth = DriverStation.isFMSAttached()
+    low_bandwidth = False
     commandscheduler = commands2.CommandScheduler.getInstance()
     def __init__(self):
         super().__init__()

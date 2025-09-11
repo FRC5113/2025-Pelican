@@ -83,12 +83,12 @@ class DriveControl(StateMachine):
         self.translationY = 0
         self.rotationX = 0
         self.field_relative = False
-        if self.remove_algae_var:
-            self.next_state("remove_algae_placement")
-        if self.go_to_pose:
-            self.next_state("going_to_pose")
-        if DriverStation.isAutonomousEnabled():
-            self.next_state("run_auton_routine")
+        # if self.remove_algae_var:
+        #     self.next_state("remove_algae_placement")
+        # if self.go_to_pose:
+        #     self.next_state("going_to_pose")
+        # if DriverStation.isAutonomousEnabled():
+        #     self.next_state("run_auton_routine")
         self.next_state("free")
 
     @state
@@ -100,8 +100,8 @@ class DriveControl(StateMachine):
             self.field_relative,
             self.period,
         )
-        if DriverStation.isAutonomousEnabled():
-            self.next_state("run_auton_routine")
+        # if DriverStation.isAutonomousEnabled():
+        #     self.next_state("run_auton_routine")
         if self.remove_algae_var:
             self.next_state("remove_algae_placement")
         if self.go_to_pose:
