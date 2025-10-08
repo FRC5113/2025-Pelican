@@ -35,6 +35,7 @@ States:
 - spit
 """
 
+
 class state_test(AutoBase):
     MODE_NAME = "state-test"
 
@@ -57,6 +58,7 @@ class test_L(AutoBase):
                 "state:level_four",
             ]
         )
+
 
 class side_2r(AutoBase):
     MODE_NAME = "Side>2R"

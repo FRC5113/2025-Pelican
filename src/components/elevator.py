@@ -8,6 +8,7 @@ from lemonlib.smart import SmartProfile
 from rev import SparkMax, SparkBaseConfig, SparkRelativeEncoder
 
 from lemonlib.util import Alert, AlertType
+
 # from lemonlib import fms_feedback
 
 

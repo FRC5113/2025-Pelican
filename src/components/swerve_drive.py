@@ -262,6 +262,18 @@ class SwerveDrive(Sendable):
             sample.omega + holospeeds.omega,
         )
         self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
+    
+    def point_towards(self, rightX: float, rightY: float):
+        angle = math.atan2(-rightX,rightY) - math.radians(180)
+        print(angle)
+        point = Rotation2d(angle)
+        holospeeds = self.holonomic_controller.calculate(
+            self.get_estimated_pose(),
+            self.get_estimated_pose(),
+            0.0,
+            point,
+        )
+        return holospeeds.omega
 
     def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
         """Drives the robot using ROBOT RELATIVE speeds.
