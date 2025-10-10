@@ -135,11 +135,11 @@ class Elevator:
                 self.get_height(), self.target_height
             )
 
-        # if self.error_detected():
-        #     self.limit_alert.enable()
-        #     return
-        # else:
-        #     self.limit_alert.disable()
+        if self.error_detected():
+            self.limit_alert.enable()
+            return
+        else:
+            self.limit_alert.disable()
 
         # prevent motors from moving the elevator past the limits
         if self.lower_switch.get() and self.motor_voltage < 0:

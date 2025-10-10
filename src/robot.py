@@ -405,16 +405,16 @@ class MyRobot(LemonRobot):
                 )
             else:
                 self.omega = self.theta_filter.calculate(
-                    self.sammi_curve(self.primary.getRightX())
+                    -self.sammi_curve(self.primary.getRightX())
                     * rotate_mult
                     * self.top_omega
                 )
             self.drive_control.drive_manual(
                 self.x_filter.calculate(
-                    -self.sammi_curve(self.getLefty) * mult * self.top_speed
+                    self.sammi_curve(self.getLefty) * mult * self.top_speed
                 ),
                 self.y_filter.calculate(
-                    -self.sammi_curve(self.getLeftx) * mult * self.top_speed
+                    self.sammi_curve(self.getLeftx) * mult * self.top_speed
                 ),
                 self.omega,
                 not self.primary.getCreateButton(),  # temporary

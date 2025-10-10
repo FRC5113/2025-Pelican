@@ -19,7 +19,7 @@ from components.swerve_wheel import SwerveWheel
 from magicbot import will_reset_to, feedback
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
-from lemonlib.smart import SmartProfile
+from lemonlib.smart import SmartProfile,SmartController
 from choreo.trajectory import SwerveSample
 from wpilib.sysid import SysIdRoutineLog
 from lemonlib import LemonComponent
@@ -181,6 +181,7 @@ class SwerveDrive(Sendable):
             self.x_controller, self.y_controller, self.theta_controller
         )
         self.theta_controller.enableContinuousInput(-math.pi, math.pi)
+        self.smart_theta_controller = SmartController("Theta Controller",self.theta_controller.calculate,True)
 
     """
     INFORMATIONAL METHODS
@@ -264,16 +265,14 @@ class SwerveDrive(Sendable):
         self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
     
     def point_towards(self, rightX: float, rightY: float):
-        angle = math.atan2(-rightX,rightY) - math.radians(180)
-        print(angle)
-        point = Rotation2d(angle)
-        holospeeds = self.holonomic_controller.calculate(
-            self.get_estimated_pose(),
-            self.get_estimated_pose(),
-            0.0,
-            point,
-        )
-        return holospeeds.omega
+        moved = abs(rightX) > 0.1 or abs(rightY) > 0.1
+        if not moved:
+            return 0.0
+        angle = math.atan2(rightY,rightX) - math.radians(90)
+        current_angle = math.radians(self.pigeon.get_yaw().value)
+        print(current_angle, angle)
+        output = self.smart_theta_controller.calculate(current_angle, angle)
+        return output
 
     def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
         """Drives the robot using ROBOT RELATIVE speeds.
