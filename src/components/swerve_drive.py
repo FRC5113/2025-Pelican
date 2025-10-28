@@ -294,6 +294,13 @@ class SwerveDrive(Sendable):
     def resetPose(self):
         self.pose_estimator.resetPose(Pose2d())
 
+    def break_wheel(self):
+        """DO NOT ACCTUALLY USE THIS UNLESS YOU WANT TO BREAK A WHEEL THIS IS FOR THE FUNNY!!!"""
+        self.front_left.setDesiredState(SwerveModuleState(0.0, Rotation2d(math.radians(135))))
+        self.front_right.setDesiredState(SwerveModuleState(self.max_speed, Rotation2d(math.radians(45))))
+        self.rear_left.setDesiredState(SwerveModuleState(self.max_speed, Rotation2d(math.radians(45))))
+        self.rear_right.setDesiredState(SwerveModuleState(self.max_speed, Rotation2d(math.radians(45))))
+
     """
     TELEMETRY METHODS
     """

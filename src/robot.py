@@ -65,6 +65,8 @@ from components.sysid_drive import SysIdDriveLinear
 from lemonlib import LemonRobot, fms_feedback
 from lemonlib.util import get_file
 
+from lemonlib.funnies.funnycontroller import Funnycontrollers
+
 
 class MyRobot(LemonRobot):
     sysid_drive: SysIdDriveLinear
@@ -88,6 +90,10 @@ class MyRobot(LemonRobot):
     slew_rate = SmartPreference(5.0)
 
     keaton_mode = SmartPreference(False)
+
+    funny_mode = SmartPreference(False)
+
+    reset_gyro = SmartPreference(False)
 
     def createObjects(self):
         """This method is where all attributes to be injected are
@@ -357,6 +363,7 @@ class MyRobot(LemonRobot):
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(0)
         self.secondary = LemonInput(1)
+        self.test = LemonInput(2)
 
         # self.commandprimary = CommandLemonInput(0)
 
@@ -366,37 +373,26 @@ class MyRobot(LemonRobot):
 
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
+
+        self.funny_controllers = Funnycontrollers(0,1)
         
 
     def teleopPeriodic(self):
+        if self.test.getAButton():
+            self.swerve_drive.break_wheel()
         with self.consumeExceptions():
 
             """
             SWERVE
             """
-
-            if self.primary.getR1Button():
-                # SAMMI: Replace -54.0 with 126.0 to flip orientiation
-                self.swerve_drive.set_pigeon_offset(126.0)
-                self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
-                self.getLeftx = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
-            elif self.primary.getL1Button():
-                self.swerve_drive.set_pigeon_offset(-126.0)
-                self.getLefty = SnapY(self.primary.getLeftX(), self.primary.getLeftY())
-                self.getLeftx = SnapX(self.primary.getLeftX(), self.primary.getLeftY())
-            else:
-                self.swerve_drive.set_pigeon_offset(0.0)
-                self.getLefty = self.primary.getLeftY()
-                self.getLeftx = self.primary.getLeftX()
+            self.swerve_drive.set_pigeon_offset(0.0)
+            self.getLefty = self.funny_controllers.get_leftY_avg()
+            self.getLeftx = self.funny_controllers.get_leftX_avg()
 
 
 
             rotate_mult = 0.75
             mult = 1
-            if self.primary.getR2Axis() >= 0.8:
-                mult *= 0.5
-            if self.primary.getL2Axis() >= 0.8:
-                mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
             keaton_mode = self.keaton_mode
             if keaton_mode:
@@ -420,69 +416,7 @@ class MyRobot(LemonRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
 
-
-            # algae removal
-            if self.primary.getPOV() == 180:
-                self.lower_algae_button_released = False
-                self.drive_control.request_remove_algae(ElevatorHeight.L1, True)
-            elif not self.lower_algae_button_released:
-                self.lower_algae_button_released = True
-                self.drive_control.request_remove_algae(ElevatorHeight.L1, False)
-            if self.primary.getPOV() == 0:
-                self.upper_algae_button_released = False
-                self.drive_control.request_remove_algae(ElevatorHeight.L2, True)
-            elif not self.upper_algae_button_released:
-                self.upper_algae_button_released = True
-                self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
-
-            # vision alignment
-            if self.primary.getPOV() in (45, 90, 135):
-                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.55, 0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getAButton():  # L1
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.6, 0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getYButton():  # L4
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.53, 0.21, Rotation2d())
-                            )
-                        )
-
-            if self.primary.getPOV() in (225, 270, 315):
-                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.565, -0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getAButton():  # L1
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.6, -0.19, Rotation2d())
-                            )
-                        )
-                if self.secondary.getYButton():  # L4
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.53, -0.21, Rotation2d())
-                            )
-                        )
-
-            if self.primary.getSquareButton():
+            if self.reset_gyro:
                 self.swerve_drive.reset_gyro()
 
         with self.consumeExceptions():
@@ -491,73 +425,35 @@ class MyRobot(LemonRobot):
             """
             if self.elevator.error_detected():
                 self.arm_control.next_state("elevator_failsafe")
-            if self.secondary.getAButton():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getAButton():
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
-            if self.secondary.getBButton():
-                self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
-                # DON'T UNCOMMENT!!!!!!!!!!!!!!!!!!!!!!!!
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
-            if self.secondary.getXButton():
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
-                self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
-            if self.secondary.getYButton():
 
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getBButton():
+                self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
+
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getXButton():
+                self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
+
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getYButton():
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
 
-            if self.secondary.getStartButton():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getStartButton():
                 self.arm_control.set(
                     ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE
                 )
-            if self.secondary.getBackButton():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getBackButton():
                 self.arm_control.set(ElevatorHeight.STATION_FAR, ClawAngle.STATION_FAR)
 
-            if self.secondary.getLeftTriggerAxis() > 0.5:
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
-                    8.0 * applyDeadband(self.secondary.getLeftTriggerAxis(), 0.1)
+                    8.0 * applyDeadband(self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getLeftTriggerAxis(), 0.1)
                 )
-            if self.secondary.getRightTriggerAxis() > 0.5:
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
-                    6.0 * applyDeadband(-self.secondary.getRightTriggerAxis(), 0.1)
+                    6.0 * applyDeadband(-self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightTriggerAxis(), 0.1)
                 )
 
-            if self.secondary.getRightBumper():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightBumper():
                 self.arm_control.set_wheel_voltage(-1)
 
             # if self.secondary.getPOV() == 270:
@@ -571,21 +467,18 @@ class MyRobot(LemonRobot):
             CLIMBER
             """
 
-            if self.primary.getTriangleButton():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 0:
                 self.climber.set_speed(-1)
-            if self.primary.getCrossButton():
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 180:
                 self.climber.set_speed(1)
 
         with self.consumeExceptions():
             """
             MISC
             """
-            if self.secondary.getPOV() == 90:
+            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 90:
                 self.arm_control.next_state_now("positioning_claw")
                 self.led_strip.justin_fun()
-
-            if self.primary.getYButton():
-                self.led_strip.commandtest()
 
         # with self.consumeExceptions():
         #     """
