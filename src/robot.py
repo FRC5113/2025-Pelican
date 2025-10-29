@@ -339,7 +339,8 @@ class MyRobot(LemonRobot):
     def disabledPeriodic(self):
         self.odometry.execute()
         self.swerve_drive.execute()
-        self.leds.move_across((5, 5, 0), 20, 20)
+        # self.leds.move_across((5, 5, 0), 20, 20)
+        self.led_strip.hollows_eve_disabled()
 
     def enabledperiodic(self):
         self.drive_control.engage()

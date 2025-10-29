@@ -32,9 +32,22 @@ class LEDStrip:
         self.error_color = (255, 0, 0)
         self.warning_color = (255, 255, 0)
         self.auton_color = (255, 50, 0)
+        self.disabled = (10,10,10)
+        self.idle = (50,50,50)
+        #Halloween temp
+
+        self.halloween_color_a = (255,0,228) #purple
+        self.halloween_color_b = (255,30,0)#orange
+        self.halloween_color_c = (133,255,0)#green
+
+
+        self.fully_climbed = self.halloween_color_a
+        self.coral_detected = self.halloween_color_b
+        self.auton_color = self.halloween_color_c
+
 
     def on_disable(self):
-        self.leds.set_solid_color((10, 10, 10))
+        self.leds.set_gradient(self.halloween_color_b,(255,165,0))
 
     """
     INFORMATIONAL METHODS
@@ -62,13 +75,18 @@ class LEDStrip:
 
     def commandtest(self) -> Command:
         return self.leds.set_solid_color((0, 255, 0))
+    
+    def hollows_eve_disabled(self):
+        self.leds.move_across_multi([self.halloween_color_a, self.halloween_color_b, self.halloween_color_c], 20, 20)
+
+    def hollows_eve(self):
+        self.leds.move_across_multi([self.halloween_color_a, self.halloween_color_b, self.halloween_color_c], 20, 40)
 
     """
     EXECUTE
     """
 
     def execute(self):
-
         if self.has_errors_present():
             self.leds.set_solid_color(self.error_color)
         elif self.has_warnings_present():
@@ -78,6 +96,7 @@ class LEDStrip:
             or self.is_aligned
         ):
             self.leds.set_solid_color(self.aligned_branch)
+            #Changed for halloween
         elif self.climber.is_deployed():
             self.leds.set_solid_color(self.fully_climbed)
         elif self.claw.get_intake_limit():
@@ -87,4 +106,5 @@ class LEDStrip:
         elif DriverStation.isAutonomousEnabled():
             self.leds.move_across(self.auton_color, 20, 50)
         else:
-            self.leds.set_solid_color((50, 50, 50))
+            # self.leds.set_solid_color((50,50,50))
+            self.hollows_eve()
