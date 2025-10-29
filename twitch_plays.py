@@ -6,7 +6,7 @@ from ntcore import NetworkTableInstance, NetworkTableEntry
 
 # Configuration
 TWITCH_CHANNEL = 'ryanforce_'  # Change this to your desired channel (without #)
-COMMAND_DURATION = 1.0  # Duration in seconds to hold each command
+COMMAND_DURATION = 2.0  # Duration in seconds to hold each command
 
 class TwitchChatMonitor:
     def __init__(self, channel):
@@ -71,7 +71,7 @@ class SmartNT:
     ):
         self.nt = NetworkTableInstance.getDefault()
         self.nt.startClient4("SmartNTClient")
-        self.nt.setServer("127.0.0.1")
+        self.nt.setServer("10.51.13.2")
         self.table = self.nt.getTable(root_table.strip("/"))
         self._entries: Dict[str, NetworkTableEntry] = {}
         self._properties: Dict[str, Dict[str, Callable]] = {}
@@ -248,11 +248,12 @@ class NetworkTableHandler:
         self.smart_nt.put('LeftY', 0.0)
         self.smart_nt.put('LeftX', 0.0)
         self.smart_nt.put('RightX', 0.0)
-        self.smart_nt.put('L4', False)
-        self.smart_nt.put('L3', False)
-        self.smart_nt.put('L2', False)
-        self.smart_nt.put('L1', False)
-        self.smart_nt.put('Intake', False)
+        self.smart_nt.put_boolean('L4', False)
+        self.smart_nt.put_boolean('L3', False)
+        self.smart_nt.put_boolean('L2', False)
+        self.smart_nt.put_boolean('L1', False)
+        self.smart_nt.put_boolean('Intake', False)
+
 
     def set_temporary_value(self, key: str, value: Any, reset_value: Any):
         """Set a value temporarily, then reset it after duration"""

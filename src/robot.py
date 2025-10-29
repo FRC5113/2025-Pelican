@@ -383,34 +383,38 @@ class MyRobot(LemonRobot):
         self.smartnt._update_loop()
         leftx = SmartDashboard.getNumber('LeftX',0.0)
         lefty = SmartDashboard.getNumber('LeftY',0.0)
-        l1 = SmartDashboard.getBoolean('L1',False)
-        l2 = SmartDashboard.getBoolean('L2',False)
-        l3 = SmartDashboard.getBoolean('L3',False)
-        l4 = SmartDashboard.getBoolean('L4',False)
+        l1 = SmartDashboard.getNumber('L1',False)
+        l2 = SmartDashboard.getNumber('L2',False)
+        l3 = SmartDashboard.getNumber('L3',False)
+        l4 = SmartDashboard.getNumber('L4',False)
         rightx = SmartDashboard.getNumber('RightX',0.0)
-        intake = SmartDashboard.getBoolean('Intake',False)
+        intake = SmartDashboard.getNumber('Intake',False)
         # print(f"LY: {lefty} LX: {leftx} RX: {rightx} L1: {l1} L2: {l2} L3: {l3} L4: {l4} Intake: {intake}")
 
 
         self.drive_control.drive_manual(lefty,leftx,rightx,field_relative=True)
 
-        if l1:
+        if l1 >= 0.1:
+            print("l1")
             self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
             if self.arm_control.at_setpoint():
                 self.arm_control.set_wheel_voltage(-1.0)
-        elif l2:
+        elif l2 >= 0.1:
+            print("l2")
             self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
             if self.arm_control.at_setpoint():
                 self.arm_control.set_wheel_voltage(-1.0)
-        elif l3:
+        elif l3 >= 0.1:
+            print("l3")
             self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.arm_control.at_setpoint():
                 self.arm_control.set_wheel_voltage(-1.0)
-        elif l4:
+        elif l4 >= 0.1:
+            print("l4")
             self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
             if self.arm_control.at_setpoint():
                 self.arm_control.set_wheel_voltage(-1.0)
-        if intake:
+        if intake >= 0.1:
             self.arm_control.set(ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE)
             self.arm_control.set_wheel_voltage(1.0)
 
