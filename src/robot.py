@@ -48,7 +48,7 @@ from lemonlib.util import (
     SnapY,
     is_red,
 )
-from lemonlib.smart import SmartPreference, SmartProfile
+from lemonlib.smart import SmartPreference, SmartProfile,SmartNT
 
 from autonomous.auto_base import AutoBase
 from components.odometry import Odometry
@@ -342,6 +342,8 @@ class MyRobot(LemonRobot):
         #         ),
         #     )
 
+        self.smartnt = SmartNT("TwitchPlays",verbose=True)
+
     def disabledPeriodic(self):
         self.odometry.execute()
         self.swerve_drive.execute()
@@ -378,120 +380,39 @@ class MyRobot(LemonRobot):
         
 
     def teleopPeriodic(self):
-        if self.test.getAButton():
-            self.swerve_drive.break_wheel()
-        with self.consumeExceptions():
+        self.smartnt._update_loop()
+        leftx = SmartDashboard.getNumber('LeftX',0.0)
+        lefty = SmartDashboard.getNumber('LeftY',0.0)
+        l1 = SmartDashboard.getBoolean('L1',False)
+        l2 = SmartDashboard.getBoolean('L2',False)
+        l3 = SmartDashboard.getBoolean('L3',False)
+        l4 = SmartDashboard.getBoolean('L4',False)
+        rightx = SmartDashboard.getNumber('RightX',0.0)
+        intake = SmartDashboard.getBoolean('Intake',False)
+        # print(f"LY: {lefty} LX: {leftx} RX: {rightx} L1: {l1} L2: {l2} L3: {l3} L4: {l4} Intake: {intake}")
 
-            """
-            SWERVE
-            """
-            self.swerve_drive.set_pigeon_offset(0.0)
-            self.getLefty = self.funny_controllers.get_leftY_avg()
-            self.getLeftx = self.funny_controllers.get_leftX_avg()
 
+        self.drive_control.drive_manual(lefty,leftx,rightx,field_relative=True)
 
-
-            rotate_mult = 0.75
-            mult = 1
-            mult *= self.arm_control.get_drive_scalar()
-            keaton_mode = self.keaton_mode
-            if keaton_mode:
-                self.omega = self.swerve_drive.point_towards(
-                    applyDeadband(self.primary.getRightX(), 0.3), applyDeadband(self.primary.getRightY(), 0.3)
-                )
-            else:
-                self.omega = self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX())
-                    * rotate_mult
-                    * self.top_omega
-                )
-            self.drive_control.drive_manual(
-                self.x_filter.calculate(
-                    self.sammi_curve(self.getLefty) * mult * self.top_speed
-                ),
-                self.y_filter.calculate(
-                    self.sammi_curve(self.getLeftx) * mult * self.top_speed
-                ),
-                self.omega,
-                not self.primary.getCreateButton(),  # temporary
-            )
-
-            if self.reset_gyro:
-                self.swerve_drive.reset_gyro()
-
-        with self.consumeExceptions():
-            """
-            ARM
-            """
-            if self.elevator.error_detected():
-                self.arm_control.next_state("elevator_failsafe")
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getAButton():
-                self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getBButton():
-                self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getXButton():
-                self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getYButton():
-                self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getStartButton():
-                self.arm_control.set(
-                    ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE
-                )
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getBackButton():
-                self.arm_control.set(ElevatorHeight.STATION_FAR, ClawAngle.STATION_FAR)
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getLeftTriggerAxis() > 0.5:
-                self.arm_control.set_wheel_voltage(
-                    8.0 * applyDeadband(self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getLeftTriggerAxis(), 0.1)
-                )
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightTriggerAxis() > 0.5:
-                self.arm_control.set_wheel_voltage(
-                    6.0 * applyDeadband(-self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightTriggerAxis(), 0.1)
-                )
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getRightBumper():
-                self.arm_control.set_wheel_voltage(-1)
-
-            # if self.secondary.getPOV() == 270:
-            #     self.arm_control.next_state_now("elevator_failsafe")
-
-            self.elevator_ligament.setLength((self.elevator.get_height() * 39.37) + 5)
-            self.claw_ligament.setAngle(self.claw.get_angle() - 90)
-
-        with self.consumeExceptions():
-            """
-            CLIMBER
-            """
-
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 0:
-                self.climber.set_speed(-1)
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 180:
-                self.climber.set_speed(1)
-
-        with self.consumeExceptions():
-            """
-            MISC
-            """
-            if self.funny_controllers.get_switched_controller(RobotController.getTime() / 1000000).getPOV() == 90:
-                self.arm_control.next_state_now("positioning_claw")
-                self.led_strip.justin_fun()
-
-        # with self.consumeExceptions():
-        #     """
-        #     SYS-ID
-        #     """
-        #     if self.sysid_con.getAButton():
-        #         self.sysid_drive.quasistatic_forward()
-        #     if self.sysid_con.getBButton():
-        #         self.sysid_drive.quasistatic_reverse()
-        #     if self.sysid_con.getXButton():
-        #         self.sysid_drive.dynamic_forward()
-        #     if self.sysid_con.getYButton():
-        #         self.sysid_drive.dynamic_reverse()
+        if l1:
+            self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
+            if self.arm_control.at_setpoint():
+                self.arm_control.set_wheel_voltage(-1.0)
+        elif l2:
+            self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
+            if self.arm_control.at_setpoint():
+                self.arm_control.set_wheel_voltage(-1.0)
+        elif l3:
+            self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
+            if self.arm_control.at_setpoint():
+                self.arm_control.set_wheel_voltage(-1.0)
+        elif l4:
+            self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
+            if self.arm_control.at_setpoint():
+                self.arm_control.set_wheel_voltage(-1.0)
+        if intake:
+            self.arm_control.set(ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE)
+            self.arm_control.set_wheel_voltage(1.0)
 
     @feedback
     def get_voltage(self) -> units.volts:
