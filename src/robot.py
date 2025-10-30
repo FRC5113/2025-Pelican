@@ -548,6 +548,9 @@ class MyRobot(LemonRobot):
                 )
             if self.secondary.getBackButton():
                 self.arm_control.set(ElevatorHeight.STATION_FAR, ClawAngle.STATION_FAR)
+            
+            if self.secondary.getPOV() == 0:
+                self.arm_control.set(ElevatorHeight.L3, ClawAngle.TROUGH)
 
             if self.secondary.getLeftTriggerAxis() > 0.5:
                 self.arm_control.set_wheel_voltage(
