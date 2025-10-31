@@ -105,6 +105,10 @@ class Claw:
 
     def at_setpoint(self) -> bool:
         return self.at_point(self.target_angle)
+    
+    @feedback
+    def get_wheel_voltage(self) -> tuple[units.volts, units.volts]:
+        return self.left_wheel_voltage, self.right_wheel_voltage
 
     """
     CONTROL METHODS

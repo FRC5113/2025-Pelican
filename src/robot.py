@@ -61,6 +61,7 @@ from components.arm_control import ArmControl
 from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
+from components.twitch_control import TwitchControl
 
 from lemonlib import LemonRobot, fms_feedback
 from lemonlib.util import get_file
@@ -69,6 +70,7 @@ from lemonlib.funnies.funnycontroller import Funnycontrollers
 
 
 class MyRobot(LemonRobot):
+    twitch_control: TwitchControl
     sysid_drive: SysIdDriveLinear
     drive_control: DriveControl
     arm_control: ArmControl
@@ -352,6 +354,7 @@ class MyRobot(LemonRobot):
     def enabledperiodic(self):
         self.drive_control.engage()
         self.arm_control.engage()
+        self.twitch_control.engage()
 
     def autonomousInit(self):
         # if DriverStation.isFMSAttached():
@@ -380,7 +383,6 @@ class MyRobot(LemonRobot):
         
 
     def teleopPeriodic(self):
-        self.smartnt._update_loop()
         leftx = SmartDashboard.getNumber('LeftX',0.0)
         lefty = SmartDashboard.getNumber('LeftY',0.0)
         l1 = SmartDashboard.getNumber('L1',False)
@@ -389,34 +391,26 @@ class MyRobot(LemonRobot):
         l4 = SmartDashboard.getNumber('L4',False)
         rightx = SmartDashboard.getNumber('RightX',0.0)
         intake = SmartDashboard.getNumber('Intake',False)
+        turn = SmartDashboard.getNumber('Turn',0.0)
         # print(f"LY: {lefty} LX: {leftx} RX: {rightx} L1: {l1} L2: {l2} L3: {l3} L4: {l4} Intake: {intake}")
 
 
-        self.drive_control.drive_manual(lefty,leftx,rightx,field_relative=True)
+        self.drive_control.drive_manual(lefty,leftx,self.swerve_drive.point_towards((turn + 180) % 360),field_relative=True)
 
         if l1 >= 0.1:
             print("l1")
-            self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
-            if self.arm_control.at_setpoint():
-                self.arm_control.set_wheel_voltage(-1.0)
+            self.twitch_control.set(ElevatorHeight.L1, ClawAngle.BRANCH, -12.0)
         elif l2 >= 0.1:
             print("l2")
-            self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
-            if self.arm_control.at_setpoint():
-                self.arm_control.set_wheel_voltage(-1.0)
+            self.twitch_control.set(ElevatorHeight.L2, ClawAngle.BRANCH, -12.0)
         elif l3 >= 0.1:
             print("l3")
-            self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
-            if self.arm_control.at_setpoint():
-                self.arm_control.set_wheel_voltage(-1.0)
+            self.twitch_control.set(ElevatorHeight.L3, ClawAngle.BRANCH, -12.0)
         elif l4 >= 0.1:
             print("l4")
-            self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
-            if self.arm_control.at_setpoint():
-                self.arm_control.set_wheel_voltage(-1.0)
+            self.twitch_control.set(ElevatorHeight.L4, ClawAngle.BRANCH, -12.0)
         if intake >= 0.1:
-            self.arm_control.set(ElevatorHeight.STATION_CLOSE, ClawAngle.STATION_CLOSE)
-            self.arm_control.set_wheel_voltage(1.0)
+            self.twitch_control.set(ElevatorHeight.L1, ClawAngle.STATION_CLOSE, 12.0)
 
     @feedback
     def get_voltage(self) -> units.volts:

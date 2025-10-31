@@ -264,7 +264,7 @@ class SwerveDrive(Sendable):
         )
         self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
     
-    def point_towards(self, rightX: float, rightY: float):
+    def point_towards_joy(self, rightX: float, rightY: float):
         moved = abs(rightX) > 0.1 or abs(rightY) > 0.1
         if not moved:
             return 0.0
@@ -272,6 +272,11 @@ class SwerveDrive(Sendable):
         current_angle = math.radians(self.pigeon.get_yaw().value)
         print(current_angle, angle)
         output = self.smart_theta_controller.calculate(current_angle, angle)
+        return output
+    def point_towards(self, angle: units.degrees):
+        current_angle = self.pigeon.getRotation2d().degrees() % 360
+        target_angle = math.radians(angle)
+        output = self.smart_theta_controller.calculate(math.radians(current_angle), target_angle)
         return output
 
     def driveRobotRelative(self, speeds: ChassisSpeeds) -> Command:
