@@ -32,6 +32,7 @@ from wpimath.geometry import (
 from wpinet import WebServer
 
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
+from phoenix6 import CANBus
 from rev import SparkMax, SparkLowLevel
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
@@ -63,7 +64,7 @@ from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
 from lemonlib import LemonRobot, fms_feedback
-from lemonlib.util import get_file
+from lemonlib.util import get_file,OneWaySlewRateLimiter
 
 
 class MyRobot(LemonRobot):
@@ -97,26 +98,28 @@ class MyRobot(LemonRobot):
         components, such as the NavX, need only be created once.
         """
 
+        self.canbus = CANBus("can0")
+
         """
         SWERVE
         """
 
         # hardware
-        self.front_left_speed_motor = TalonFX(21,canbus="can0")
-        self.front_left_direction_motor = TalonFX(22,canbus="can0")
-        self.front_left_cancoder = CANcoder(23,canbus="can0")
+        self.front_left_speed_motor = TalonFX(21,self.canbus)
+        self.front_left_direction_motor = TalonFX(22,self.canbus)
+        self.front_left_cancoder = CANcoder(23,self.canbus)
 
-        self.front_right_speed_motor = TalonFX(31,canbus="can0")
-        self.front_right_direction_motor = TalonFX(32,canbus="can0")
-        self.front_right_cancoder = CANcoder(33,canbus="can0")
+        self.front_right_speed_motor = TalonFX(31,self.canbus)
+        self.front_right_direction_motor = TalonFX(32,self.canbus)
+        self.front_right_cancoder = CANcoder(33,self.canbus)
 
-        self.rear_left_speed_motor = TalonFX(11,canbus="can0")
-        self.rear_left_direction_motor = TalonFX(12,canbus="can0")
-        self.rear_left_cancoder = CANcoder(13,canbus="can0")
+        self.rear_left_speed_motor = TalonFX(11,self.canbus)
+        self.rear_left_direction_motor = TalonFX(12,self.canbus)
+        self.rear_left_cancoder = CANcoder(13,self.canbus)
 
-        self.rear_right_speed_motor = TalonFX(41,canbus="can0")
-        self.rear_right_direction_motor = TalonFX(42,canbus="can0")
-        self.rear_right_cancoder = CANcoder(43,canbus="can0")
+        self.rear_right_speed_motor = TalonFX(41,self.canbus)
+        self.rear_right_direction_motor = TalonFX(42,self.canbus)
+        self.rear_right_cancoder = CANcoder(43,self.canbus)
 
         # physical constants
         self.offset_x: units.meters = 0.381
@@ -292,10 +295,10 @@ class MyRobot(LemonRobot):
         """
 
         # self.period: units.seconds = 0.02
+        self.led_length = 112
+        self.leds = LEDController(0, self.led_length)  # broken amount is 46
 
-        self.leds = LEDController(0, 112)  # broken amount is 46
-
-        self.pigeon = Pigeon2(30,canbus="can0")
+        self.pigeon = Pigeon2(30,self.canbus)
 
         self.fms = DriverStation.isFMSAttached()
 
@@ -361,9 +364,9 @@ class MyRobot(LemonRobot):
 
         # self.commandprimary = CommandLemonInput(0)
 
-        self.x_filter = SlewRateLimiter(self.slew_rate)
-        self.y_filter = SlewRateLimiter(self.slew_rate)
-        self.theta_filter = SlewRateLimiter(self.slew_rate)
+        self.x_filter = OneWaySlewRateLimiter(self.slew_rate)
+        self.y_filter = OneWaySlewRateLimiter(self.slew_rate)
+        self.theta_filter = OneWaySlewRateLimiter(self.slew_rate)
 
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
@@ -497,49 +500,48 @@ class MyRobot(LemonRobot):
             if self.secondary.getBButton():
                 self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
                 # DON'T UNCOMMENT!!!!!!!!!!!!!!!!!!!!!!!!
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.565, -0.21, Rotation2d())
+                        )
+                    ) < 0.03
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.55, 0.21, Rotation2d())
+                        )
+                    ) < 0.03
+                ):
+                    self.led_strip.is_aligned()
             if self.secondary.getXButton():
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.565, -0.21, Rotation2d()) 
+                        )
+                    ) < 0.03
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.55, 0.21, Rotation2d()) 
+                        )
+                    ) < 0.03
+                ):
+                    self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
-
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, -0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, 0.21, Rotation2d()) < 0.03
-                #         )
-                #     )
-                # ):
-                #     self.led_strip.is_aligned()
+                if self.camera_front.get_best_tag() is not None and (
+                    self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.53, -0.21, Rotation2d()) 
+                        )
+                    ) < 0.03
+                    or self.swerve_drive.get_distance_from_pose(
+                        self.camera_front.get_best_pose(True).transformBy(
+                            Transform2d(0.53, 0.21, Rotation2d()) 
+                        )
+                    ) < 0.03
+                ):
+                    self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
 
             if self.secondary.getStartButton():
