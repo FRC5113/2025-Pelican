@@ -7,13 +7,13 @@ from wpimath import units
 
 
 class SysIdDriveLinear(MagicSysIdRoutine):
-    swerve_drive: SwerveDrive
     drive_control: DriveControl
+    swerve_drive: SwerveDrive
     period: units.seconds = 0.02
 
     def setup(self):
         self.setup_sysid(
-            SysIdRoutine.Config(rampRate=0.4, stepVoltage=7.0, timeout=5),
+            SysIdRoutine.Config(rampRate=1, stepVoltage=7.0, timeout=5),
             SysIdRoutine.Mechanism(
                 self.drive_sysid,
                 self.swerve_drive.log,
@@ -23,12 +23,12 @@ class SysIdDriveLinear(MagicSysIdRoutine):
         )
 
     def drive_sysid(self, voltage: units.volts) -> None:
-        self.drive_control.drive_manual(voltage, 0, 0, False)
+        self.drive_control.drive_sysid_manual(voltage)
 
 
 class SysIdDriveRotation(MagicSysIdRoutine):
-    swerve_drive: SwerveDrive
     drive_control: DriveControl
+    swerve_drive: SwerveDrive
     period: units.seconds = 0.02
 
     def setup(self):
@@ -43,4 +43,4 @@ class SysIdDriveRotation(MagicSysIdRoutine):
         )
 
     def drive_sysid(self, voltage: units.volts) -> None:
-        self.drive_control.drive_manual(0, 0, voltage, False)
+        self.drive_control.drive_sysid_manual(voltage,1)

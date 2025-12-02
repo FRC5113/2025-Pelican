@@ -32,6 +32,8 @@ class SwerveWheel:
     stopped = will_reset_to(True)
     angle_deadband = SmartPreference(0.0349)
 
+    doing_sysid = will_reset_to(False)
+
     """
     INITIALIZATION METHODS
     """
@@ -109,6 +111,11 @@ class SwerveWheel:
         self.stopped = False
         self.desired_state = state
 
+    def setVoltageOnly(self, voltage: float):
+        self.stopped = False
+        self.doing_sysid = True
+        self.sysid_volts = voltage
+
     """
     EXECUTE
     """
@@ -129,14 +136,19 @@ class SwerveWheel:
 
         state = self.desired_state
         state.optimize(encoder_rotation)
-        # scale speed while turning
-        state.speed *= (state.angle - encoder_rotation).cos()
-        # convert speed from m/s to r/s
-        state.speed *= self.drive_gear_ratio / (self.wheel_radius * 2 * math.pi)
-        speed_output = self.speed_controller.calculate(
-            self.speed_motor.get_velocity().value, state.speed
-        )
-        self.speed_motor.set_control(controls.VoltageOut(speed_output))
+        if not self.doing_sysid:
+            print(f"not doing sysid")
+            # scale speed while turning
+            state.speed *= (state.angle - encoder_rotation).cos()
+            # convert speed from m/s to r/s
+            state.speed *= self.drive_gear_ratio / (self.wheel_radius * 2 * math.pi)
+            speed_output = self.speed_controller.calculate(
+                self.speed_motor.get_velocity().value, state.speed
+            )
+            self.speed_motor.set_control(controls.VoltageOut(speed_output))
+        else:
+            print(f"doing sysid at volts: {self.sysid_volts}")
+            self.speed_motor.set_control(controls.VoltageOut(self.sysid_volts))
 
         direction_output = self.direction_controller.calculate(
             encoder_rotation.radians(),

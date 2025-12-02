@@ -48,6 +48,9 @@ class SwerveDrive(Sendable):
     field_relative = will_reset_to(True)
     has_desired_pose = will_reset_to(False)
 
+    doing_sysid = will_reset_to(False)
+    sysid_volts = will_reset_to(0.0)
+
     def __init__(self) -> None:
         Sendable.__init__(self)
 
@@ -234,6 +237,14 @@ class SwerveDrive(Sendable):
         self.period = period
         self.field_relative = field_relative
 
+    def sysid_drive(self, volts: float, rot: float = 0.0) -> None:
+        self.doing_sysid = True
+        self.sysid_volts = volts
+        if rot == 0.0:
+            self.translationX = 0.01
+            self.translationY = 0.0
+        self.rotationX = rot
+
     def set_desired_pose(self, pose: Pose2d):
         self.desired_pose = pose
         self.has_desired_pose = True
@@ -390,7 +401,11 @@ class SwerveDrive(Sendable):
                 ),
                 self.period,
             )
-
+        if self.doing_sysid:
+            self.front_left.setVoltageOnly(self.sysid_volts)
+            self.front_right.setVoltageOnly(self.sysid_volts)
+            self.rear_left.setVoltageOnly(self.sysid_volts)
+            self.rear_right.setVoltageOnly(self.sysid_volts)
         self.swerve_module_states = self.kinematics.toSwerveModuleStates(
             self.chassis_speeds
         )
@@ -398,6 +413,7 @@ class SwerveDrive(Sendable):
             self.swerve_module_states,
             self.max_speed,
         )
+
         self.front_left.setDesiredState(self.swerve_module_states[0])
         self.front_right.setDesiredState(self.swerve_module_states[1])
         self.rear_left.setDesiredState(self.swerve_module_states[2])

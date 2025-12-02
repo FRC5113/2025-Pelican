@@ -34,6 +34,8 @@ class DriveControl(StateMachine):
     translationY = will_reset_to(0)
     rotationX = will_reset_to(0)
     raiseclaw = will_reset_to(False)
+    drive_sysid = will_reset_to(False)
+    sysid_volts = will_reset_to(0.0)
     sample: SwerveSample = None
 
     def drive_manual(
@@ -48,6 +50,13 @@ class DriveControl(StateMachine):
             self.translationY = translationY
             self.rotationX = rotationX
             self.field_relative = field_relative
+    def drive_sysid_manual(
+        self,
+        volts: float,
+    ):
+        
+        self.drive_sysid = True
+        self.sysid_volts = volts
 
     def request_remove_algae(
         self, elevatorheight, raiseclaw, period: units.seconds = 0.02
@@ -106,6 +115,13 @@ class DriveControl(StateMachine):
             self.next_state("remove_algae_placement")
         if self.go_to_pose:
             self.next_state("going_to_pose")
+        if self.drive_sysid:
+            self.next_state("drive_sysid_state")
+    @state
+    def drive_sysid_state(self):
+        if not self.drive_sysid:
+            self.next_state("free")
+        self.swerve_drive.sysid_drive(self.sysid_volts)
 
     @state
     def remove_algae_placement(self, state_tm):

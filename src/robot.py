@@ -361,6 +361,7 @@ class MyRobot(LemonRobot):
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(0)
         self.secondary = LemonInput(1)
+        self.sysid_con = LemonInput(2)
 
         # self.commandprimary = CommandLemonInput(0)
 
@@ -500,48 +501,48 @@ class MyRobot(LemonRobot):
             if self.secondary.getBButton():
                 self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
                 # DON'T UNCOMMENT!!!!!!!!!!!!!!!!!!!!!!!!
-                if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.565, -0.21, Rotation2d())
-                        )
-                    ) < 0.03
-                    or self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.55, 0.21, Rotation2d())
-                        )
-                    ) < 0.03
-                ):
-                    self.led_strip.is_aligned()
+                # if self.camera_front.get_best_tag() is not None and (
+                #     self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.565, -0.21, Rotation2d())
+                #         )
+                #     ) < 0.03
+                #     or self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.55, 0.21, Rotation2d())
+                #         )
+                #     ) < 0.03
+                # ):
+                #     self.led_strip.is_aligned()
             if self.secondary.getXButton():
-                if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.565, -0.21, Rotation2d()) 
-                        )
-                    ) < 0.03
-                    or self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.55, 0.21, Rotation2d()) 
-                        )
-                    ) < 0.03
-                ):
-                    self.led_strip.is_aligned()
+                # if self.camera_front.get_best_tag() is not None and (
+                #     self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.565, -0.21, Rotation2d()) 
+                #         )
+                #     ) < 0.03
+                #     or self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.55, 0.21, Rotation2d()) 
+                #         )
+                #     ) < 0.03
+                # ):
+                #     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
-                if self.camera_front.get_best_tag() is not None and (
-                    self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.53, -0.21, Rotation2d()) 
-                        )
-                    ) < 0.03
-                    or self.swerve_drive.get_distance_from_pose(
-                        self.camera_front.get_best_pose(True).transformBy(
-                            Transform2d(0.53, 0.21, Rotation2d()) 
-                        )
-                    ) < 0.03
-                ):
-                    self.led_strip.is_aligned()
+                # if self.camera_front.get_best_tag() is not None and (
+                #     self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.53, -0.21, Rotation2d()) 
+                #         )
+                #     ) < 0.03
+                #     or self.swerve_drive.get_distance_from_pose(
+                #         self.camera_front.get_best_pose(True).transformBy(
+                #             Transform2d(0.53, 0.21, Rotation2d()) 
+                #         )
+                #     ) < 0.03
+                # ):
+                #     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
 
             if self.secondary.getStartButton():
@@ -593,18 +594,17 @@ class MyRobot(LemonRobot):
             if self.primary.getYButton():
                 self.led_strip.commandtest()
 
-        # with self.consumeExceptions():
-        #     """
-        #     SYS-ID
-        #     """
-        #     if self.sysid_con.getAButton():
-        #         self.sysid_drive.quasistatic_forward()
-        #     if self.sysid_con.getBButton():
-        #         self.sysid_drive.quasistatic_reverse()
-        #     if self.sysid_con.getXButton():
-        #         self.sysid_drive.dynamic_forward()
-        #     if self.sysid_con.getYButton():
-        #         self.sysid_drive.dynamic_reverse()
+        """
+        SYS-ID
+        """
+        if self.sysid_con.getAButton():
+            self.sysid_drive.quasistatic_forward()
+        if self.sysid_con.getBButton():
+            self.sysid_drive.quasistatic_reverse()
+        if self.sysid_con.getXButton():
+            self.sysid_drive.dynamic_forward()
+        if self.sysid_con.getYButton():
+            self.sysid_drive.dynamic_reverse()
 
     @feedback
     def get_voltage(self) -> units.volts:
