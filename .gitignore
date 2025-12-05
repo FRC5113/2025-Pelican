@@ -127,6 +127,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+2025venv
+2027venv
 
 # Spyder project settings
 .spyderproject

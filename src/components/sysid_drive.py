@@ -43,4 +43,4 @@ class SysIdDriveRotation(MagicSysIdRoutine):
         )
 
     def drive_sysid(self, voltage: units.volts) -> None:
-        self.drive_control.drive_sysid_manual(voltage,1)
+        self.drive_control.drive_sysid_manual(voltage, 1)

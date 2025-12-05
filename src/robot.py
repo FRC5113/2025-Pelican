@@ -64,7 +64,7 @@ from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
 from lemonlib import LemonRobot, fms_feedback
-from lemonlib.util import get_file,OneWaySlewRateLimiter
+from lemonlib.util import get_file, AsymmetricSlewLimiter
 
 
 class MyRobot(LemonRobot):
@@ -86,7 +86,9 @@ class MyRobot(LemonRobot):
     # greatest speed that chassis should move (not greatest possible speed)
     top_speed = SmartPreference(3.0)
     top_omega = SmartPreference(6.0)
-    slew_rate = SmartPreference(5.0)
+
+    rasing_slew_rate = SmartPreference(5.0)
+    falling_slew_rate = SmartPreference(5.0)
 
     keaton_mode = SmartPreference(False)
 
@@ -105,21 +107,21 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.front_left_speed_motor = TalonFX(21,self.canbus)
-        self.front_left_direction_motor = TalonFX(22,self.canbus)
-        self.front_left_cancoder = CANcoder(23,self.canbus)
+        self.front_left_speed_motor = TalonFX(21, self.canbus)
+        self.front_left_direction_motor = TalonFX(22, self.canbus)
+        self.front_left_cancoder = CANcoder(23, self.canbus)
 
-        self.front_right_speed_motor = TalonFX(31,self.canbus)
-        self.front_right_direction_motor = TalonFX(32,self.canbus)
-        self.front_right_cancoder = CANcoder(33,self.canbus)
+        self.front_right_speed_motor = TalonFX(31, self.canbus)
+        self.front_right_direction_motor = TalonFX(32, self.canbus)
+        self.front_right_cancoder = CANcoder(33, self.canbus)
 
-        self.rear_left_speed_motor = TalonFX(11,self.canbus)
-        self.rear_left_direction_motor = TalonFX(12,self.canbus)
-        self.rear_left_cancoder = CANcoder(13,self.canbus)
+        self.rear_left_speed_motor = TalonFX(11, self.canbus)
+        self.rear_left_direction_motor = TalonFX(12, self.canbus)
+        self.rear_left_cancoder = CANcoder(13, self.canbus)
 
-        self.rear_right_speed_motor = TalonFX(41,self.canbus)
-        self.rear_right_direction_motor = TalonFX(42,self.canbus)
-        self.rear_right_cancoder = CANcoder(43,self.canbus)
+        self.rear_right_speed_motor = TalonFX(41, self.canbus)
+        self.rear_right_direction_motor = TalonFX(42, self.canbus)
+        self.rear_right_cancoder = CANcoder(43, self.canbus)
 
         # physical constants
         self.offset_x: units.meters = 0.381
@@ -298,7 +300,7 @@ class MyRobot(LemonRobot):
         self.led_length = 112
         self.leds = LEDController(0, self.led_length)  # broken amount is 46
 
-        self.pigeon = Pigeon2(30,self.canbus)
+        self.pigeon = Pigeon2(30, self.canbus)
 
         self.fms = DriverStation.isFMSAttached()
 
@@ -365,13 +367,18 @@ class MyRobot(LemonRobot):
 
         # self.commandprimary = CommandLemonInput(0)
 
-        self.x_filter = OneWaySlewRateLimiter(self.slew_rate)
-        self.y_filter = OneWaySlewRateLimiter(self.slew_rate)
-        self.theta_filter = OneWaySlewRateLimiter(self.slew_rate)
+        self.x_filter = AsymmetricSlewLimiter(
+            self.rasing_slew_rate, self.falling_slew_rate
+        )
+        self.y_filter = AsymmetricSlewLimiter(
+            self.rasing_slew_rate, self.falling_slew_rate
+        )
+        self.theta_filter = AsymmetricSlewLimiter(
+            self.rasing_slew_rate, self.falling_slew_rate
+        )
 
         self.upper_algae_button_released = True
         self.lower_algae_button_released = True
-        
 
     def teleopPeriodic(self):
         with self.consumeExceptions():
@@ -394,8 +401,6 @@ class MyRobot(LemonRobot):
                 self.getLefty = self.primary.getLeftY()
                 self.getLeftx = self.primary.getLeftX()
 
-
-
             rotate_mult = 0.75
             mult = 1
             if self.primary.getR2Axis() >= 0.8:
@@ -406,7 +411,8 @@ class MyRobot(LemonRobot):
             keaton_mode = self.keaton_mode
             if keaton_mode:
                 self.omega = self.swerve_drive.point_towards(
-                    applyDeadband(self.primary.getRightX(), 0.3), applyDeadband(self.primary.getRightY(), 0.3)
+                    applyDeadband(self.primary.getRightX(), 0.3),
+                    applyDeadband(self.primary.getRightY(), 0.3),
                 )
             else:
                 self.omega = self.theta_filter.calculate(
@@ -424,7 +430,6 @@ class MyRobot(LemonRobot):
                 self.omega,
                 not self.primary.getCreateButton(),  # temporary
             )
-
 
             # algae removal
             if self.primary.getPOV() == 180:
@@ -518,12 +523,12 @@ class MyRobot(LemonRobot):
                 # if self.camera_front.get_best_tag() is not None and (
                 #     self.swerve_drive.get_distance_from_pose(
                 #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d()) 
+                #             Transform2d(0.565, -0.21, Rotation2d())
                 #         )
                 #     ) < 0.03
                 #     or self.swerve_drive.get_distance_from_pose(
                 #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d()) 
+                #             Transform2d(0.55, 0.21, Rotation2d())
                 #         )
                 #     ) < 0.03
                 # ):
@@ -533,12 +538,12 @@ class MyRobot(LemonRobot):
                 # if self.camera_front.get_best_tag() is not None and (
                 #     self.swerve_drive.get_distance_from_pose(
                 #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, -0.21, Rotation2d()) 
+                #             Transform2d(0.53, -0.21, Rotation2d())
                 #         )
                 #     ) < 0.03
                 #     or self.swerve_drive.get_distance_from_pose(
                 #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, 0.21, Rotation2d()) 
+                #             Transform2d(0.53, 0.21, Rotation2d())
                 #         )
                 #     ) < 0.03
                 # ):
@@ -551,7 +556,7 @@ class MyRobot(LemonRobot):
                 )
             if self.secondary.getBackButton():
                 self.arm_control.set(ElevatorHeight.STATION_FAR, ClawAngle.STATION_FAR)
-            
+
             if self.secondary.getPOV() == 0:
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.TROUGH)
 

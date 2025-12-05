@@ -50,11 +50,12 @@ class DriveControl(StateMachine):
             self.translationY = translationY
             self.rotationX = rotationX
             self.field_relative = field_relative
+
     def drive_sysid_manual(
         self,
         volts: float,
     ):
-        
+
         self.drive_sysid = True
         self.sysid_volts = volts
 
@@ -117,6 +118,7 @@ class DriveControl(StateMachine):
             self.next_state("going_to_pose")
         if self.drive_sysid:
             self.next_state("drive_sysid_state")
+
     @state
     def drive_sysid_state(self):
         if not self.drive_sysid:
