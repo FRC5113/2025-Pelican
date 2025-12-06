@@ -6,40 +6,33 @@ from wpilib import (
     Field2d,
     SmartDashboard,
     DataLogManager,
-    CameraServer,
     Mechanism2d,
-    MechanismLigament2d,
     Color8Bit,
     RobotController,
     DigitalInput,
     DutyCycleEncoder,
     DriverStation,
-    RobotBase,
     PowerDistribution,
+    PWM
 )
 
 from wpimath import units, applyDeadband
-from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import (
     Transform3d,
-    Pose2d,
     Transform2d,
     Rotation2d,
     Rotation3d,
-    Translation2d,
 )
 
-from wpinet import WebServer
 
 from phoenix6.hardware import CANcoder, TalonFX, Pigeon2
 from phoenix6 import CANBus
 from rev import SparkMax, SparkLowLevel
-from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
+from robotpy_apriltag import AprilTagFieldLayout
 
-import magicbot
 from magicbot import feedback
 
-from lemonlib import LemonInput, LemonCamera
+from lemonlib import LemonInput
 from lemonlib.util import (
     curve,
     AlertManager,
@@ -47,12 +40,12 @@ from lemonlib.util import (
     LEDController,
     SnapX,
     SnapY,
-    is_red,
 )
 from lemonlib.smart import SmartPreference, SmartProfile
+from lemonlib import LemonRobot
+from lemonlib.util import AsymmetricSlewLimiter
 
-from autonomous.auto_base import AutoBase
-from components.odometry import Odometry
+# from autonomous.auto_base import AutoBase
 from components.swerve_drive import SwerveDrive
 from components.swerve_wheel import SwerveWheel
 from components.elevator import Elevator, ElevatorHeight
@@ -63,15 +56,10 @@ from components.drive_control import DriveControl
 from components.leds import LEDStrip
 from components.sysid_drive import SysIdDriveLinear
 
-from lemonlib import LemonRobot, fms_feedback
-from lemonlib.util import get_file, AsymmetricSlewLimiter
-
-
 class MyRobot(LemonRobot):
     sysid_drive: SysIdDriveLinear
     drive_control: DriveControl
     arm_control: ArmControl
-    odometry: Odometry
     led_strip: LEDStrip
 
     swerve_drive: SwerveDrive
@@ -100,28 +88,29 @@ class MyRobot(LemonRobot):
         components, such as the NavX, need only be created once.
         """
 
-        self.canbus = CANBus("can0")
+        self.ctre_canbus = CANBus("can0")
+        self.rev_canbus = 0
 
         """
         SWERVE
         """
 
         # hardware
-        self.front_left_speed_motor = TalonFX(21, self.canbus)
-        self.front_left_direction_motor = TalonFX(22, self.canbus)
-        self.front_left_cancoder = CANcoder(23, self.canbus)
+        self.front_left_speed_motor = TalonFX(21, self.ctre_canbus)
+        self.front_left_direction_motor = TalonFX(22, self.ctre_canbus)
+        self.front_left_cancoder = CANcoder(23, self.ctre_canbus)
 
-        self.front_right_speed_motor = TalonFX(31, self.canbus)
-        self.front_right_direction_motor = TalonFX(32, self.canbus)
-        self.front_right_cancoder = CANcoder(33, self.canbus)
+        self.front_right_speed_motor = TalonFX(31, self.ctre_canbus)
+        self.front_right_direction_motor = TalonFX(32, self.ctre_canbus)
+        self.front_right_cancoder = CANcoder(33, self.ctre_canbus)
 
-        self.rear_left_speed_motor = TalonFX(11, self.canbus)
-        self.rear_left_direction_motor = TalonFX(12, self.canbus)
-        self.rear_left_cancoder = CANcoder(13, self.canbus)
+        self.rear_left_speed_motor = TalonFX(11, self.ctre_canbus)
+        self.rear_left_direction_motor = TalonFX(12, self.ctre_canbus)
+        self.rear_left_cancoder = CANcoder(13, self.ctre_canbus)
 
-        self.rear_right_speed_motor = TalonFX(41, self.canbus)
-        self.rear_right_direction_motor = TalonFX(42, self.canbus)
-        self.rear_right_cancoder = CANcoder(43, self.canbus)
+        self.rear_right_speed_motor = TalonFX(41, self.ctre_canbus)
+        self.rear_right_direction_motor = TalonFX(42, self.ctre_canbus)
+        self.rear_right_cancoder = CANcoder(43, self.ctre_canbus)
 
         # physical constants
         self.offset_x: units.meters = 0.381
@@ -190,8 +179,8 @@ class MyRobot(LemonRobot):
 
         # hardware
         BRUSHLESS = SparkLowLevel.MotorType.kBrushless
-        self.elevator_right_motor = SparkMax(59, BRUSHLESS)
-        self.elevator_left_motor = SparkMax(57, BRUSHLESS)
+        self.elevator_right_motor = SparkMax(self.rev_canbus, 59, BRUSHLESS)
+        self.elevator_left_motor = SparkMax(self.rev_canbus, 57, BRUSHLESS)
         self.elevator_right_encoder = self.elevator_right_motor.getEncoder()
         self.elevator_left_encoder = self.elevator_left_motor.getEncoder()
         self.elevator_upper_switch = DigitalInput(0)
@@ -227,9 +216,9 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.claw_hinge_motor = SparkMax(56, BRUSHLESS)
-        self.claw_left_motor = SparkMax(55, SparkLowLevel.MotorType.kBrushed)
-        self.claw_right_motor = SparkMax(58, SparkLowLevel.MotorType.kBrushed)
+        self.claw_hinge_motor = SparkMax(self.rev_canbus, 56, BRUSHLESS)
+        self.claw_left_motor = SparkMax(self.rev_canbus, 55, SparkLowLevel.MotorType.kBrushed)
+        self.claw_right_motor = SparkMax(self.rev_canbus, 58, SparkLowLevel.MotorType.kBrushed)
         self.claw_hinge_encoder = self.claw_hinge_motor.getAbsoluteEncoder()
         self.claw_intake_limit = self.claw_left_motor.getReverseLimitSwitch()
 
@@ -259,38 +248,9 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.climber_motor = TalonFX(51)
+        self.climber_motor = TalonFX(51, CANBus("can_s0"))
         self.climber_encoder = DutyCycleEncoder(2)
 
-        """
-        ODOMETRY
-        """
-        self.robot_to_camera_front = Transform3d(
-            -0.2286,
-            0.0,
-            0.2667,
-            Rotation3d(0.0, 0.0, math.pi),
-        )
-        self.robot_to_camera_back = Transform3d(
-            -0.0381,
-            0.0,
-            0.762,
-            Rotation3d(0.0, math.pi / 6, 0.0),
-        )
-
-        self.field_layout = AprilTagFieldLayout(
-            str(Path(__file__).parent.resolve() / "2025_test_field.json")
-        )
-        # self.field_layout = AprilTagFieldLayout.loadField(
-        #     AprilTagField.k2025ReefscapeWelded
-        # )
-
-        self.camera_front = LemonCamera(
-            "Global_Shutter_Camera", self.robot_to_camera_front, self.field_layout
-        )
-        self.camera_back = LemonCamera(
-            "USB_Camera", self.robot_to_camera_back, self.field_layout
-        )
 
         """
         MISCELLANEOUS
@@ -298,9 +258,9 @@ class MyRobot(LemonRobot):
 
         # self.period: units.seconds = 0.02
         self.led_length = 112
-        self.leds = LEDController(0, self.led_length)  # broken amount is 46
+        self.leds = LEDController(2, self.led_length)  # broken amount is 46
 
-        self.pigeon = Pigeon2(30, self.canbus)
+        self.pigeon = Pigeon2(30, self.ctre_canbus)
 
         self.fms = DriverStation.isFMSAttached()
 
@@ -316,10 +276,9 @@ class MyRobot(LemonRobot):
                 "Low Bandwidth Mode is active! Tuning is disabled.", AlertType.INFO
             )
 
-        self.pdh = PowerDistribution()
+        self.pdh = PowerDistribution(self.rev_canbus)
 
         self.estimated_field = Field2d()
-        # CameraServer().launch()
 
         self.arm_visuize = Mechanism2d(20, 50)
         self.arm_root = self.arm_visuize.getRoot("Arm Root", 10, 0)
@@ -332,17 +291,9 @@ class MyRobot(LemonRobot):
             self.alliance = True
         else:
             self.alliance = False
-        # self.webserver = WebServer.getInstance()
-        # if not DriverStation.isFMSAttached():
-        #     self.webserver.start(
-        #         port=5800,
-        #         path=str(
-        #             Path(__file__).parent.resolve() / "deploy/elastic-layout.json"
-        #         ),
-        #     )
 
     def disabledPeriodic(self):
-        self.odometry.execute()
+        # self.odometry.execute()
         self.swerve_drive.execute()
         # self.leds.move_across((5, 5, 0), 20, 20)
         self.led_strip.hollows_eve_disabled()
@@ -363,9 +314,7 @@ class MyRobot(LemonRobot):
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(0)
         self.secondary = LemonInput(1)
-        self.sysid_con = LemonInput(2)
-
-        # self.commandprimary = CommandLemonInput(0)
+        # self.sysid_con = LemonInput(2)
 
         self.x_filter = AsymmetricSlewLimiter(
             self.rasing_slew_rate, self.falling_slew_rate
@@ -408,18 +357,11 @@ class MyRobot(LemonRobot):
             if self.primary.getL2Axis() >= 0.8:
                 mult *= 0.5
             mult *= self.arm_control.get_drive_scalar()
-            keaton_mode = self.keaton_mode
-            if keaton_mode:
-                self.omega = self.swerve_drive.point_towards(
-                    applyDeadband(self.primary.getRightX(), 0.3),
-                    applyDeadband(self.primary.getRightY(), 0.3),
-                )
-            else:
-                self.omega = self.theta_filter.calculate(
-                    -self.sammi_curve(self.primary.getRightX())
-                    * rotate_mult
-                    * self.top_omega
-                )
+            self.omega = self.theta_filter.calculate(
+                -self.sammi_curve(self.primary.getRightX())
+                * rotate_mult
+                * self.top_omega
+            )
             self.drive_control.drive_manual(
                 self.x_filter.calculate(
                     self.sammi_curve(self.getLefty) * mult * self.top_speed
@@ -431,66 +373,19 @@ class MyRobot(LemonRobot):
                 not self.primary.getCreateButton(),  # temporary
             )
 
-            # algae removal
-            if self.primary.getPOV() == 180:
-                self.lower_algae_button_released = False
-                self.drive_control.request_remove_algae(ElevatorHeight.L1, True)
-            elif not self.lower_algae_button_released:
-                self.lower_algae_button_released = True
-                self.drive_control.request_remove_algae(ElevatorHeight.L1, False)
-            if self.primary.getPOV() == 0:
-                self.upper_algae_button_released = False
-                self.drive_control.request_remove_algae(ElevatorHeight.L2, True)
-            elif not self.upper_algae_button_released:
-                self.upper_algae_button_released = True
-                self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
-
-            # vision alignment
-            if self.primary.getPOV() in (45, 90, 135):
-                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.55, 0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getAButton():  # L1
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.6, 0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getYButton():  # L4
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.53, 0.21, Rotation2d())
-                            )
-                        )
-
-            if self.primary.getPOV() in (225, 270, 315):
-                if self.secondary.getXButton() or self.secondary.getBButton():  # L2&3
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.565, -0.21, Rotation2d())
-                            )
-                        )
-                if self.secondary.getAButton():  # L1
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.6, -0.19, Rotation2d())
-                            )
-                        )
-                if self.secondary.getYButton():  # L4
-                    if self.camera_front.get_best_tag() is not None:
-                        self.drive_control.request_pose(
-                            self.camera_front.get_best_pose(True).transformBy(
-                                Transform2d(0.53, -0.21, Rotation2d())
-                            )
-                        )
+            # # algae removal
+            # if self.primary.getPOV() == 180:
+            #     self.lower_algae_button_released = False
+            #     self.drive_control.request_remove_algae(ElevatorHeight.L1, True)
+            # elif not self.lower_algae_button_released:
+            #     self.lower_algae_button_released = True
+            #     self.drive_control.request_remove_algae(ElevatorHeight.L1, False)
+            # if self.primary.getPOV() == 0:
+            #     self.upper_algae_button_released = False
+            #     self.drive_control.request_remove_algae(ElevatorHeight.L2, True)
+            # elif not self.upper_algae_button_released:
+            #     self.upper_algae_button_released = True
+            #     self.drive_control.request_remove_algae(ElevatorHeight.L2, False)
 
             if self.primary.getSquareButton():
                 self.swerve_drive.reset_gyro()
@@ -505,49 +400,9 @@ class MyRobot(LemonRobot):
                 self.arm_control.set(ElevatorHeight.L1, ClawAngle.TROUGH)
             if self.secondary.getBButton():
                 self.arm_control.set(ElevatorHeight.L2, ClawAngle.BRANCH)
-                # DON'T UNCOMMENT!!!!!!!!!!!!!!!!!!!!!!!!
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                # ):
-                #     self.led_strip.is_aligned()
             if self.secondary.getXButton():
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.565, -0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.55, 0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                # ):
-                #     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L3, ClawAngle.BRANCH)
             if self.secondary.getYButton():
-                # if self.camera_front.get_best_tag() is not None and (
-                #     self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, -0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                #     or self.swerve_drive.get_distance_from_pose(
-                #         self.camera_front.get_best_pose(True).transformBy(
-                #             Transform2d(0.53, 0.21, Rotation2d())
-                #         )
-                #     ) < 0.03
-                # ):
-                #     self.led_strip.is_aligned()
                 self.arm_control.set(ElevatorHeight.L4, ClawAngle.BRANCH)
 
             if self.secondary.getStartButton():
@@ -571,9 +426,6 @@ class MyRobot(LemonRobot):
 
             if self.secondary.getRightBumper():
                 self.arm_control.set_wheel_voltage(-1)
-
-            # if self.secondary.getPOV() == 270:
-            #     self.arm_control.next_state_now("elevator_failsafe")
 
             self.elevator_ligament.setLength((self.elevator.get_height() * 39.37) + 5)
             self.claw_ligament.setAngle(self.claw.get_angle() - 90)
@@ -599,33 +451,33 @@ class MyRobot(LemonRobot):
             if self.primary.getYButton():
                 self.led_strip.commandtest()
 
-        """
-        SYS-ID
-        """
-        if self.sysid_con.getAButton():
-            self.sysid_drive.quasistatic_forward()
-        if self.sysid_con.getBButton():
-            self.sysid_drive.quasistatic_reverse()
-        if self.sysid_con.getXButton():
-            self.sysid_drive.dynamic_forward()
-        if self.sysid_con.getYButton():
-            self.sysid_drive.dynamic_reverse()
+        # """
+        # SYS-ID
+        # """
+        # if self.sysid_con.getAButton():
+        #     self.sysid_drive.quasistatic_forward()
+        # if self.sysid_con.getBButton():
+        #     self.sysid_drive.quasistatic_reverse()
+        # if self.sysid_con.getXButton():
+        #     self.sysid_drive.dynamic_forward()
+        # if self.sysid_con.getYButton():
+        #     self.sysid_drive.dynamic_reverse()
 
     @feedback
     def get_voltage(self) -> units.volts:
         return RobotController.getBatteryVoltage()
 
-    def _display_auto_trajectory(self) -> None:
-        selected_auto = self._automodes.chooser.getSelected()
-        if isinstance(selected_auto, AutoBase):
-            selected_auto.display_trajectory()
+    # def _display_auto_trajectory(self) -> None:
+    #     selected_auto = self._automodes.chooser.getSelected()
+    #     if isinstance(selected_auto, AutoBase):
+    #         selected_auto.display_trajectory()
 
-    @feedback
-    def display_auto_state(self) -> None:
-        selected_auto = self._automodes.chooser.getSelected()
-        if isinstance(selected_auto, AutoBase):
-            return selected_auto.current_state
-        return "No Auto Selected"
+    # @feedback
+    # def display_auto_state(self) -> None:
+    #     selected_auto = self._automodes.chooser.getSelected()
+    #     if isinstance(selected_auto, AutoBase):
+    #         return selected_auto.current_state
+    #     return "No Auto Selected"
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ from magicbot import will_reset_to, feedback
 from lemonlib.util import Alert, AlertType
 from lemonlib.ctre import LemonPigeon
 from lemonlib.smart import SmartProfile, SmartController
-from choreo.trajectory import SwerveSample
+# from choreo.trajectory import SwerveSample
 from wpilib.sysid import SysIdRoutineLog
 from lemonlib import LemonComponent
 
@@ -263,19 +263,19 @@ class SwerveDrive(Sendable):
         """set angle added to reading from pigeon"""
         self.pigeon_offset = Rotation2d.fromDegrees(offset)
 
-    def follow_trajectory(self, sample: SwerveSample):
-        holospeeds = self.holonomic_controller.calculate(
-            self.get_estimated_pose(),
-            sample.get_pose(),
-            0.0,
-            sample.get_pose().rotation(),
-        )
-        speeds = ChassisSpeeds(
-            sample.vx + holospeeds.vx,
-            sample.vy + holospeeds.vy,
-            sample.omega + holospeeds.omega,
-        )
-        self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
+    # def follow_trajectory(self, sample: SwerveSample):
+    #     holospeeds = self.holonomic_controller.calculate(
+    #         self.get_estimated_pose(),
+    #         sample.get_pose(),
+    #         0.0,
+    #         sample.get_pose().rotation(),
+    #     )
+    #     speeds = ChassisSpeeds(
+    #         sample.vx + holospeeds.vx,
+    #         sample.vy + holospeeds.vy,
+    #         sample.omega + holospeeds.omega,
+    #     )
+    #     self.drive(-speeds.vx, -speeds.vy, -speeds.omega, False, self.period)
 
     def point_towards(self, rightX: float, rightY: float):
         moved = abs(rightX) > 0.1 or abs(rightY) > 0.1
@@ -387,17 +387,12 @@ class SwerveDrive(Sendable):
                 return
             self.chassis_speeds = ChassisSpeeds.discretize(
                 (
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        self.translationX,
-                        self.translationY,
-                        self.rotationX,
+                    ChassisSpeeds(self.translationX, self.translationY, self.rotationX).toFieldRelative(
                         self.pigeon.getRotation2d() + self.pigeon_offset,
+                        
                     )
                     if self.field_relative
-                    else ChassisSpeeds.fromFieldRelativeSpeeds(
-                        self.translationX,
-                        self.translationY,
-                        self.rotationX,
+                    else ChassisSpeeds(self.translationX, self.translationY, self.rotationX).toFieldRelative(
                         Rotation2d(),
                     )
                 ),

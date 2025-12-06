@@ -6,7 +6,7 @@
 [tool.robotpy]
 
 # Version of robotpy this project depends on
-robotpy_version = "2025.3.2.2"
+robotpy_version = "2027.0.0a2"
 
 # Run tests in isolated mode to prevent hanging and weird errors
 pyfrc.isolated = true
@@ -17,19 +17,16 @@ robotpy_extras = [
     # "all",
      "apriltag",
      "commands2",
-    # "cscore",
+    "cscore",
      "navx",
     # "pathplannerlib",
-    # "phoenix5",
-     "phoenix6",
     # "playingwithfusion",
-     "rev",
     # "romi",
-    # "sim",
+    "sim",
     # "xrp",
 ]
 
 # Other pip packages to install
 requires = [
-    "photonlibpy==2025.1.1", "sleipnirgroup-choreolib","phoenix6"
+    "phoenix6==25.90.0a2", "numpy~=2.1", "robotpy-rev==2027.0.0a1" # "photonlibpy==2025.1.1"
 ]

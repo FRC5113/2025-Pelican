@@ -137,7 +137,6 @@ class SwerveWheel:
         state = self.desired_state
         state.optimize(encoder_rotation)
         if not self.doing_sysid:
-            print(f"not doing sysid")
             # scale speed while turning
             state.speed *= (state.angle - encoder_rotation).cos()
             # convert speed from m/s to r/s
@@ -147,7 +146,6 @@ class SwerveWheel:
             )
             self.speed_motor.set_control(controls.VoltageOut(speed_output))
         else:
-            print(f"doing sysid at volts: {self.sysid_volts}")
             self.speed_motor.set_control(controls.VoltageOut(self.sysid_volts))
 
         direction_output = self.direction_controller.calculate(

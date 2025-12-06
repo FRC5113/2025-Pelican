@@ -4,15 +4,15 @@ from phoenix6.hardware.talon_fx import TalonFX
 from rev import SparkMaxSim, SparkRelativeEncoderSim, SparkMax, SparkAbsoluteEncoderSim
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics.drivetrains import four_motor_swerve_drivetrain
-from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
-from photonlibpy.simulation.simCameraProperties import SimCameraProperties
-from photonlibpy.simulation.visionSystemSim import VisionSystemSim
+# from photonlibpy.simulation.photonCameraSim import PhotonCameraSim
+# from photonlibpy.simulation.simCameraProperties import SimCameraProperties
+# from photonlibpy.simulation.visionSystemSim import VisionSystemSim
 from wpilib import DriverStation, Mechanism2d, SmartDashboard, Color8Bit
 from wpilib.simulation import SingleJointedArmSim, ElevatorSim, DIOSim
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.geometry import Pose2d, Transform2d, Rotation3d
 from robot import MyRobot
-from lemonlib.simulation import LemonCameraSim
+# from lemonlib.simulation import LemonCameraSim
 from lemonlib.simulation import FalconSim
 
 
@@ -101,27 +101,6 @@ class PhysicsEngine:
         # Put Mechanism to SmartDashboard
         SmartDashboard.putData("Arm Sim", self.arm_sim)
 
-        # Vision Simulation
-        self.vision_sim = LemonCameraSim(
-            robot.camera_front, robot.field_layout, fov=100.0, fps=20.0
-        )
-        # self.vision_sim.addAprilTags(robot.field_layout)
-
-        # self.camera_props = SimCameraProperties()
-        # self.camera_props.setCalibrationFromFOV(640, 480, Rotation2d.fromDegrees(100))
-        # self.camera_props.setFPS(20)
-        # self.camera_props.setAvgLatency(0.035)
-        # self.camera_props.setLatencyStdDev(0.005)
-
-        # self.camera_sim = PhotonCameraSim(
-        #     robot.camera, self.camera_props, robot.field_layout
-        # )
-        # self.vision_sim.addCamera(self.camera_sim, robot.robot_to_camera)
-
-        # self.camera_sim = LemonCameraSim(
-        #     robot.camera, robot.field_layout, fov=100.0, fps=20.0
-        # )
-
         # Simulated components
 
     def update_sim(self, now, tm_diff):
@@ -208,6 +187,3 @@ class PhysicsEngine:
             # Update the Elevator length based on the simulated elevator height
             self.elevator_ligament.setLength(self.elevator_sim.getPositionInches() + 5)
             self.claw_ligament.setAngle(self.claw_sim.getAngleDegrees() - 90)
-
-            # Simulate Vision
-            self.vision_sim.update(self.pose)

@@ -1,4 +1,4 @@
-name: ⏫ Copy Lemonlib to LemonLib Repo
+name: Copy Lemonlib to LemonLib Repo
 
 on:
   push:
@@ -17,9 +17,10 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: "src/lemonlib/" # Folder to copy
-          destination_repo: "FRC5113/LemonLib" # Target repo
-          destination_folder: "/" # Folder where to copy it
+          source_file: "src/lemonlib/"               # Folder to copy
+          destination_repo: "FRC5113/LemonLib"       # Target repo
+          destination_folder: "/"                    # Destination folder
+          destination_branch: "2027"                 # <<< DEPLOY TO THIS BRANCH
           user_email: "rradtke1208@gmail.com"
           user_name: "Ryanforce08"
           commit_message: ${{ github.event.head_commit.message }}

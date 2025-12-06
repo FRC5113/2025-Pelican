@@ -5,13 +5,12 @@ from wpilib import SmartDashboard, DriverStation, Timer
 from wpimath import units
 from wpimath.controller import HolonomicDriveController
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-from choreo.trajectory import SwerveSample
+# from choreo.trajectory import SwerveSample
 from magicbot import StateMachine, will_reset_to
 from magicbot.state_machine import state, timed_state
 
 from lemonlib.smart import SmartProfile
 
-# from components.odometry import Odometry
 from components.swerve_drive import SwerveDrive
 from components.arm_control import ArmControl
 from components.claw import Claw, ClawAngle
@@ -20,7 +19,6 @@ from components.elevator import Elevator, ElevatorHeight
 
 class DriveControl(StateMachine):
     arm_control: ArmControl
-    # odometry: Odometry
     swerve_drive: SwerveDrive
 
     pigeon: Pigeon2
@@ -36,7 +34,7 @@ class DriveControl(StateMachine):
     raiseclaw = will_reset_to(False)
     drive_sysid = will_reset_to(False)
     sysid_volts = will_reset_to(0.0)
-    sample: SwerveSample = None
+    # sample: SwerveSample = None
 
     def drive_manual(
         self,
@@ -70,8 +68,8 @@ class DriveControl(StateMachine):
         self.go_to_pose = True
         self.desired_pose = pose
 
-    def drive_auto(self, sample: SwerveSample = None):
-        self.sample = sample
+    # def drive_auto(self, sample: SwerveSample = None):
+    #     self.sample = sample
 
     def drive_auto_manual(
         self,
@@ -150,11 +148,11 @@ class DriveControl(StateMachine):
             self.next_state("free")
         self.swerve_drive.set_desired_pose(self.desired_pose)
 
-    @state
-    def run_auton_routine(self):
-        # used to drive the bot and used here to keep driving in one place
-        # main controls are in the auto_base.py like intake eject etc
-        if self.sample is not None:
-            self.swerve_drive.follow_trajectory(self.sample)
-        if DriverStation.isTeleop():
-            self.next_state("free")
+    # @state
+    # def run_auton_routine(self):
+    #     # used to drive the bot and used here to keep driving in one place
+    #     # main controls are in the auto_base.py like intake eject etc
+    #     if self.sample is not None:
+    #         self.swerve_drive.follow_trajectory(self.sample)
+    #     if DriverStation.isTeleop():
+    #         self.next_state("free")
