@@ -88,7 +88,8 @@ class MyRobot(LemonRobot):
         components, such as the NavX, need only be created once.
         """
 
-        self.ctre_canbus = CANBus("can0")
+        self.canicore_canbus = CANBus("can0")
+        self.ctre_canbus = CANBus.system_core(0)
         self.rev_canbus = 0
 
         """
@@ -96,21 +97,21 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.front_left_speed_motor = TalonFX(21, self.ctre_canbus)
-        self.front_left_direction_motor = TalonFX(22, self.ctre_canbus)
-        self.front_left_cancoder = CANcoder(23, self.ctre_canbus)
+        self.front_left_speed_motor = TalonFX(21, self.canicore_canbus)
+        self.front_left_direction_motor = TalonFX(22, self.canicore_canbus)
+        self.front_left_cancoder = CANcoder(23, self.canicore_canbus)
 
-        self.front_right_speed_motor = TalonFX(31, self.ctre_canbus)
-        self.front_right_direction_motor = TalonFX(32, self.ctre_canbus)
-        self.front_right_cancoder = CANcoder(33, self.ctre_canbus)
+        self.front_right_speed_motor = TalonFX(31, self.canicore_canbus)
+        self.front_right_direction_motor = TalonFX(32, self.canicore_canbus)
+        self.front_right_cancoder = CANcoder(33, self.canicore_canbus)
 
-        self.rear_left_speed_motor = TalonFX(11, self.ctre_canbus)
-        self.rear_left_direction_motor = TalonFX(12, self.ctre_canbus)
-        self.rear_left_cancoder = CANcoder(13, self.ctre_canbus)
+        self.rear_left_speed_motor = TalonFX(11, self.canicore_canbus)
+        self.rear_left_direction_motor = TalonFX(12, self.canicore_canbus)
+        self.rear_left_cancoder = CANcoder(13, self.canicore_canbus)
 
-        self.rear_right_speed_motor = TalonFX(41, self.ctre_canbus)
-        self.rear_right_direction_motor = TalonFX(42, self.ctre_canbus)
-        self.rear_right_cancoder = CANcoder(43, self.ctre_canbus)
+        self.rear_right_speed_motor = TalonFX(41, self.canicore_canbus)
+        self.rear_right_direction_motor = TalonFX(42, self.canicore_canbus)
+        self.rear_right_cancoder = CANcoder(43, self.canicore_canbus)
 
         # physical constants
         self.offset_x: units.meters = 0.381
@@ -248,7 +249,7 @@ class MyRobot(LemonRobot):
         """
 
         # hardware
-        self.climber_motor = TalonFX(51, CANBus("can_s0"))
+        self.climber_motor = TalonFX(51, self.ctre_canbus)
         self.climber_encoder = DutyCycleEncoder(2)
 
 
@@ -258,9 +259,9 @@ class MyRobot(LemonRobot):
 
         # self.period: units.seconds = 0.02
         self.led_length = 112
-        self.leds = LEDController(2, self.led_length)  # broken amount is 46
+        self.leds = LEDController(3, self.led_length)  # broken amount is 46
 
-        self.pigeon = Pigeon2(30, self.ctre_canbus)
+        self.pigeon = Pigeon2(30, self.canicore_canbus)
 
         self.fms = DriverStation.isFMSAttached()
 
