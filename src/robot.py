@@ -89,8 +89,8 @@ class MyRobot(LemonRobot):
         """
 
         self.canicore_canbus = CANBus("can0")
-        self.ctre_canbus = CANBus.system_core(0)
-        self.rev_canbus = 0
+        self.ctre_canbus = CANBus.system_core(1)
+        self.rev_canbus = 1
 
         """
         SWERVE

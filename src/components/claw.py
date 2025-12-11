@@ -53,24 +53,25 @@ class Claw:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        self.hinge_alert = Alert(
-            "Claw hinge has rotated too far!", type=AlertType.ERROR
-        )
-
-    def on_enable(self):
         self.hinge_motor.configure(
             SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kBrake),
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+        self.hinge_alert = Alert(
+            "Claw hinge has rotated too far!", type=AlertType.ERROR
+        )
+
+    def on_enable(self):
+
         self.controller = self.claw_profile.create_arm_controller("claw")
 
-    def on_disable(self):
-        self.hinge_motor.configure(
-            SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
+    # def on_disable(self):
+    #     self.hinge_motor.configure(
+    #         SparkBaseConfig().setIdleMode(SparkBaseConfig.IdleMode.kCoast),
+    #         SparkMax.ResetMode.kResetSafeParameters,
+    #         SparkMax.PersistMode.kPersistParameters,
+    #     )
 
     """
     INFORMATIONAL METHODS
