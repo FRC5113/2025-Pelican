@@ -13,7 +13,7 @@ from wpilib import (
     DutyCycleEncoder,
     DriverStation,
     PowerDistribution,
-    PWM, 
+    PWM
 )
 from wpilib import RobotController
 
@@ -332,7 +332,6 @@ class MyRobot(LemonRobot):
         self.lower_algae_button_released = True
 
     def teleopPeriodic(self):
-        RobotController.
         print(f"Lower: {self.elevator_lower_switch.get()}, Upper: {self.elevator_upper_switch.get()}")
         with self.consumeExceptions():
 
