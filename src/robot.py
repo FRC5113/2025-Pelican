@@ -13,8 +13,9 @@ from wpilib import (
     DutyCycleEncoder,
     DriverStation,
     PowerDistribution,
-    PWM
+    PWM, 
 )
+from wpilib import RobotController
 
 from wpimath import units, applyDeadband
 from wpimath.geometry import (
@@ -89,8 +90,8 @@ class MyRobot(LemonRobot):
         """
 
         self.canicore_canbus = CANBus("can0")
-        self.ctre_canbus = CANBus.system_core(1)
-        self.rev_canbus = 1
+        self.ctre_canbus = CANBus.system_core(0)
+        self.rev_canbus = 0
 
         """
         SWERVE
@@ -313,8 +314,8 @@ class MyRobot(LemonRobot):
 
     def teleopInit(self):
         # initialize HIDs here in case they are changed after robot initializes
-        self.primary = LemonInput(0)
-        self.secondary = LemonInput(1)
+        self.primary = LemonInput(0, "PS5")
+        self.secondary = LemonInput(1, "Xbox")
         # self.sysid_con = LemonInput(2)
 
         self.x_filter = AsymmetricSlewLimiter(
@@ -331,6 +332,8 @@ class MyRobot(LemonRobot):
         self.lower_algae_button_released = True
 
     def teleopPeriodic(self):
+        RobotController.
+        print(f"Lower: {self.elevator_lower_switch.get()}, Upper: {self.elevator_upper_switch.get()}")
         with self.consumeExceptions():
 
             """
