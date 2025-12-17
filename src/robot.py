@@ -345,7 +345,6 @@ class MyRobot(LemonRobot):
         self.odometry.execute()
         self.swerve_drive.execute()
         # self.leds.move_across((5, 5, 0), 20, 20)
-        self.led_strip.hollows_eve_disabled()
 
     def enabledperiodic(self):
         self.drive_control.engage()
@@ -363,7 +362,7 @@ class MyRobot(LemonRobot):
         # initialize HIDs here in case they are changed after robot initializes
         self.primary = LemonInput(0)
         self.secondary = LemonInput(1)
-        self.sysid_con = LemonInput(2)
+        # self.sysid_con = LemonInput(2)
 
         # self.commandprimary = CommandLemonInput(0)
 
@@ -602,14 +601,14 @@ class MyRobot(LemonRobot):
         """
         SYS-ID
         """
-        if self.sysid_con.getAButton():
-            self.sysid_drive.quasistatic_forward()
-        if self.sysid_con.getBButton():
-            self.sysid_drive.quasistatic_reverse()
-        if self.sysid_con.getXButton():
-            self.sysid_drive.dynamic_forward()
-        if self.sysid_con.getYButton():
-            self.sysid_drive.dynamic_reverse()
+        # if self.sysid_con.getAButton():
+        #     self.sysid_drive.quasistatic_forward()
+        # if self.sysid_con.getBButton():
+        #     self.sysid_drive.quasistatic_reverse()
+        # if self.sysid_con.getXButton():
+        #     self.sysid_drive.dynamic_forward()
+        # if self.sysid_con.getYButton():
+        #     self.sysid_drive.dynamic_reverse()
 
     @feedback
     def get_voltage(self) -> units.volts:

@@ -45,7 +45,8 @@ class LEDStrip:
         self.auton_color = self.halloween_color_c
 
     def on_disable(self):
-        self.leds.set_gradient(self.halloween_color_b, (255, 165, 0))
+        self.leds.set_solid_color(self.disabled)
+        
 
     """
     INFORMATIONAL METHODS
@@ -108,9 +109,8 @@ class LEDStrip:
         elif self.claw.get_intake_limit():
             self.leds.set_solid_color(self.coral_detected)
         elif self.justin_bool:
-            self.leds.scolling_rainbow(6)
+            self.leds.scrolling_rainbow(6)
         elif DriverStation.isAutonomousEnabled():
             self.leds.move_across(self.auton_color, 20, 50)
         else:
-            # self.leds.set_solid_color((50,50,50))
-            self.hollows_eve()
+            self.leds.set_solid_color((50,50,50))
