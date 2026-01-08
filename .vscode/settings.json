@@ -3,5 +3,6 @@
         "auton"
     ],
     "python-envs.defaultEnvManager": "ms-python.python:venv",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "python.languageServer": "None"
 }

@@ -66,6 +66,8 @@ from components.sysid_drive import SysIdDriveLinear
 from lemonlib import LemonRobot, fms_feedback
 from lemonlib.util import get_file, AsymmetricSlewLimiter
 
+from chasestate import FiniteStateMachine
+
 
 class MyRobot(LemonRobot):
     sysid_drive: SysIdDriveLinear
@@ -99,6 +101,8 @@ class MyRobot(LemonRobot):
         can be found in one place. Also, attributes shared by multiple
         components, such as the NavX, need only be created once.
         """
+
+        self.fsm = FiniteStateMachine(True)
 
         self.canbus = CANBus("can0")
 
