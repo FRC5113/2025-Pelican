@@ -43,27 +43,31 @@ class ArmControl:
 
         self.fsm.construct_state(
             "homeing",
-            conditional = lambda: not self.elevator_homed,
-            runner = self.homing,
-            test_runner = lambda: print("print test homeing")
+            conditional=lambda: not self.elevator_homed,
+            runner=self.homing,
+            test_runner=lambda: print("print test homeing"),
         )
         self.fsm.construct_state(
             "standby",
-            conditional = lambda: self.at_setpoint(),
-            runner = self.standby,
-            test_runner = lambda: print("print test standby")
+            conditional=lambda: self.at_setpoint(),
+            runner=self.standby,
+            test_runner=lambda: print("print test standby"),
         )
         self.fsm.construct_state(
             "positioning arm",
-            conditional = lambda: self.claw.at_setpoint() and (not self.elevator.at_setpoint()),
-            runner = self.positioning_arm,
-            test_runner=lambda: print("test moving up")
+            conditional=lambda: self.elevator_setpoint != self.claw.get_setpoint()
+            and (
+                self.claw_setpoint == self.claw.get_position and self.claw.at_setpoint()
+            ),
+            runner=self.positioning_arm,
+            test_runner=lambda: print("test moving up"),
         )
         self.fsm.construct_state(
             "positioning claw",
-            conditional=lambda: not self.claw.at_setpoint(),
-            runner = self.positioning_claw,
-            test_runner=lambda: print("test moving down")
+            conditional=lambda: self.claw_setpoint == self.claw.get_position
+            and (not self.claw.at_setpoint()),
+            runner=self.positioning_claw,
+            test_runner=lambda: print("test moving down"),
         )
 
     def on_enable(self):
@@ -99,6 +103,7 @@ class ArmControl:
     """
     STATES
     """
+
     def homing(self):
         self.drive_scalar = 0.5
         self.claw.set_target_angle(ClawAngle.SAFE_START)

@@ -1,5 +1,6 @@
 from wpilib import RobotController
 
+
 class AsymmetricSlewLimiter:
     """
     slew rate limiter with separate rising and falling rates.
@@ -16,11 +17,10 @@ class AsymmetricSlewLimiter:
         self.falling_rate = abs(falling_rate)
         self.prev_value = initial_value
         self.prev_time = RobotController.getTime() / 1000000
-    
+
     def get_time_seconds(self):
         """Get the time in seconds"""
         return RobotController.getTime() / 1000000
-
 
     def calculate(self, input_signal):
         """
@@ -42,7 +42,6 @@ class AsymmetricSlewLimiter:
         self.prev_value += change
         self.prev_time = current_time
         return self.prev_value
-
 
     def lastValue(self):
         """Get the last output value of the limiter."""

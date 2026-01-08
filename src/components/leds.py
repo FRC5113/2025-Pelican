@@ -46,7 +46,6 @@ class LEDStrip:
 
     def on_disable(self):
         self.leds.set_solid_color(self.disabled)
-        
 
     """
     INFORMATIONAL METHODS
@@ -113,4 +112,4 @@ class LEDStrip:
         elif DriverStation.isAutonomousEnabled():
             self.leds.move_across(self.auton_color, 20, 50)
         else:
-            self.leds.set_solid_color((50,50,50))
+            self.leds.set_solid_color((50, 50, 50))
